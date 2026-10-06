@@ -28,7 +28,8 @@ Name the problem. Check, in order: the framework and its conventions; tactics by
 modifiability: encapsulation, dependency inversion, ports and adapters; security: input validation,
 authorization at the boundary, least privilege); styles (layered, hexagonal / ports and adapters,
 clean architecture); patterns (PoEAA: repository, service layer, data mapper, DTO; DDD: aggregate,
-value object, bounded context; EIP for messaging). Record what fits and what was rejected and why.
+value object, bounded context; EIP for messaging). Record what fits and what was rejected and why. For a non-trivial problem or a library choice, hand the
+named problem to the `researcher` subagent and cite its sources.
 
 ## 4. Options and trade-offs
 
@@ -49,7 +50,8 @@ implementation; unrequested functionality; a decision without a driver.
 
 ## 5. The human decides
 
-Present drivers, options, trade-offs and the recommendation; wait for the decision.
+Before presenting, pass the ADR draft (or the options) to the `architecture-reviewer` subagent; put its
+findings next to the options. Present drivers, options, trade-offs and the recommendation; wait for the decision.
 
 ## 6. ADR and updates (same change)
 

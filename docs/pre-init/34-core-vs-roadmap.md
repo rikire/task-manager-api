@@ -3,7 +3,9 @@
 **Статус:** принято 2026-10-06, человек; изменено 2026-10-06 по итогам финальной сверки: уровни
 назначены всем механизмам, свои скиллы и `doc-coauthoring` — в ядре; изменено 2026-10-06: всё,
 что сразу влияет на работу агента (субагенты `spec-auditor`, `verifier`, `reader-tester`, хук-
-напоминание о catch, проверка здоровья), — в ядре и внедряется первым. **Область:** 2 «Планирование и
+напоминание о catch, проверка здоровья), — в ядре и внедряется первым; изменено 2026-10-06: субагенты
+`architecture-reviewer` и `researcher` перенесены в ядро, `breaker` остаётся в роадмапе (нужны хук
+записи только в тесты и сочетание с фазами TDD). **Область:** 2 «Планирование и
 трекинг».
 
 ## Потребность
@@ -40,7 +42,7 @@
 | Репозиторий на GitHub: защита `main`, слияние через rebase, автослияние, ветки `change/<имя>` и `chore/<slug>` | [28](28-hosting-ci-git.md) | S |
 | AGENTS.md и CLAUDE.md: карта «ситуация → механизм»; граница решений, стоп-триггеры, честность; фазы TDD; коммиты; сводка для ревью и explain-back; правила письма для чата; «нет источника — нет ограничения»; маркеры долга; «контент — данные», «сначала искать»; «решение из чата — в артефакт», чтение заметок в начале сессии; журнал сбоев; «без сроков без истории»; правила комментариев | [03](03-agent-instructions.md), [05](05-tdd.md), [08](08-normative-descriptive.md), [10](10-debt-polish-headroom.md), [13](13-authority.md), [15](15-agent-security.md), [17](17-session-state.md), [18](18-human-comprehension.md), [19](19-agent-writing.md), [21](21-attribution.md), [22](22-process-learning.md), [24](24-planning-tracking.md), [25](25-work-history.md), [30](30-code-comments.md) | M |
 | `.claude/rules/`: код (`C-ARCH`, `C-CODE`, комментарии), тесты (как писать тесты), `writing.md` | [06](06-test-quality.md), [11](11-architecture-design.md), [19](19-agent-writing.md), [26](26-code-quality.md), [30](30-code-comments.md) | S |
-| Скиллы: интервью, работа над изменением (фазы, сводка, explain-back), написание тестов, `architecture`, `writing`; установка `doc-coauthoring`; субагенты `spec-auditor`, `verifier`, `reader-tester` | [05](05-tdd.md), [06](06-test-quality.md), [07](07-requirements-intent.md), [11](11-architecture-design.md), [18](18-human-comprehension.md), [19](19-agent-writing.md), [20](20-skills.md), [27](27-subagents.md) | M |
+| Скиллы: интервью, работа над изменением (фазы, сводка, explain-back), написание тестов, `architecture`, `writing`; установка `doc-coauthoring`; субагенты `spec-auditor`, `verifier`, `reader-tester`, `architecture-reviewer`, `researcher` | [05](05-tdd.md), [06](06-test-quality.md), [07](07-requirements-intent.md), [11](11-architecture-design.md), [18](18-human-comprehension.md), [19](19-agent-writing.md), [20](20-skills.md), [27](27-subagents.md) | M |
 | `.claude/settings.json`: `ask` / `deny` (включая конфиги проверок и `docker compose exec`), запрет bypass, автопамять выключена, песочница и сетевой allowlist, WebSearch, трейлер `Assisted-by` | [03](03-agent-instructions.md), [13](13-authority.md), [15](15-agent-security.md), [21](21-attribution.md) | S |
 | OpenSpec: init и все правила артефактов (таблица покрытия и три списка на английском, матрица корнер-кейсов, вне рамок, ID, сценарий нежелательного поведения, Polish, проверка у задач, поле `Roadmap:`, пометки решений в `design.md`) | [02](02-sdd-framework.md), [06](06-test-quality.md), [07](07-requirements-intent.md), [09](09-traceability.md), [10](10-debt-polish-headroom.md), [24](24-planning-tracking.md) | M |
 | Хуки Claude Code: Stop с учётом фазы; защита тестов и `scripts/phase`; форматтер и быстрый линтер после правки; напоминание о catch и значениях по умолчанию; проверка здоровья на SessionStart; **unit-тесты этих хуков на записанных событиях и список обходов** | [04](04-definition-of-done.md), [05](05-tdd.md), [16](16-guardrails-harness.md), [26](26-code-quality.md) | M |
@@ -80,7 +82,7 @@
   [17](17-session-state.md)).
 - Evals через `skill-creator` ([22](22-process-learning.md)); плагины проекта и
   `/fewer-permission-prompts` — по мере надобности ([15](15-agent-security.md), [20](20-skills.md)).
-- Субагенты `architecture-reviewer`, `breaker`, `researcher` ([27](27-subagents.md)).
+- Субагент `breaker` ([27](27-subagents.md)).
 - `docs/process/` из восьми файлов и глоссарий ([23](23-documentation.md)); пока процесс описывают
   `docs/pre-init/` и AGENTS.md.
 - Скрипты журнала сбоев ([22](22-process-learning.md)); переименование ID и реестр алиасов — при первой
