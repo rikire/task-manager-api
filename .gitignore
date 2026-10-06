@@ -1,0 +1,9 @@
+# Agent working state (decision 16, 17)
+.agent-state/
+
+# Personal Claude Code settings (decision 15)
+.claude/settings.local.json
+
+# Local environment overrides
+.env.local
+.env.*.local
