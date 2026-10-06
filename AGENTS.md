@@ -30,8 +30,9 @@ Tools are pinned in `mise.toml`; run them on `PATH` (mise activated) or via `mis
 | You (or the human) noticed an agent failure | draft a `FAIL-` entry and a remedy by the ladder | `docs/registers/failures.md` (create on the first entry) |
 | Something is unclear in the spec or a test | stop and ask one question with options | "Stop triggers" below |
 
-Subagents for independent review (fresh context, read-only): `spec-auditor` after the interview,
-`verifier` before acceptance of non-trivial work, `reader-tester` for significant documents.
+Subagents (fresh context, read-only): `spec-auditor` after the interview, `verifier` before acceptance
+of non-trivial work, `reader-tester` for significant documents, `architecture-reviewer` for ADR drafts
+and architecturally significant changes, `researcher` for known solutions, libraries and version facts.
 
 ## Decision boundary
 
