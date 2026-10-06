@@ -16,7 +16,8 @@ Check:
    asserts the behaviour the scenario describes (response and stored state), not something weaker.
 2. Every task marked done in `tasks.md` is reflected in the diff; nothing in the diff is outside the
    change's scope.
-3. Unwanted-behaviour scenarios are implemented, not only the happy path.
+3. Unwanted-behaviour scenarios are implemented, not only the happy path; nothing in the diff violates
+   an active constraint in `docs/constraints.md`.
 4. What is simplified or omitted relative to the spec, and whether it is recorded in "Simplifications /
    Debt / Not done".
 5. What an experienced engineer would do better on each quality axis (functionality, reliability,

@@ -1,7 +1,7 @@
 ---
 name: architecture
 description: Make an architectural decision the disciplined way - drivers, known patterns and tactics, options with trade-offs, ADR draft, updated architecture description. Use when the significance checklist says yes, when choosing stack or library that is hard to replace, or for the architecture kickoff.
-when_to_use: design.md significance checklist has a yes; new module or boundary; data schema; API contract; hard-to-replace dependency; new cross-cutting concern; affects a Q- scenario; hard to reverse; "how should we structure"; stack choice.
+when_to_use: design.md significance checklist has a yes; new module or boundary; data schema; API contract; hard-to-replace dependency; new cross-cutting concern; affects a QAS- scenario; hard to reverse; "how should we structure"; stack choice.
 ---
 
 # Architecture
@@ -12,14 +12,16 @@ definitions and questions below and name what you apply.
 ## 1. Significance checklist
 
 New module or boundary · data schema · API contract · new dependency that is hard to replace · new
-cross-cutting concern · affects a `Q-` scenario · hard to reverse. Any yes → this procedure. All no →
+cross-cutting concern · affects a `QAS-` scenario · hard to reverse. Any yes → this procedure. All no →
 local decision in `design.md` with `Scope: local`.
 
 ## 2. Drivers
 
-List the drivers of this decision with IDs: functional requirements `R-`, quality scenarios `Q-`
-(source → stimulus → artifact → environment → response → **measurable** response measure), constraints
-`C-`, cross-cutting concerns. A decision without a driver is not taken.
+List the drivers of this decision with IDs: functional requirements `REQ-`, quality scenarios `QAS-`
+(source → stimulus → artifact → environment → response → **measurable** response measure), external
+constraints `CON-` from `docs/constraints.md`, cross-cutting concerns. A decision without a driver is not
+taken; do not invent driver labels — a missing constraint is proposed as a `CON-` entry for the human to
+confirm (`docs/pre-init/36-constraints-and-ids.md`).
 
 ## 3. Known solutions first
 
@@ -62,4 +64,4 @@ dependency rule that enforces it, or "review"); Retires (rules or wording it can
 When asking to commit, say "this commit accepts ADR-NNNN-<slug>".
 
 Update in the same change: `docs/architecture/README.md` (strategy, building blocks, diagrams in
-Mermaid with a caption saying why the diagram exists), dependency rules, `C-ARCH-…` rules if any.
+Mermaid with a caption saying why the diagram exists), dependency rules, `RUL-ARCH-…` rules if any.

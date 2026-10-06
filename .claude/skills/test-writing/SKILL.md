@@ -18,7 +18,7 @@ Sources: `docs/pre-init/06-test-quality.md`, `05-tdd.md`, `09-traceability.md`, 
    behaviour from the spec, "not applicable" with a reason, or a question to the human.
 3. **Merge equivalent cases:** same path and same result → one test. One happy-path test per scenario.
 4. **Write tests** (PHPUnit):
-   - `#[Group('R-<CAP>-<slug>.<scenario>')]` on each test; `#[Group('internal')]` plus a comment on why
+   - `#[Group('REQ-<CAP>-<slug>.<scenario>')]` on each test; `#[Group('internal')]` plus a comment on why
      the component exists for tests without a requirement;
    - names state the behaviour in PHP camelCase (`testRejectsTaskWithEmptyTitle`);
    - assert the response **and** the stored state; literal expected values, not values computed by the

@@ -142,7 +142,7 @@ class PostEdit(HookCase):
     def test_reminds_about_new_catch(self):
         r = self.run_hook("post_edit.py", self.payload("src/A.php", "} catch (Exception $e) { return null; }"))
         self.assertEqual(r.returncode, 0)
-        self.assertIn("C-CODE-fail-fast", json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"])
+        self.assertIn("RUL-CODE-fail-fast", json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"])
 
     def test_silent_for_plain_php(self):
         r = self.run_hook("post_edit.py", self.payload("src/A.php", "return $a + $b;"))

@@ -11,12 +11,14 @@ fact. Source: `docs/pre-init/07-requirements-intent.md`.
 
 ## Steps
 
-1. **Read first.** Read the request, existing specs (`openspec/specs/`), related code and ADRs. What the
-   repository answers is not a question.
+1. **Read first.** Read the request, existing specs (`openspec/specs/`), `docs/constraints.md`, related
+   code and ADRs. What the repository answers is not a question.
 2. **Fill the coverage table** for the change: categories `Scope`, `Data`, `Edge cases and failures`,
    `Constraints`, `Terminology`, `Non-functional`, `Done criteria`; status `clear` / `partial` /
    `missing` with a one-line rationale. You decide the status by evidence, not by feeling: a category is
-   `clear` only if the human said it or an artifact states it.
+   `clear` only if the human said it or an artifact states it. `Constraints` cites the `CON-…` IDs from
+   `docs/constraints.md` that bind the change; a new external limit is proposed as a `CON-` entry and
+   stays an assumption until the human confirms it (`docs/pre-init/36-constraints-and-ids.md`).
 3. **Build the corner-case matrix:** each input × dimension (emptiness, size and boundaries, type and
    format, structure, state, trust) → expected behaviour, or a question.
 4. **Ask** about every `partial` / `missing` row and every unanswered matrix cell:

@@ -15,11 +15,11 @@ Check, in order:
    valid, appropriate) without a measure.
 2. **Hidden assumptions:** anything the specs rely on that is not in `Confirmed` and not listed in
    `Assumptions`.
-3. **Contradictions:** between requirements, scenarios, proposal sections, main specs and ADRs in
-   `docs/adr/`.
+3. **Contradictions:** between requirements, scenarios, proposal sections, main specs, ADRs in
+   `docs/adr/` and constraints in `docs/constraints.md`.
 4. **Gaps:** requirements without an unwanted-behaviour scenario; coverage categories marked `clear`
    without evidence; corner-case matrix cells with no answer that are not in `Open questions`.
-5. **Form:** requirement and scenario headers carry IDs (`R-<CAP>-<slug>`, `R-…<slug>.<scenario>`);
+5. **Form:** requirement and scenario headers carry IDs (`REQ-<CAP>-<slug>`, `REQ-…<slug>.<scenario>`);
    uppercase MUST/SHALL only inside requirements.
 
 Output:
