@@ -52,7 +52,7 @@
 |---|---|---|
 | `email` | пустота | `test_empty_email_rejected` |
 | `email` | формат | `test_malformed_email_rejected` |
-| `email` | доверие | не применимо: поле заполняет только администратор (`R-USERS-create-user`) |
+| `email` | доверие | не применимо: поле заполняет только администратор (`REQ-USERS-create-user`) |
 
 ### 3. Мутационное тестирование
 

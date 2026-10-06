@@ -11,3 +11,54 @@
 ([docs/pre-init/31](../pre-init/31-task-requirements.md) §1).
 
 Других изменений нет: концы строк приведены к LF, метка кодировки (BOM) снята.
+
+## Покрытие задания
+
+Каждый пункт задания → внешнее ограничение `CON` ([docs/constraints.md](../constraints.md)), будущее
+требование `REQ`, сценарий качества `QAS`, приоритет или скоуп в роадмапе, задача сдачи или пометка,
+что это не требование. Так видно, что из задания
+ничего не потеряно и ничего не добавлено сверх него. Правило выбора вида —
+[docs/pre-init/36](../pre-init/36-constraints-and-ids.md) §1. Требований `REQ` пока нет: они появятся в
+изменениях OpenSpec по продукту; в таблице указана capability, к которой пункт отойдёт.
+
+| Строки | Пункт задания | Куда |
+|---|---|---|
+| 1–3, 6 | как устроено задание | не требование: описание |
+| 7, 102, 106 | публичный Git-репозиторий на GitHub или GitLab | `CON-DELIV-public-repo` |
+| 8–9, 144–150 | заполнить «Ваше решение» и «Ваши контакты», открыть доступ, прислать ссылку | задача сдачи: чек-лист вехи «Сдача» в `docs/roadmap.md` (шаг 11 [35](../pre-init/35-init-checklist.md)) |
+| 12 | срок сообщает рекрутер | `CON-PLAN-deadline` (срок — из переписки) |
+| 13 | объём 6–10 часов; база важнее фич; если не успеваем — CRUD и чистые миграции | приоритеты в `docs/roadmap.md` (шаг 11); пометка о несделанном — `CON-DELIV-readme-sections` |
+| 14 | вопросы о сроках — рекрутеру | не требование: канал связи |
+| 14 | неоднозначное требование — выбрать вариант и описать в README | `CON-DELIV-ambiguity-in-readme` |
+| 17, 101 | REST API для управления задачами | `CON-STACK-rest` (стиль интерфейса); управление задачами — `REQ` ниже |
+| 21–28 | сущность Task: id, title, description, status, created_at, updated_at | `REQ`, capability `TASK` |
+| 29–32 | сущность Status: id, name, title | `REQ`, capability `STATUS` |
+| 36–44 | создать задачу `POST /api/tasks` | `REQ`, capability `TASK` |
+| 49–54 | список задач `GET /api/tasks`, фильтр `?status=` | `REQ`, capability `TASK` |
+| 57–58 | получить задачу `GET /api/tasks/{id}` | `REQ`, capability `TASK` |
+| 61–62 | удалить задачу `DELETE /api/tasks/{id}` | `REQ`, capability `TASK` |
+| 65–72 | изменить статус `PATCH /api/tasks/{id}/status` | `REQ`, capability `TASK` |
+| 75–76 | список статусов `GET /api/statuses` | `REQ`, capability `STATUS` |
+| 79–80 | получить статус `GET /api/statuses/{id}` | `REQ`, capability `STATUS` |
+| 83–91 | добавить статус `POST /api/statuses` | `REQ`, capability `STATUS` |
+| 94–95 | удалить статус `DELETE /api/statuses/{id}` | `REQ`, capability `STATUS` |
+| 97–100 | PHP 8+, Symfony 6+, PostgreSQL, Docker Compose | `CON-STACK-php-symfony-pg` |
+| 102, 106 | Git; мелкие коммиты, историю не объединять | `CON-DELIV-commit-history` |
+| 106 | после отправки ссылки не пушить в основную ветку | `CON-DELIV-frozen-main` |
+| 107–112, 129 | разделы README, включая использование ИИ | `CON-DELIV-readme-sections` |
+| 108, 135 | проект поднимается по README одной-двумя командами | `QAS-DEPLOY-clean-clone-start`, изменение `architecture-kickoff` (шаг 12) |
+| 113 | по желанию: Postman или curl-примеры, скриншоты, видео | не требование: по желанию; curl-примеры — в ядре по [34](../pre-init/34-core-vs-roadmap.md) |
+| 115 | корректные HTTP-коды | `REQ`: сценарии каждого эндпоинта (доп. баллы) |
+| 116 | OpenAPI / Swagger | `ADR-0003-api-contract` (доп. баллы) |
+| 117 | строгая валидация входных данных | `REQ`: сценарии нежелательного поведения (доп. баллы) |
+| 118 | Codeception / PHPUnit-тесты | процесс: [05](../pre-init/05-tdd.md), [32](../pre-init/32-stack-tools.md) (доп. баллы) |
+| 119 | DTO или другие архитектурные паттерны | архитектура: ADR в изменении `architecture-kickoff` (доп. баллы) |
+| 120 | кэширование или очереди | кандидат «если успеем» в роадмапе ([34](../pre-init/34-core-vs-roadmap.md)) (доп. баллы) |
+| 121 | AGENTS.md / CLAUDE.md, MCP, плагины, правила для агентов | сделано: harness агента, решения 01–36 (доп. баллы) |
+| 124 | улучшения сверх базы — с обоснованием в README | `CON-DELIV-justify-extras` |
+| 128, 155 | понимать каждую строку; следующий этап — изменение без ИИ | `CON-DELIV-explain-without-ai` |
+| 136 | битый JSON, несуществующие ID и статусы, удаление статуса с задачами | `REQ`: сценарии нежелательного поведения, capability `TASK` и `STATUS` |
+| 137 | читаемость, разделение ответственности, контроллеры без SQL и бизнес-логики, типизация | `QAS-MAINT-layering`, `QAS-MAINT-typing`, `QAS-MAINT-readability`, изменение `architecture-kickoff` (шаг 12) |
+| 138 | решения в коде совпадают с README | `QAS-MAINT-readme-matches-code`, изменение `architecture-kickoff` (шаг 12) |
+| 141 | не нужны пагинация, сложная авторизация, админка, деплой | скоуп: раздел «Вне рамок» в `docs/roadmap.md` (шаг 11) |
+| 153–155 | как узнать результат, что будет дальше | не требование: информация (кроме 155 — см. строку 128, 155) |

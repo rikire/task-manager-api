@@ -36,9 +36,21 @@
 11. **Документы.** Скелет `docs/README.md` (реестр, префиксы ID, алиасы), `docs/architecture/README.md`,
     `docs/roadmap.md`, `docs/api/curl-examples.md`, скелет README ([23](23-documentation.md),
     [24](24-planning-tracking.md), [33](33-readme.md)).
+    В роадмап перенести из таблицы покрытия задания (`docs/task/README.md`, [36](36-constraints-and-ids.md)):
+    приоритет «база важнее фич; если не успеваем — CRUD и чистые миграции» (строка 13 задания); «Вне
+    рамок»: пагинация, сложная авторизация, админка, деплой (строка 141); чек-лист вехи «Сдача»:
+    заполнить «Ваше решение» и «Ваши контакты», открыть доступ, прислать ссылку (строки 8–9, 144–150).
+    В реестр префиксов — алиас `C-<AREA>-<slug>` → `RUL-<AREA>-<slug>` и области `CON` / `RUL` по 36.
 12. **Старт архитектуры** — первое изменение OpenSpec: драйверы, выборка из ASVS уровня 1, ADR на стек
     (версии Symfony и PHP, FPM + nginx или FrankenPHP, подход к контракту API), правила Deptrac
     ([11](11-architecture-design.md), [12](12-adr.md), [14](14-code-security.md)).
+    **Порядок изменён 2026-10-06 (решение человека):** первая группа задач изменения
+    `architecture-kickoff` — ADR на стек (версии, запуск PHP, контракт API, Doctrine ORM, Symfony
+    Validator) с драйверами из `docs/constraints.md` — идёт **до шагов 8–11**; остальное — после скелета.
+    Сценарии качества в этом изменении: `QAS-DEPLOY-clean-clone-start` (строки 108, 135 задания),
+    `QAS-MAINT-layering`, `QAS-MAINT-typing`, `QAS-MAINT-readability` (строка 137),
+    `QAS-MAINT-readme-matches-code` (строка 138); после этого `Source:` правила
+    `RUL-ARCH-thin-controllers` перевести на `QAS-MAINT-layering`.
 13. **Стиль и скиллы под стек** — поиск Symfony Coding Standards, Best Practices, скиллов; карточки
     кандидатов ([26](26-code-quality.md) §3).
 14. **Заморозка `docs/pre-init/`** — отметка коммита в README папки.

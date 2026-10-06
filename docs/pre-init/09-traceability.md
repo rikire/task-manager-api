@@ -1,8 +1,8 @@
 # 09. Трассируемость
 
-**Статус:** принято 2026-10-05, человек; изменено 2026-10-05: ID со слагами (`R-CART-add-to-cart`)
-вместо номеров (`R-CART-001`) — номер ничего не говорит читателю. **Область:** 1 «Намерение и
-требования».
+**Статус:** принято 2026-10-05, человек; изменено 2026-10-05: ID со слагами (`REQ-CART-add-to-cart`)
+вместо номеров (`REQ-CART-001`) — номер ничего не говорит читателю. **Область:** 1 «Намерение и
+требования». Изменено 2026-10-06 решением [36](36-constraints-and-ids.md): трёхбуквенные префиксы, внешние ограничения `CON-` отдельно от правил `RUL-`.
 
 ## Потребность
 
@@ -26,10 +26,11 @@
 
 | Сущность | Формат | Пример |
 |---|---|---|
-| Требование | `R-<CAP>-<slug>` | `R-CART-add-to-cart` |
-| Сценарий требования | `R-<CAP>-<slug>.<slug-сценария>` | `R-CART-add-to-cart.out-of-stock` |
-| Сценарий качества ([11](11-architecture-design.md)) | `Q-<ATTR>-<slug>` | `Q-PERF-cart-p95` |
-| Ограничение (правило в AGENTS.md, `.claude/rules/`) | `C-<AREA>-<slug>` | `C-TEST-no-mocking-sut` |
+| Требование | `REQ-<CAP>-<slug>` | `REQ-CART-add-to-cart` |
+| Сценарий требования | `REQ-<CAP>-<slug>.<slug-сценария>` | `REQ-CART-add-to-cart.out-of-stock` |
+| Сценарий качества ([11](11-architecture-design.md)) | `QAS-<ATTR>-<slug>` | `QAS-PERF-cart-p95` |
+| Внешнее ограничение (`docs/constraints.md`, [36](36-constraints-and-ids.md)) | `CON-<AREA>-<slug>` | `CON-STACK-php-symfony-pg` |
+| Правило (AGENTS.md, `.claude/rules/`) | `RUL-<AREA>-<slug>` | `RUL-TEST-no-mocking-sut` |
 | ADR | `ADR-NNNN-<slug>` (так же назван файл) | `ADR-0004-error-format` |
 | Долг | `DEBT-NNN-<slug>` | `DEBT-012-no-retry-on-timeout` |
 | Улучшение | `IMP-NNN-<slug>` | `IMP-007-batch-import` |
@@ -52,10 +53,10 @@
 Как ID выглядит в спеке:
 
 ```markdown
-### Requirement: R-CART-add-to-cart — добавление товара в корзину
+### Requirement: REQ-CART-add-to-cart — добавление товара в корзину
 The system SHALL ...
 
-#### Scenario: R-CART-add-to-cart.out-of-stock
+#### Scenario: REQ-CART-add-to-cart.out-of-stock
 - WHEN ...
 - THEN ...
 ```
@@ -81,7 +82,7 @@ The system SHALL ...
 
 ### 5. Коммиты
 
-Трейлер `Refs: R-CART-add-to-cart, R-CART-remove-from-cart` обязателен в коммитах, которые меняют код
+Трейлер `Refs: REQ-CART-add-to-cart, REQ-CART-remove-from-cart` обязателен в коммитах, которые меняют код
 вне тестов и документации (список путей — по стеку). Проверка — в commit-msg хуке и CI. Набор
 трейлеров согласован с атрибуцией ИИ: `Assisted-by` ([21](21-attribution.md)).
 
