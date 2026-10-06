@@ -1,0 +1,49 @@
+schema: spec-driven
+
+# Project context: constraints an agent cannot infer from the code.
+# Rationale for every rule below: docs/pre-init/ (decision records).
+context: |
+  Write all OpenSpec artifacts in English (docs/pre-init/23-documentation.md).
+  One change = one vertical slice: one observable behaviour through all layers,
+  small enough to read and understand in one sitting (docs/pre-init/02-sdd-framework.md).
+  The human owns requirements, contract, schema, dependencies and architecture decisions;
+  the agent proposes options with a recommendation (docs/pre-init/13-authority.md).
+  Anything the human has not explicitly confirmed is an assumption, never a fact
+  (docs/pre-init/07-requirements-intent.md).
+  IDs: requirements R-<CAP>-<slug>, scenarios R-<CAP>-<slug>.<scenario-slug>,
+  quality scenarios Q-<ATTR>-<slug> in capability "quality", ADR-NNNN-<slug>,
+  DEBT-NNN-<slug>, IMP-NNN-<slug>. IDs never change after creation
+  (docs/pre-init/09-traceability.md).
+
+rules:
+  proposal:
+    - "Sections, in this order: Why; What Changes; Out of scope; Capabilities; Impact; Roadmap (link to the docs/roadmap.md entry); Coverage; Corner cases; Confirmed; Assumptions; Open questions."
+    - "Coverage is a table over the categories Scope, Data, Edge cases and failures, Constraints, Terminology, Non-functional, Done criteria; each row has a status clear / partial / missing and a one-line rationale. Every partial or missing row becomes an open question or an explicit assumption."
+    - "Corner cases is a matrix: input x dimension (emptiness, size and boundaries, type and format, structure, state, trust) -> expected behaviour or a question. Cells the spec does not answer go to Open questions or Assumptions."
+    - "Confirmed lists only what the human explicitly said. Everything else the proposal relies on goes to Assumptions."
+    - "Interview the human before writing: at most 5 questions per round, each with options and a recommendation; continue rounds until no category is missing. For a change where every category is clear, no rounds are needed."
+    - "Do not start tests or code while Assumptions or Open questions contain unresolved items."
+  specs:
+    - "Every requirement header carries its ID: '### Requirement: R-<CAP>-<slug> — <title>'. Every scenario header carries its ID: '#### Scenario: R-<CAP>-<slug>.<scenario-slug>'. Quality scenarios use Q-<ATTR>-<slug> under capability 'quality'."
+    - "Every requirement has at least one scenario of unwanted behaviour: error, invalid input, refusal. More than three scenarios on one requirement is a signal to split the requirement."
+    - "Uppercase MUST / SHALL / SHOULD / MAY only inside requirements (BCP 14). Describe observable behaviour only: no class names, libraries or implementation steps."
+    - "A scenario is a human-readable example; corner cases live in the proposal matrix and in tests."
+  design:
+    - "Write design.md only when the slice has technical decisions. Mark every decision 'Scope: local' or 'ADR: ADR-NNNN-<slug>'."
+    - "Run the architectural significance checklist (new module or boundary; data schema; API contract; hard-to-replace dependency; new cross-cutting concern; affects a Q- scenario; hard to reverse). Any 'yes' requires an ADR via the architecture skill."
+    - "Every decision cites its drivers (R-, Q-, C-) and the principle, tactic or pattern applied. Include a 'Known solutions' section for non-trivial problems: what the problem is called, existing libraries, standards and patterns, what was chosen and why."
+    - "A deliberate simplification records 'Source:' (requirement, ADR or decision record) and 'Revisit-when:'."
+  tasks:
+    - "Group tasks so that each group is one green commit. Each group starts with writing failing tests for its scenarios (phase tests), then implementation (phase impl), then refactoring (phase refactor)."
+    - "Every task fits one sitting and names its check: the test or command that proves it done."
+    - "The last group is Polish: names; error handling and error message wording; logging; boundary input; API contract and docs updated; no out-of-scope changes in the diff."
+
+operations:
+  apply:
+    guidance:
+      - "Show the failing test output before implementing; show the green output after."
+      - "If a test looks wrong during impl or refactor, stop and ask the human instead of editing it."
+      - "At the end of each task group, produce the review brief from the change-workflow skill (.claude/skills/change-workflow/SKILL.md) and ask before committing."
+  archive:
+    guidance:
+      - "Before archiving, check that every design.md decision carries 'Scope: local' or 'ADR: ...'. After archiving, suggest /clear."
