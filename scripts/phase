@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Switch the TDD phase of the active change (docs/pre-init/05-tdd.md, 16-guardrails-harness.md).
+# tests    — tests editable (unlocking needs the human's confirmation: permission rule "ask")
+# impl     — tests locked, implementation
+# refactor — tests locked, structure only
+# off      — no TDD cycle in progress (tests editable, e.g. work outside a change)
+set -euo pipefail
+
+root="$(git -C "$(dirname "$0")" rev-parse --show-toplevel)"
+state_dir="$root/.agent-state"
+phase="${1:-}"
+
+case "$phase" in
+  tests|impl|refactor|off) ;;
+  "")
+    cat "$state_dir/phase" 2>/dev/null || echo off
+    exit 0
+    ;;
+  *)
+    echo "usage: scripts/phase [tests|impl|refactor|off]" >&2
+    exit 64
+    ;;
+esac
+
+mkdir -p "$state_dir"
+printf '%s\n' "$phase" > "$state_dir/phase"
+echo "phase: $phase"
