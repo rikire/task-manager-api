@@ -10,10 +10,11 @@ context: |
   the agent proposes options with a recommendation (docs/pre-init/13-authority.md).
   Anything the human has not explicitly confirmed is an assumption, never a fact
   (docs/pre-init/07-requirements-intent.md).
-  IDs: requirements R-<CAP>-<slug>, scenarios R-<CAP>-<slug>.<scenario-slug>,
-  quality scenarios Q-<ATTR>-<slug> in capability "quality", ADR-NNNN-<slug>,
+  IDs: requirements REQ-<CAP>-<slug>, scenarios REQ-<CAP>-<slug>.<scenario-slug>,
+  quality scenarios QAS-<ATTR>-<slug> in capability "quality", external constraints
+  CON-<AREA>-<slug> (docs/constraints.md), rules RUL-<AREA>-<slug>, ADR-NNNN-<slug>,
   DEBT-NNN-<slug>, IMP-NNN-<slug>. IDs never change after creation
-  (docs/pre-init/09-traceability.md).
+  (docs/pre-init/09-traceability.md, docs/pre-init/36-constraints-and-ids.md).
 
 rules:
   proposal:
@@ -24,14 +25,14 @@ rules:
     - "Interview the human before writing: at most 5 questions per round, each with options and a recommendation; continue rounds until no category is missing. For a change where every category is clear, no rounds are needed."
     - "Do not start tests or code while Assumptions or Open questions contain unresolved items."
   specs:
-    - "Every requirement header carries its ID: '### Requirement: R-<CAP>-<slug> — <title>'. Every scenario header carries its ID: '#### Scenario: R-<CAP>-<slug>.<scenario-slug>'. Quality scenarios use Q-<ATTR>-<slug> under capability 'quality'."
+    - "Every requirement header carries its ID: '### Requirement: REQ-<CAP>-<slug> — <title>'. Every scenario header carries its ID: '#### Scenario: REQ-<CAP>-<slug>.<scenario-slug>'. Quality scenarios use QAS-<ATTR>-<slug> under capability 'quality'."
     - "Every requirement has at least one scenario of unwanted behaviour: error, invalid input, refusal. More than three scenarios on one requirement is a signal to split the requirement."
     - "Uppercase MUST / SHALL / SHOULD / MAY only inside requirements (BCP 14). Describe observable behaviour only: no class names, libraries or implementation steps."
     - "A scenario is a human-readable example; corner cases live in the proposal matrix and in tests."
   design:
     - "Write design.md only when the slice has technical decisions. Mark every decision 'Scope: local' or 'ADR: ADR-NNNN-<slug>'."
-    - "Run the architectural significance checklist (new module or boundary; data schema; API contract; hard-to-replace dependency; new cross-cutting concern; affects a Q- scenario; hard to reverse). Any 'yes' requires an ADR via the architecture skill."
-    - "Every decision cites its drivers (R-, Q-, C-) and the principle, tactic or pattern applied. Include a 'Known solutions' section for non-trivial problems: what the problem is called, existing libraries, standards and patterns, what was chosen and why."
+    - "Run the architectural significance checklist (new module or boundary; data schema; API contract; hard-to-replace dependency; new cross-cutting concern; affects a QAS- scenario; hard to reverse). Any 'yes' requires an ADR via the architecture skill."
+    - "Every decision cites its drivers (REQ-, QAS-, CON-) and the principle, tactic or pattern applied. Include a 'Known solutions' section for non-trivial problems: what the problem is called, existing libraries, standards and patterns, what was chosen and why."
     - "A deliberate simplification records 'Source:' (requirement, ADR or decision record) and 'Revisit-when:'."
   tasks:
     - "Group tasks so that each group is one green commit. Each group starts with writing failing tests for its scenarios (phase tests), then implementation (phase impl), then refactoring (phase refactor)."

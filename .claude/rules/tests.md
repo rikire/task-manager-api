@@ -17,7 +17,7 @@ paths:
 - **A case the spec does not answer is a question,** not a guess: the answer goes into the spec first.
 - **Assert behaviour:** response and stored state, not call order. Do not mock the code under test;
   mock only external boundaries (clock, randomness, external services).
-- **Trace.** Each test carries `#[Group('R-<CAP>-<slug>.<scenario>')]`; a test without a requirement
+- **Trace.** Each test carries `#[Group('REQ-<CAP>-<slug>.<scenario>')]`; a test without a requirement
   carries `#[Group('internal')]` and a comment on why the component exists. Source:
   `docs/pre-init/09-traceability.md`.
 - **List endpoints** get a query-count test: 1 vs N records, the number of queries must not grow.

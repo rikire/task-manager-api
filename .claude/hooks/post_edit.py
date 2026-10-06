@@ -17,7 +17,7 @@ from _common import make_has_target, project_dir, read_event, relative  # noqa: 
 
 SUSPICIOUS = re.compile(r"\bcatch\s*\(|\?\?\s|\?:\s")
 REMINDER = ("New catch or default value in {path}: justify it or remove it. Fail fast; a default is set "
-            "once at the boundary where data enters (C-CODE-fail-fast, docs/pre-init/26-code-quality.md).")
+            "once at the boundary where data enters (RUL-CODE-fail-fast, docs/pre-init/26-code-quality.md).")
 
 
 def edited_text(tool_input: dict) -> str:
