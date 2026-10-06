@@ -58,7 +58,7 @@
 | 23 | [23-documentation.md](23-documentation.md) | структура документов, реестр, язык, проверки целостности |
 | 24 | [24-planning-tracking.md](24-planning-tracking.md) | роадмап, приоритеты, трекинг из фактов, оценка объёма |
 | 25 | [25-work-history.md](25-work-history.md) | формат и язык коммитов, журнал, время |
-| 26 | [26-code-quality.md](26-code-quality.md) | проверки качества кода, правила C-CODE, стиль под стек |
+| 26 | [26-code-quality.md](26-code-quality.md) | проверки качества кода, правила RUL-CODE, стиль под стек |
 | 27 | [27-subagents.md](27-subagents.md) | список субагентов, ограничения, бриф |
 | 28 | [28-hosting-ci-git.md](28-hosting-ci-git.md) | GitHub, ветки и PR, защита main, CI-джобы |
 | 29 | [29-environment.md](29-environment.md) | mise, Makefile и `make setup`, чистый клон |
@@ -68,6 +68,7 @@
 | 33 | [33-readme.md](33-readme.md) | главный README проекта |
 | 34 | [34-core-vs-roadmap.md](34-core-vs-roadmap.md) | порядок внедрения: ядро, «если успеем», роадмап |
 | 35 | [35-init-checklist.md](35-init-checklist.md) | чек-лист инициализации и проверки при настройке |
+| 36 | [36-constraints-and-ids.md](36-constraints-and-ids.md) | внешние ограничения `CON` и трёхбуквенные префиксы ID |
 
 ### Как устроен документ решения
 
