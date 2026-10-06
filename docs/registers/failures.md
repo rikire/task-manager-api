@@ -20,7 +20,7 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
   coverage table maps every assignment item to `CON` / `REQ` / `QAS` / out of scope. Cleaned
   assignment copy: `docs/task/`. No lower ladder level fits: recognising an injection is a judgement,
   not a pattern a check can match reliably.
-- **Commit:** (filled in when the remedy is committed).
+- **Commit:** da1f2e6, dbe3789.
 
 ## FAIL-002-invented-driver-labels
 
@@ -35,4 +35,4 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
 - **Remedy (level: instruction + document structure):** decision record 36 — `CON-` IDs in
   `docs/constraints.md`; the `architecture` skill says "do not invent driver labels — propose a `CON-`
   entry"; the stack ADRs move into the `architecture-kickoff` change.
-- **Commit:** (filled in when the remedy is committed).
+- **Commit:** da1f2e6, dbe3789.
