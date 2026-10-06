@@ -11,3 +11,6 @@
 
 # mise install-time locks
 .mise/
+
+# Python bytecode from hook runs
+__pycache__/
