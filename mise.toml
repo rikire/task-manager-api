@@ -1,0 +1,15 @@
+# Process tools for development (decisions 29, 32). The application itself runs in Docker.
+[tools]
+node = "24.21.0"
+"npm:@fission-ai/openspec" = "1.14.0"
+"npm:markdownlint-cli2" = "0.23.3"
+"npm:@commitlint/cli" = "21.2.3"
+"npm:jscpd" = "5.4.0"
+lychee = "0.24.2"
+gitleaks = "8.30.1"
+
+[env]
+OPENSPEC_TELEMETRY = "0"
+
+[settings]
+lockfile = true

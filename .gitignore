@@ -4,6 +4,10 @@
 # Personal Claude Code settings (decision 15)
 .claude/settings.local.json
 
-# Local environment overrides
+# Local environment: only .env.example is committed (decision 15)
+.env
 .env.local
 .env.*.local
+
+# mise install-time locks
+.mise/
