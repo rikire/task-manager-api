@@ -11,6 +11,7 @@ Input (passed by the caller): the change folder path `openspec/changes/<name>/`;
 delta specs, `design.md` if present, and the related main specs in `openspec/specs/`.
 
 Check, in order:
+
 1. **Ambiguity:** statements a developer could implement in two different ways; vague words (fast,
    valid, appropriate) without a measure.
 2. **Hidden assumptions:** anything the specs rely on that is not in `Confirmed` and not listed in
@@ -23,6 +24,7 @@ Check, in order:
    uppercase MUST/SHALL only inside requirements.
 
 Output:
+
 - Findings, most important first. Each: file and line, quote, why it is a problem, a concrete fix.
 - A separate block **NEEDS_DECISION**: questions only the human can answer, each with options and a
   recommendation.

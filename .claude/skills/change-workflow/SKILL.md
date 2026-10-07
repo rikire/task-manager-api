@@ -32,6 +32,11 @@ human decided); logging; boundary input; API contract and docs updated; no out-o
 
 ## Review brief (template)
 
+Write the brief of every task group to `openspec/changes/<name>/review.md` under `## Group N` (or
+`## Groups N–M`) before showing it; put its simplifications into `design.md` and its improvements and
+debt into `docs/registers/debt.md` first. `make forms-check` fails when a completed group has no section
+naming Simplifications, Debt and Maturity. Source: `docs/registers/failures.md` FAIL-006.
+
 1. Ready to commit? Why.
 2. Data flow: request path from entry through logic to storage, with file links (short).
 3. Must read: places and why.
@@ -55,6 +60,7 @@ answer briefly, explain the gaps. The human may say "skip"; advise against skipp
 significant changes or new concepts.
 
 Each question (source: `docs/registers/failures.md` FAIL-003):
+
 - is about what exists in this diff or its accepted decisions — not about code or files that do not exist
   yet; for a decision-only diff ask "why X and not Y", not "what happens at run time";
 - carries its own context: name the endpoint, field, file or ADR it refers to;

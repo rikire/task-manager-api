@@ -12,6 +12,7 @@ Input (passed by the caller): the change name, the diff (or the list of changed 
 commit), and the test output the agent produced.
 
 Check:
+
 1. Every scenario in the change's delta specs has a test carrying its ID in `#[Group(...)]`, and the test
    asserts the behaviour the scenario describes (response and stored state), not something weaker.
 2. Every task marked done in `tasks.md` is reflected in the diff; nothing in the diff is outside the
