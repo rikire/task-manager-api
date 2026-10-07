@@ -21,3 +21,12 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+when@test:
+    services:
+        # Without Monolog the framework logger writes errors to stderr. Tests provoke errors on purpose
+        # (404, 409, 500), and Infection stops its initial run when the tests write to stderr; the log goes
+        # to a file instead (var/cache/test/test.log, next to the container the tests already rebuild).
+        logger:
+            class: Symfony\Component\HttpKernel\Log\Logger
+            arguments: ['error', '%kernel.cache_dir%/test.log']
