@@ -1,6 +1,14 @@
 # ADR-0006: Module structure — modules Task and Status, vertical slices on a hexagonal core
 
 - **Status:** active, 2026-10-07
+- **Errata:** 2026-10-07 — the dependency table forbade `Persistence` the `symfony/uid` library that the
+  Identifiers point requires; the vendor rule now follows ports and adapters: the core uses no vendor
+  code, adapters may use any (owner's decision; found by the Deptrac rule test, change `architecture-kickoff`
+  group 2; decision record 12 §4).
+  2026-10-07 — the table let `Http` reach the database through `Symfony\Bridge\Doctrine\` and `PDO`, and
+  left classes outside the modules unchecked, while `QAS-MAINT-layering` forbids HTTP entry points any
+  database access; added the `Database` and `Unassigned` layers (owner's decision; found by the `verifier`
+  subagent).
 - **Kind:** architecture
 - **Decided by:** project owner (proposed the style; chose full hexagonal and two modules over the agent's
   lighter recommendation)
@@ -94,24 +102,27 @@ the check does not report dependencies on classes outside every layer by default
 
 | Vendor layer | Classes |
 |---|---|
-| `Doctrine` | `Doctrine\` (ORM, DBAL, Persistence) |
-| `SymfonyHttp` | `Symfony\Component\HttpFoundation\`, `Symfony\Component\HttpKernel\` (including the `#[MapRequestPayload]` / `#[MapQueryString]` attributes), `Symfony\Component\Routing\`, `Symfony\Bundle\FrameworkBundle\Controller\` |
-| `SymfonyValidation` | `Symfony\Component\Validator\Constraints\`, `Symfony\Component\Serializer\Attribute\` |
-| `OpenApiAttributes` | `OpenApi\Attributes\`, `Nelmio\ApiDocBundle\Attribute\` |
-| `OtherVendor` | any other non-`App` class that is not a PHP built-in (a `bool` collector; exact form fixed in group 2) |
+| `Database` | `Doctrine\` (ORM, DBAL, Persistence), `Symfony\Bridge\Doctrine\` (for example `#[MapEntity]`, which loads an entity from the database), `PDO` |
+| `Vendor` | any other class outside `App\` that is not a PHP built-in (a `bool` collector) |
+| `Unassigned` | any class in `src/` outside the modules, except `src/Kernel.php` — so that, for example, a controller in `src/Controller/` is still checked |
 
 | App layer (in each module) | May depend on |
 |---|---|
 | `Domain` | nothing but PHP built-ins; Task's `Domain` may use Status's `Domain` |
 | `Application` | its module's `Domain`; Task's may use Status's `Domain` (ports and values) |
-| `Http` | its module's `Application` and `Domain` (exceptions and values); `SymfonyHttp`, `SymfonyValidation`, `OpenApiAttributes` |
-| `Persistence` | its module's `Domain`, `Doctrine`; Task's may use Status's `Domain` (to implement `StatusUsage`) |
+| `Http` | its module's `Application` and `Domain` (exceptions and values); `Vendor` — never `Database` or `Persistence` |
+| `Persistence` | its module's `Domain`, `Database`, `Vendor`; Task's may use Status's `Domain` (to implement `StatusUsage`) |
+| `Unassigned` | nothing: code belongs in a module |
+
+The core (`Domain`, `Application`) depends on nothing outside PHP; the adapters (`Http`, `Persistence`) may
+use any third-party library — that is where infrastructure belongs in ports and adapters — with the one
+directed restriction the quality scenario needs: `Http` never reaches persistence.
 
 - **Between modules:** Task may depend on Status's `Domain` only; **Status never depends on Task**. The
   cycle is broken by the `StatusUsage` port: Status asks it before deleting; Task's persistence implements
   it.
-- `Http` never depends on `Persistence` or Doctrine (`QAS-MAINT-layering`); `Domain` and `Application`
-  never depend on Symfony or Doctrine. No cycles.
+- `Http` never depends on `Persistence` or the database (Doctrine, its Symfony bridge, `PDO`) (`QAS-MAINT-layering`); `Domain` and `Application`
+  never depend on any vendor code. No cycles.
 - **Identifiers:** UUID v7 for tasks and statuses (owner, 2026-10-07; v7 values grow with time, so
   inserts into the PostgreSQL index stay ordered). Each repository port has `nextId()`; the `Persistence`
   adapter generates the value with `symfony/uid` (dependency approved at skeleton time); the domain keeps

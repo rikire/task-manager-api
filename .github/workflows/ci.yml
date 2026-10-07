@@ -49,6 +49,12 @@ jobs:
           done
           docker compose logs
           exit 1
+      - name: Security baseline (docs/architecture/asvs-l1.md — V3.2.1, V13.4.1)
+        run: |
+          curl -fsS -D - -o /dev/null http://localhost:8080/api/doc.json | grep -qi '^x-content-type-options: nosniff'
+          curl -sS -D - -o /dev/null http://localhost:8080/no-such-page | grep -qi '^x-content-type-options: nosniff'
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/.git/HEAD)" = 404
+          docker compose exec -T app sh -c '! test -e /app/.git'
       - name: Second start on the same volume
         run: |
           docker compose up -d
