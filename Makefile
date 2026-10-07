@@ -41,7 +41,11 @@ dev-running:
 test: dev-running ## PHPUnit
 	$(PHP) vendor/bin/phpunit
 
-stan: dev-running ## PHPStan at the strictest level
+# The dead-code rule reads the compiled container to see services as used (phpstan.neon, containerXmlPath).
+container-xml: dev-running
+	@$(PHP) bin/console cache:warmup --env=dev --quiet
+
+stan: container-xml ## PHPStan at the strictest level
 	$(PHP) vendor/bin/phpstan analyse --no-progress --memory-limit=512M
 
 cs: dev-running ## Code style check (PHP-CS-Fixer, @Symfony)
@@ -72,7 +76,7 @@ roadmap-check: ## Roadmap statuses match the OpenSpec changes; change order (dec
 forms-check: ## Form of OpenSpec changes, review briefs and ADRs (decision records 07, 12; FAIL-006)
 	python3 scripts/forms.py --check
 
-complexity: dev-running ## Cognitive complexity report; does not fail until IMP-001 sets the threshold
+complexity: container-xml ## Cognitive complexity report; does not fail until IMP-001 sets the threshold
 	$(PHP) vendor/bin/phpstan analyse -c phpstan-complexity.neon --no-progress --memory-limit=512M
 
 taint: dev-running ## Psalm taint analysis: request input reaching SQL, HTML or shell (decision record 14)
@@ -101,7 +105,7 @@ check: cs stan deptrac test audit openapi-check spec roadmap-check forms-check m
 fix-file: dev-running ## Format one file (FILE=path); called after each edit by the Claude Code hook
 	$(PHP) vendor/bin/php-cs-fixer fix --quiet $(FILE)
 
-lint-file: dev-running ## Static analysis of one file (FILE=path); called by the Claude Code hook
+lint-file: container-xml ## Static analysis of one file (FILE=path); called by the Claude Code hook
 	$(PHP) vendor/bin/phpstan analyse --no-progress --memory-limit=512M --error-format=raw $(FILE)
 
 # In phase `tests` only new or changed tests may fail (decision record 04); otherwise everything is green.

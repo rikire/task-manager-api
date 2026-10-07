@@ -60,3 +60,61 @@ that `/api/doc` stays HTML — now, in group 2's tests.
 
 **Extra checks:** `verifier` not run for this group (harness only; planned for the change in 4.3);
 `/security-review` not needed yet (no input parsing of product data).
+
+## Group 2 — initial statuses, list and read (tasks 2.1–2.3), 2026-10-07
+
+**Ready to commit:** yes, after `make check` (output in the chat brief). PHPUnit `OK (75 tests)`, PHPStan
+no errors, Deptrac 0 violations, `doctrine:schema:validate` OK; the prod image (`make up`) served the curl
+examples of `docs/api/curl-examples.md`.
+
+**Data flow:** `GET /api/statuses` → `ListStatusesController` (`src/Status/Infrastructure/Http/ListStatuses/`)
+→ `ListStatusesHandler` → port `StatusRepository::all()` → `DoctrineStatusRepository` (`findBy` ordered by
+`id`, one query) → `StatusView` list → `{"items": …}`. `GET /api/statuses/{id}`: route requirement
+`Requirement::UUID` (non-UUID → no route → 404) → `GetStatusController` → `GetStatusHandler(GetStatus)` →
+`StatusRepository::get()` → `StatusNotFound` → 404 via `framework.exceptions`, message in `detail`.
+
+**Must read:**
+
+- `migrations/Version20261007120000.php` — schema, unique index and the fixed seed ids.
+- `src/Status/Domain/StatusTitle.php` — the title rule (reject control characters, then trim, then length).
+- `src/Status/Application/StatusView.php` — exactly what a response contains.
+
+**Check by hand:** the three curl examples of `docs/api/curl-examples.md`, section "Статусы", against
+`make up`.
+
+**Key decisions:** design D2 (read models, `\JsonSerializable`), D5 (migration and seed), D8 (test data
+by SQL); ADR-0006, ADR-0007.
+
+**Corner-case matrix and red output:** accepted by the owner in phase `tests` (chat): 9 functional tests
+red on assertions.
+
+**Deviations, each agreed in chat or stated here:**
+
+- Process slip: the domain value objects (`StatusName`, `StatusTitle`, `StatusId`) were written in phase
+  `impl` before their tests. The owner approved a second phase `tests`; the unit tests were green on the
+  first run except the entity constructor test. Their strength was checked with Infection instead: 17
+  mutants, 16 killed; the escaped one (`StatusTitle::trim` public) was fixed by making it private → MSI
+  100%.
+- `phpstan.neon`: `containerXmlPath` (services built by the container count as used) and
+  `objectManagerLoader` (`tools/PHPStan/object-manager.php`, Doctrine-written entity fields count as
+  written); `make container-xml` warms the dev cache before `stan`, `lint-file` and `complexity`.
+- `StatusView` implements `\JsonSerializable` instead of relying on `ObjectNormalizer`: see design D2.
+- The list handler takes no query object (no input); `GetStatusHandler` takes `GetStatus` (ADR-0006).
+- `phpunit.xml.dist`: `memory_limit` 512M. With more functional tests, the PHPStan rule test ran out of the
+  CLI default 128M when the random order put it late (`make check` red once, green twice after the fix).
+
+**Simplifications:** the list has no limit (pagination is out of scope, assignment line 141).
+
+**Debt:** none.
+
+**Not done:** `REQ-STATUS-initial.restart` is checked in CI (task 4.1).
+
+**Maturity:** functionality — working minimum (read only); reliability — working minimum (constraints in
+the database); performance — production-ready for this size (one query per list, test guards it);
+security — production-ready (read models list fields explicitly; no internals in errors); maintainability
+— production-ready (layer rules, typed, mutation-tested domain); observability — prototype;
+consumer experience — working minimum. Improvements: Cyrillic in JSON is escaped (`\u041d…`) — valid
+JSON, but `JSON_UNESCAPED_UNICODE` would make curl output readable — registry: `IMP-009-json-unescaped-unicode`
+(first offered as "now", `FAIL-008`); README badges — roadmap row 9.
+
+**Extra checks:** `verifier` planned for the change (task 4.3).

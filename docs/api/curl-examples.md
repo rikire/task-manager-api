@@ -40,7 +40,38 @@ curl -s -i -X <МЕТОД> "$API/<путь>" -H 'Content-Type: application/json'
 
 ## Статусы
 
-Появятся с изменением `status-catalog`.
+### Список статусов — `GET /api/statuses`
+
+Сценарий: `REQ-STATUS-initial.fresh-database`, `REQ-STATUS-read.list`.
+
+```bash
+curl -s -i "$API/api/statuses"
+```
+
+Ожидаемо: `200`, `{"items": [...]}` — сначала `new`, `in_progress`, `done`, затем остальные в порядке
+создания. Кириллица в `title` приходит экранированной (`\u041d...`) — это корректный JSON.
+
+### Один статус — `GET /api/statuses/{id}`
+
+Сценарий: `REQ-STATUS-read.get`. Id начальных статусов фиксированы миграцией; `in_progress`:
+
+```bash
+curl -s -i "$API/api/statuses/019b76da-a800-7000-8000-000000000002"
+```
+
+Ожидаемо: `200`, `{"id": "019b76da-…-000000000002", "name": "in_progress", "title": "В работе"}`.
+
+### Статуса нет — `GET /api/statuses/{id}`
+
+Сценарий: `REQ-STATUS-read.not-found`.
+
+```bash
+curl -s -i "$API/api/statuses/019b76da-a800-7000-8000-0000000000ff"
+curl -s -i "$API/api/statuses/abc"
+```
+
+Ожидаемо: `404`, тело ошибки в JSON; для существующего формата id в `detail` —
+`Status "019b76da-…-0000000000ff" not found.`, для `abc` — `Not Found`.
 
 ## Задачи
 

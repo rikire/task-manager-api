@@ -17,6 +17,13 @@ rules:
 
 parameters:
     level: max
+    # Services the container builds (constructors of controllers, handlers, adapters) count as used by the
+    # dead-code rule; `make stan` and `make lint-file` warm the dev cache that writes this file first.
+    symfony:
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+    # Entity fields written by Doctrine from the XML mappings count as written.
+    doctrine:
+        objectManagerLoader: tools/PHPStan/object-manager.php
     paths:
         - src
         - tests

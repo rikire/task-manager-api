@@ -11,9 +11,15 @@ doctrine:
         identity_generation_preferences:
             Doctrine\DBAL\Platforms\PostgreSQLPlatform: identity
         auto_mapping: true
-        # XML mappings per module (src/<Module>/Infrastructure/Persistence) are added with the first
-        # module; domain classes carry no Doctrine attributes (ADR-0004, ADR-0006).
-        mappings: {}
+        # XML mappings per module (src/<Module>/Infrastructure/Persistence/Mapping); domain classes carry no
+        # Doctrine attributes (ADR-0004, ADR-0006).
+        mappings:
+            Status:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Status/Infrastructure/Persistence/Mapping'
+                prefix: 'App\Status\Domain'
+                alias: Status
 
 when@test:
     doctrine:

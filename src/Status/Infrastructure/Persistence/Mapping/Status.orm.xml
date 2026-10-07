@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mapping of App\Status\Domain\Status: XML keeps the domain free of Doctrine (ADR-0004, ADR-0006).
+     Schema and initial rows: migrations/Version20261007120000.php (ADR-0007 D1, D3). -->
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="App\Status\Domain\Status" table="status">
+        <unique-constraints>
+            <unique-constraint name="uniq_status_name" columns="name"/>
+        </unique-constraints>
+        <id name="id" type="guid" column="id"/>
+        <field name="name" type="string" column="name" length="50"/>
+        <field name="title" type="string" column="title" length="255"/>
+    </entity>
+</doctrine-mapping>

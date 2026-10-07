@@ -132,3 +132,17 @@ Format and rules: `docs/pre-init/10-debt-polish-headroom.md` §2.
   is needed.
 - **Size:** match only write targets (redirection target, `open(...)` path, `sed -i` file) instead of
   any mention; 3 hook tests.
+
+## IMP-009-json-unescaped-unicode
+
+- **What could be better:** JSON responses escape non-ASCII characters, so a Cyrillic `title` reaches
+  the client as `"\u0412 \u0440\u0430\u0431\u043e\u0442\u0435"` instead of `"В работе"`. It is valid
+  JSON and every client decodes it, but a reviewer reading `curl` output cannot read the titles
+  (`docs/api/curl-examples.md`, section "Статусы").
+- **Why not now:** not part of any task of change `status-catalog`; found while checking the prod image
+  (2026-10-07, group 2). Out-of-scope ideas go to this register (AGENTS.md "Planning").
+- **Trigger:** the README "Как запустить" examples are written, or a reviewer-facing check of the API by
+  hand is prepared (submission checklist in `docs/roadmap.md`).
+- **Size:** one setting — `JSON_UNESCAPED_UNICODE` in the JSON encoder context
+  (`framework.serializer.default_context`) or in `AbstractController::json()` calls; one test asserting
+  a literal Cyrillic `title` in the response body; the curl-examples note removed.
