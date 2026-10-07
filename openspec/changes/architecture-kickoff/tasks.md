@@ -19,13 +19,13 @@ here per `openspec/config.yaml`).
 
 ## 2. Architecture rules and description (after checklist steps 8–11, before any product change)
 
-- [ ] 2.1 Phase `tests`: write fixture tests where an `Http` class depends on Doctrine and a `Status` class depends on `Task`, and assert the dependency-rule check reports a violation for each; verify they fail for the right reason (no rules yet)
-- [ ] 2.2 Phase `impl`: write the Deptrac layer and module rules from ADR-0006 and the `RUL-ARCH-…` rules; verify the fixture test passes and the check reports 0 violations on the skeleton
-- [ ] 2.3 Move `Source:` of `RUL-ARCH-thin-controllers` to `QAS-MAINT-layering` (instruction commit); verify `grep` finds no reference to `assignment.txt:137` in `.claude/rules/`
-- [ ] 2.4 Select the OWASP ASVS level 1 requirements that apply and record each as a `RUL-SEC-…` rule or a future `REQ-` with its reason; verify every selected item has a target and every skipped item a reason
-- [ ] 2.5 Fill `docs/architecture/README.md` (decision record 11 §1: quality goals, constraints link, strategy with the stack table, building blocks, deployment view from ADR-0002 — containers, image targets, ports, volumes, environment configuration — and cross-cutting concepts); verify the `reader-tester` subagent passes it
+- [x] 2.1 Phase `tests`: write fixture tests where an `Http` class depends on Doctrine and a `Status` class depends on `Task`, and assert the dependency-rule check reports a violation for each; verify they fail for the right reason (no rules yet)
+- [x] 2.2 Phase `impl`: write the Deptrac layer and module rules from ADR-0006 and the `RUL-ARCH-…` rules; verify the fixture test passes and the check reports 0 violations on the skeleton
+- [x] 2.3 Move `Source:` of `RUL-ARCH-thin-controllers` to `QAS-MAINT-layering` (instruction commit); verify `grep` finds no reference to `assignment.txt:137` in `.claude/rules/`
+- [x] 2.4 Select the OWASP ASVS level 1 requirements that apply and record each as a `RUL-SEC-…` rule or a future `REQ-` with its reason; verify every selected item has a target and every skipped item a reason
+- [x] 2.5 Fill `docs/architecture/README.md` (decision record 11 §1: quality goals, constraints link, strategy with the stack table, building blocks, deployment view from ADR-0002 — containers, image targets, ports, volumes, environment configuration — and cross-cutting concepts); verify the `reader-tester` subagent passes it
 
 ## 3. Polish
 
-- [ ] 3.1 Names, error handling wording, boundary cases, docs updated, no out-of-scope changes in the diff; verify with the review brief and the `verifier` subagent
+- [x] 3.1 Names, error handling wording, boundary cases, docs updated, no out-of-scope changes in the diff; verify with the review brief and the `verifier` subagent
 - [ ] 3.2 Archive the change; verify `openspec/specs/quality/spec.md` exists and every `design.md` decision carries `Scope: local` or `ADR:`

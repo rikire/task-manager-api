@@ -29,3 +29,6 @@ __pycache__/
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
+# Deptrac analysis cache
+/.deptrac.cache

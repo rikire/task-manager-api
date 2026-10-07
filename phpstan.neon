@@ -11,3 +11,6 @@ parameters:
     paths:
         - src
         - tests
+    excludePaths:
+        # Input data for the Deptrac rule tests (deliberately broken dependencies), not application code.
+        - tests/Architecture/Fixtures

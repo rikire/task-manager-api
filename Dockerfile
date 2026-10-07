@@ -6,8 +6,10 @@ WORKDIR /app
 RUN install-php-extensions pdo_pgsql zip
 COPY --from=composer:2@sha256:af98f42dfff7c68ba8d53c2164fd9fde1087b7d449514baa38c418b1f6bc4bac /usr/bin/composer /usr/local/bin/composer
 COPY --chmod=0755 docker/entrypoint.sh /usr/local/bin/app-entrypoint
-# The image's default Caddyfile serves plain HTTP when the site address is a bare port.
-ENV SERVER_NAME=:80
+# The image's default Caddyfile serves plain HTTP when the site address is a bare port; the extra directive
+# keeps browsers from sniffing a response into another type (ASVS V3.2.1, docs/architecture/asvs-l1.md).
+ENV SERVER_NAME=:80 \
+    CADDY_SERVER_EXTRA_DIRECTIVES="header X-Content-Type-Options nosniff"
 ENTRYPOINT ["app-entrypoint"]
 CMD ["--config", "/etc/frankenphp/Caddyfile", "--adapter", "caddyfile"]
 
