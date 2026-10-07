@@ -180,6 +180,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Problem'
+    delete:
+      tags:
+        - Tasks
+      operationId: delete_task_delete
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[13-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      responses:
+        '204':
+          description: 'The task is deleted'
+        '404':
+          description: 'No task has this id'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
 components:
   schemas:
     Problem:
