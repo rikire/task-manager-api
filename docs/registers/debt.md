@@ -165,6 +165,18 @@ Format and rules: `docs/pre-init/10-debt-polish-headroom.md` §2.
   `TEST_TOKEN`, if the kernel supports it — not verified) or disable the validator metadata cache in the
   test environment; one check that the hand-applied mutant above is reported as killed.
 
+## IMP-012-status-name-rule-in-three-dtos
+
+- **What could be better:** the status name rule (`NotBlank`, `Length(max: 50)`, the pattern, its message and
+  `htmlPattern`) is written out in three request DTOs: `CreateStatusRequest`, `ListTasksQuery`,
+  `ChangeTaskStatusRequest`. ADR-0006's Revisit-when ("the same rule duplicated in two slices → move it into
+  `Domain`") has fired. Found by the `verifier` subagent (change `task-status-change`, 2026-10-07).
+- **Why not now:** the copies are identical and each is tested over HTTP; moving them changes three slices
+  outside the change that found it. A Task `Http` class may not use Status's `Domain` (ADR-0006), so the shared
+  place needs a decision (a constant in each module, or a `Shared` constraint).
+- **Trigger:** the name rule changes, or a fourth DTO needs it.
+- **Size:** one compound constraint (or constants) used by three DTOs; the existing tests stay as they are.
+
 ## IMP-009-json-unescaped-unicode
 
 - **What could be better:** JSON responses escape non-ASCII characters, so a Cyrillic `title` reaches
