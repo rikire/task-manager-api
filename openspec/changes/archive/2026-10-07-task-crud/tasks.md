@@ -33,7 +33,7 @@
 
 ## 4. Polish
 
-- [ ] 4.1 Curl examples for every `REQ-TASK-…` scenario in `docs/api/curl-examples.md`; CI `clean-clone`
+- [x] 4.1 Curl examples for every `REQ-TASK-…` scenario in `docs/api/curl-examples.md`; CI `clean-clone`
   creates a task on the prod image (`POST /api/tasks` → 201); verify the examples against `make up` and the
   job is green
 - [x] 4.2 Names, messages, boundary input, no out-of-scope changes; verify with the `verifier` subagent: no
