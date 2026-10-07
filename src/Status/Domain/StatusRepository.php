@@ -16,4 +16,10 @@ interface StatusRepository
 
     /** @throws StatusNotFound */
     public function get(StatusId $id): Status;
+
+    /** A new UUID v7 identifier: known before the status is saved (ADR-0006). */
+    public function nextId(): StatusId;
+
+    /** @throws StatusNameTaken when another status has the same name, also under concurrent requests */
+    public function save(Status $status): void;
 }

@@ -73,7 +73,51 @@ curl -s -i "$API/api/statuses/abc"
 Ожидаемо: `404`, тело ошибки в JSON; для существующего формата id в `detail` —
 `Status "019b76da-…-0000000000ff" not found.`, для `abc` — `Not Found`.
 
+### Создать статус — `POST /api/statuses`
+
+Сценарий: `REQ-STATUS-create.created`.
+
+```bash
+curl -s -i -X POST "$API/api/statuses" -H 'Content-Type: application/json' \
+  -d '{"name": "code_review", "title": "  Ревью кода "}'
+```
+
+Ожидаемо: `201`, заголовок `Location: /api/statuses/<id>`, тело `{"id": "…", "name": "code_review",
+"title": "Ревью кода"}` — пробелы по краям `title` обрезаны.
+
+### Неверные значения — `POST /api/statuses`
+
+Сценарий: `REQ-STATUS-create.invalid-values`.
+
+```bash
+curl -s -i -X POST "$API/api/statuses" -H 'Content-Type: application/json' \
+  -d '{"name": "Code Review", "title": ""}'
+```
+
+Ожидаемо: `422`, в `violations` — ошибки на `name` и `title`.
+
+### Лишнее поле — `POST /api/statuses`
+
+Сценарий: `REQ-STATUS-create.unknown-field`.
+
+```bash
+curl -s -i -X POST "$API/api/statuses" -H 'Content-Type: application/json' \
+  -d '{"name": "qa", "title": "Тестирование", "color": "red"}'
+```
+
+Ожидаемо: `422`, в `violations` — только `color` («This attribute was not expected.»).
+
+### Имя занято — `POST /api/statuses`
+
+Сценарий: `REQ-STATUS-create.duplicate-name`.
+
+```bash
+curl -s -i -X POST "$API/api/statuses" -H 'Content-Type: application/json' \
+  -d '{"name": "done", "title": "Сделано"}'
+```
+
+Ожидаемо: `409`, `detail` — `Status "done" already exists.`
+
 ## Задачи
 
-Появятся с изменениями `task-create-and-read`, `task-status-change`, `task-filter-by-status`,
-`task-delete`.
+Появятся с изменениями `task-crud` и `task-status-change`.

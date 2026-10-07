@@ -12,6 +12,8 @@ framework:
     exceptions:
         App\Status\Domain\StatusNotFound:
             status_code: 404
+        App\Status\Domain\StatusNameTaken:
+            status_code: 409
 
 when@test:
     framework:

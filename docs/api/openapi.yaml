@@ -3,6 +3,63 @@ info:
   title: 'Task Manager API'
   version: 1.0.0
 paths:
+  /api/statuses:
+    get:
+      tags:
+        - Statuses
+      operationId: get_status_list
+      responses:
+        '200':
+          description: 'Every status in creation order'
+          content:
+            application/json:
+              schema:
+                required:
+                  - items
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/StatusView' } }
+                type: object
+    post:
+      tags:
+        - Statuses
+      operationId: post_status_create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStatusRequest'
+      responses:
+        '201':
+          description: 'The created status'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusView'
+        '400':
+          description: 'Malformed JSON'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: 'A status with this name exists'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '415':
+          description: 'The body is not JSON'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '422':
+          description: 'The body breaks a rule; violations per field'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
   '/api/statuses/{id}':
     get:
       tags:
@@ -29,22 +86,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Problem'
-  /api/statuses:
-    get:
-      tags:
-        - Statuses
-      operationId: get_status_list
-      responses:
-        '200':
-          description: 'Every status in creation order'
-          content:
-            application/json:
-              schema:
-                required:
-                  - items
-                properties:
-                  items: { type: array, items: { $ref: '#/components/schemas/StatusView' } }
-                type: object
 components:
   schemas:
     Problem:
@@ -74,6 +115,19 @@ components:
               title:
                 type: string
             type: object
+      type: object
+    CreateStatusRequest:
+      required:
+        - name
+        - title
+      properties:
+        name:
+          type: string
+          pattern: '[a-z][a-z0-9_]*\z.*'
+          maxLength: 50
+        title:
+          type: string
+          maxLength: 255
       type: object
     StatusView:
       required:

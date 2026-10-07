@@ -32,6 +32,15 @@ final class ErrorResponsesTest extends ApiTestCase
         self::assertStringNotContainsString('db:5432', (string) $response->getContent());
     }
 
+    /** Only /api is forced to JSON (ADR-0005, amended); other paths keep the framework's default format. */
+    public function testLeavesPathsOutsideApiToTheDefaultFormat(): void
+    {
+        $response = $this->send('GET', '/no-such-page', debug: false);
+
+        self::assertSame(404, $response->getStatusCode());
+        self::assertStringStartsWith('text/html', (string) $response->headers->get('Content-Type'));
+    }
+
     public function testShowsBrokenDomainRuleInDetail(): void
     {
         $response = $this->send('GET', '/api/_test/domain-rule', debug: false);

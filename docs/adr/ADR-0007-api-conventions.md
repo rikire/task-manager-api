@@ -21,7 +21,7 @@
 > is the Symfony setting that maps an exception class to an HTTP code.
 
 This ADR records the product decisions that every endpoint shares, so that each product change
-(`status-catalog`, `task-create-and-read`, `task-status-change`, `task-filter-by-status`, `task-delete`,
+(`status-catalog`, `task-crud` — create, read, filter and delete tasks — `task-status-change` and
 `status-delete` in `docs/roadmap.md`) specifies only its own edge cases.
 
 ## Context and drivers
@@ -144,7 +144,7 @@ the contract.
 **Responses (D4).**
 
 - Task: `{"id", "title", "description", "status": "<name>", "created_at", "updated_at"}`. Status:
-  `{"id", "name", "title"}`. Whether `description` may be empty is decided in `task-create-and-read`.
+  `{"id", "name", "title"}`. Whether `description` may be empty is decided in `task-crud`.
 - Lists (`GET /api/tasks`, `GET /api/statuses`): `{"items": [ … ]}`, ordered by `id` ascending; 200; without `?status=`,
   all tasks. UUID v7 grows with time, so this is creation order to the microsecond; ids made in the same microsecond by
   different requests keep a stable but arbitrary order (Facts).

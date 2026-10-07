@@ -53,7 +53,10 @@ Scope: local. ADR: ADR-0006 (query handlers return read models), ADR-0007 (D4, D
 Scope: local. ADR: ADR-0005 (amended), ADR-0006; drivers `REQ-STATUS-create`, `QAS-MAINT-layering`.
 
 - `#[MapRequestPayload(mapWhenEmpty: true, serializationContext: [allow_extra_attributes: false,
-  collect_extra_attributes_errors: true])]` (ADR-0005, amended).
+  collect_extra_attributes_errors: true])]` (ADR-0005, amended). The DTO is built by the default
+  `ObjectNormalizer`, which needs `symfony/property-access` (it is used by every object denormalizer,
+  `PropertyNormalizer` included); the owner moved it to production dependencies on 2026-10-07 after the
+  prod image answered 500 to `POST /api/statuses` — the tests run with dev dependencies and could not see it.
 - `name`: `NotBlank`, `Length(max: 50)`, `Regex('/^[a-z][a-z0-9_]*\z/')`.
 - `title`: `Regex('/^\P{Cc}*\z/u')` on the raw value (no control character anywhere; `\z`, because `$`
   would accept a final `\n`), then `NotBlank` and `Length(max: 255)` with a normalizer that trims
@@ -65,12 +68,13 @@ Scope: local. ADR: ADR-0005 (amended), ADR-0006; drivers `REQ-STATUS-create`, `Q
 Alternative: rules only in the domain, exceptions turned into violations — rejected: it needs code to
 build violations, which ADR-0005 avoids.
 
-### D4. Duplicate name: check in the handler, unique index as backstop
+### D4. Duplicate name: the unique index is the one check
 
-Scope: local. ADR: ADR-0007 (D3); driver `REQ-STATUS-create.duplicate-name`. `CreateStatusHandler` asks
-`StatusRepository::existsByName()` and throws `StatusNameTaken` (`Status "done" already exists.`); the
-Doctrine adapter catches the unique-constraint violation on flush and throws the same exception.
-`framework.exceptions` maps `StatusNameTaken` to 409.
+Scope: local. ADR: ADR-0007 (D3); driver `REQ-STATUS-create.duplicate-name`. The Doctrine adapter catches
+the unique-constraint violation on flush and throws `StatusNameTaken` (`Status "done" already exists.`);
+`framework.exceptions` maps it to 409. The planned `existsByName()` check in the handler was not written:
+no test needs it (minimal code to green, `FAIL-009`), it costs a query, and the index alone also covers two
+concurrent requests.
 
 ### D5. Schema and seed in one migration with fixed ids
 

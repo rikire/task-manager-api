@@ -137,6 +137,34 @@ Format and rules: `docs/pre-init/10-debt-polish-headroom.md` §2.
 - **Size:** match only write targets (redirection target, `open(...)` path, `sed -i` file) instead of
   any mention; 3 hook tests.
 
+## IMP-010-stop-hook-non-utf8-output
+
+- **What could be better:** the Stop hook (`.claude/hooks/stop_check.py`) decodes the output of
+  `make stop-check` as strict UTF-8. On 2026-10-07 (change `status-catalog`, group 3, phase `tests`) a
+  failing test printed its data-provider argument — a deliberately invalid UTF-8 body — as raw bytes; the
+  hook crashed with `UnicodeDecodeError` and blocked the turn ("internal error, blocking by design").
+- **Why not now:** it fails closed, so nothing slipped through; the cause was removed in the test (the
+  invalid bytes are built inside the test method, not passed through a provider). Changing the hook is an
+  instruction-and-harness change the owner decides.
+- **Trigger:** any other non-UTF-8 output reaches the hook (a tool's binary output, a test name with raw
+  bytes), or the next change to the hook.
+- **Size:** decode with `errors="replace"` in the hook's output reading; one hook test with invalid bytes in
+  the output.
+
+## IMP-011-infection-stale-validator-cache
+
+- **What could be better:** Infection reports mutants of validation attributes (`#[Assert\Length(max: 50)]`
+  → 51) as escaped although the tests kill them: the functional tests boot a kernel whose cached validator
+  metadata in `var/cache/test` does not see the mutated attribute. Checked by hand on 2026-10-07 (change
+  `status-catalog`, group 3): the same mutant with cleared caches fails `testReportsEachInvalidField`
+  (500 instead of 422).
+- **Why not now:** the score is report-only (`IMP-008-mutation-score-threshold`); a false "escaped" hides no
+  defect, it only lowers the reported score.
+- **Trigger:** `IMP-008` sets a failing threshold, or a review relies on an escaped attribute mutant.
+- **Size:** run Infection with a cache directory per mutant process (for example `APP_CACHE_DIR` from
+  `TEST_TOKEN`, if the kernel supports it — not verified) or disable the validator metadata cache in the
+  test environment; one check that the hand-applied mutant above is reported as killed.
+
 ## IMP-009-json-unescaped-unicode
 
 - **What could be better:** JSON responses escape non-ASCII characters, so a Cyrillic `title` reaches
