@@ -76,7 +76,7 @@ roadmap-check: ## Roadmap statuses match the OpenSpec changes; change order (dec
 forms-check: ## Form of OpenSpec changes, review briefs and ADRs (decision records 07, 12; FAIL-006)
 	python3 scripts/forms.py --check
 
-complexity: container-xml ## Cognitive complexity report; does not fail until IMP-001 sets the threshold
+complexity: container-xml ## Cognitive complexity: method above 5 or class above 20 fails (QAS-MAINT-readability)
 	$(PHP) vendor/bin/phpstan analyse -c phpstan-complexity.neon --no-progress --memory-limit=512M
 
 taint: dev-running ## Psalm taint analysis: request input reaching SQL, HTML or shell (decision record 14)
@@ -100,7 +100,7 @@ hooks-test: ## Tests of the Claude Code hooks and of the git-hook scripts
 	python3 -m unittest discover -s .claude/hooks/tests -q
 	python3 -m unittest discover -s scripts/tests -q
 
-check: cs stan deptrac test audit openapi-check spec roadmap-check forms-check md hooks-test ## Everything the pre-commit hook runs (decision record 04)
+check: cs stan complexity deptrac test audit openapi-check spec roadmap-check forms-check md hooks-test ## Everything the pre-commit hook runs (decision record 04)
 
 fix-file: dev-running ## Format one file (FILE=path); called after each edit by the Claude Code hook
 	$(PHP) vendor/bin/php-cs-fixer fix --quiet $(FILE)

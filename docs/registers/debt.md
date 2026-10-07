@@ -47,6 +47,10 @@ Format and rules: `docs/pre-init/10-debt-polish-headroom.md` §2.
 - **Trigger:** the first product change is merged; its code is measured and the threshold set.
 - **Size:** 1 config value (complexity check threshold), 1 CI step switched from report to fail, the
   `QAS-MAINT-readability` requirement text updated with the number.
+- **Closed:** 2026-10-07 — the trigger fired (change `status-catalog`, groups 1–2 merged; measured method
+  maximum 3, class maximum 6); the owner set method 5, class 20; `make complexity` is part of `make check`
+  (pre-commit and CI), the report-only CI step is removed; `QAS-MAINT-readability` amended in change
+  `status-catalog`.
 
 ## IMP-002-non-root-containers
 

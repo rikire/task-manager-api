@@ -1,5 +1,5 @@
-# Cognitive complexity per method and class — report only until IMP-001-readability-threshold fires
-# (QAS-MAINT-readability). Run by `make complexity` and a CI step that does not fail the build.
+# Cognitive complexity per method and class (QAS-MAINT-readability). Run by `make complexity`, which is
+# part of `make check` (pre-commit and CI): a method or class above the threshold fails the build.
 includes:
     - vendor/tomasvotruba/cognitive-complexity/config/extension.neon
 
@@ -9,7 +9,7 @@ parameters:
     paths:
         - src
     cognitive_complexity:
-        # Threshold 0 prints the score of every method and class with any branching (the rule reports only
-        # values above the threshold); IMP-001 sets the failing threshold after the first product change.
-        class: 0
-        function: 0
+        # Owner, 2026-10-07 (IMP-001-readability-threshold): measured on change status-catalog — method
+        # maximum 3, class maximum 6; the threshold leaves about twice that as headroom.
+        class: 20
+        function: 5

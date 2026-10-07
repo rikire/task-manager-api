@@ -48,8 +48,10 @@ the status `new` (ADR-0007, D1).
 
 ### Modified Capabilities
 
-None. `quality` is unchanged; `QAS-DEPLOY-clean-clone-start` gets its `GET /api/statuses` → 200 check
-once the endpoint exists, as the scenario already says.
+- `quality`: `QAS-MAINT-readability` gets its thresholds — method 5, class 20 — and the check moves from
+  a CI report into `make check` (owner, 2026-10-07; `IMP-001-readability-threshold` fired once groups 1–2
+  were merged). `QAS-DEPLOY-clean-clone-start` gets its `GET /api/statuses` → 200 check once the endpoint
+  exists, as the scenario already says.
 
 ## Impact
 
