@@ -1,0 +1,51 @@
+# Reviewer path: `docker compose up -d` builds and runs the production image (ADR-0002).
+# Development uses `compose.dev.yaml` on top of this file (see Makefile).
+# Defaults below are non-secret development values; override them in `.env` (see `.env.example`).
+
+x-app-environment: &app-environment
+  DATABASE_URL: postgresql://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-app}@db:5432/${POSTGRES_DB:-app}?serverVersion=18&charset=utf8
+  APP_SECRET: ${APP_SECRET:-dev-only-not-a-secret}
+
+services:
+  db:
+    image: postgres:18-alpine@sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - db-data:/var/lib/postgresql
+
+  # One-shot: applies migrations before the app starts; never restarted (ADR-0002).
+  migrate:
+    build:
+      context: .
+      target: prod
+    image: task-manager-app:prod
+    command: ["php", "bin/console", "doctrine:migrations:migrate", "--no-interaction", "--allow-no-migration"]
+    environment: *app-environment
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  app:
+    build:
+      context: .
+      target: prod
+    image: task-manager-app:prod
+    environment: *app-environment
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  db-data:

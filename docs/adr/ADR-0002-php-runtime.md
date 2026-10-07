@@ -77,7 +77,7 @@ Facts (checked 2026-10-06):
 
 | Attribute | A. entrypoint | B. one-shot service |
 |---|---|---|
-| Failed migration visible to the reviewer | − `up -d` returns 0, the app container exits later | + expected: `up` reports the failed dependency (not documented; checked by Confirmation) |
+| Failed migration visible to the reviewer | − `up -d` returns 0, the app container exits later | + `up -d` exits 1: `service "migrate" didn't complete successfully` (checked on the skeleton, 2026-10-07) |
 | Not restarted automatically after failure | ± depends on the app's restart policy | + `restart: "no"` on its own service |
 | API never served on an unmigrated schema | + server starts after migration | + app starts only after success |
 | Moving parts | + one service | − one more service (same image) |
@@ -89,7 +89,8 @@ development server only.
 ## Decision and rationale
 
 - **FrankenPHP in classic mode** (option 3), image `dunglas/frankenphp:1.13-php8.4` pinned by digest
-  (PHP from ADR-0001), plain HTTP, minimal Caddyfile (Caddy is the web server built into FrankenPHP); no `worker` directive. 1.13 was released two days
+  (PHP from ADR-0001), plain HTTP — the image's default Caddyfile with `SERVER_NAME=:80`, no own Caddyfile (Caddy is the web
+  server built into FrankenPHP); no `worker` directive. 1.13 was released two days
   before this decision: decision record 15's 7-day cooldown on new releases is set aside for it because 1.13 fixes CVEs
   that 1.12 has (owner, 2026-10-06).
 - **Migrations in a one-shot `migrate` service** (B): same image, command
