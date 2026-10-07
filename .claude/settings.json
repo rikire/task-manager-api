@@ -119,6 +119,16 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/protect_ask_paths.py",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "PostToolUse": [

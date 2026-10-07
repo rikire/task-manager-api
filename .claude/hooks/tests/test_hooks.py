@@ -100,6 +100,58 @@ class ProtectTests(HookCase):
         self.assertEqual(r.returncode, 2, "an internal error must block (fail closed)")
 
 
+class ProtectAskPaths(HookCase):
+    """Shell writes to files under an `ask` rule must not skip the owner's confirmation (FAIL-004)."""
+
+    def setUp(self):
+        super().setUp()
+        (self.root / ".claude").mkdir()
+        (self.root / ".claude" / "settings.json").write_text(json.dumps({"permissions": {"ask": [
+            "Bash(git commit *)", "Edit(./Makefile)", "Edit(./deptrac.yaml)", "Edit(./.claude/**)",
+        ]}}))
+
+    def bash(self, command):
+        return {"hook_event_name": "PreToolUse", "tool_name": "Bash", "tool_input": {"command": command}}
+
+    def test_shell_writes_to_protected_files_are_blocked(self):
+        for command in ("python3 -I - <<'EOF'\np='Makefile'; open(p,'w').write(s)\nEOF",
+                        "echo x >> deptrac.yaml", "sed -i 's/a/b/' Makefile", "cp /tmp/d.yaml deptrac.yaml",
+                        "printf x > .claude/rules/code.md", "git checkout -- Makefile",
+                        "python3 -c \"import pathlib; pathlib.Path('deptrac.yaml').write_text('x')\""):
+            with self.subTest(command=command):
+                r = self.run_hook("protect_ask_paths.py", self.bash(command))
+                self.assertEqual(r.returncode, 2)
+                self.assertIn("ask", r.stderr)
+
+    def test_reads_and_tool_runs_are_allowed(self):
+        for command in ("cat Makefile", "make check", "grep -n deptrac Makefile", "git diff Makefile",
+                        "vendor/bin/deptrac analyse --config-file=deptrac.yaml", "git add Makefile deptrac.yaml",
+                        "ls .claude/rules", "grep -n deptrac Makefile 2>&1 | tail -3",
+                        "make lint-file FILE=src/A.php > /dev/null 2>&1; cat deptrac.yaml"):
+            with self.subTest(command=command):
+                self.assertEqual(self.run_hook("protect_ask_paths.py", self.bash(command)).returncode, 0)
+
+    def test_commit_and_pr_messages_mentioning_protected_files_are_allowed(self):
+        for command in ("git commit -q -F - <<'EOF'\nchore: Makefile — cp и mv в тексте\nEOF",
+                        "gh pr create --title t --body 'deptrac.yaml > old rules'"):
+            with self.subTest(command=command):
+                self.assertEqual(self.run_hook("protect_ask_paths.py", self.bash(command)).returncode, 0)
+
+    def test_unprotected_files_are_writable(self):
+        self.assertEqual(self.run_hook("protect_ask_paths.py", self.bash("echo x > docs/a.md")).returncode, 0)
+
+    def test_edit_tools_are_not_its_business(self):
+        payload = {"hook_event_name": "PreToolUse", "tool_name": "Edit",
+                   "tool_input": {"file_path": "Makefile", "old_string": "a", "new_string": "b"}}
+        self.assertEqual(self.run_hook("protect_ask_paths.py", payload).returncode, 0)
+
+    def test_malformed_input_blocks(self):
+        env = dict(os.environ, CLAUDE_PROJECT_DIR=str(self.root))
+        r = subprocess.run([sys.executable, str(HOOKS / "protect_ask_paths.py")], input="{not json",
+                           capture_output=True, text=True, env=env)
+        self.assertEqual(r.returncode, 2, "an internal error must block (fail closed)")
+
+
 class StopCheck(HookCase):
     def write_makefile(self, recipe):
         (self.root / "Makefile").write_text(f"stop-check:\n\t{recipe}\n")
