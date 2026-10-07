@@ -58,30 +58,67 @@
 ## Проверки при настройке
 
 - [ ] OpenSpec: поведение `continue` и `verify`; если `continue` не подходит — ручная приёмка
-  ([02](02-sdd-framework.md), [07](07-requirements-intent.md) §6).
-- [ ] Приоритет `autoMemoryEnabled: false` над пользовательскими настройками
-  ([03](03-agent-instructions.md)).
-- [ ] Подгружаются ли правила по путям при правке через Bash ([03](03-agent-instructions.md)).
-- [ ] Время набора pre-commit в Stop-хуке (порог ~1 мин) ([04](04-definition-of-done.md)).
-- [ ] Скорость форматтера через `docker compose exec` после каждой правки; если медленно — в Stop
-  ([32](32-stack-tools.md)).
-- [ ] Защита Stop-хука от зацикливания по полям входа хука ([16](16-guardrails-harness.md)).
-- [ ] Песочница: строгий режим bubblewrap; что происходит при обращении к домену вне allowlist;
-  доступ к сокету Docker из песочницы ([15](15-agent-security.md)).
-- [ ] `scripts/phase` пишет файл фазы, а прямая запись агентом блокируется (встроенные инструменты и
-  известные формы Bash) ([16](16-guardrails-harness.md) §2).
-- [ ] `attribution` принимает свой текст `Assisted-by: Claude Code`; можно ли отличить коммит агента
-  ([21](21-attribution.md)).
-- [ ] Команда установки `doc-coauthoring` ([19](19-agent-writing.md)).
-- [ ] Хуки во frontmatter субагентов работают при принятом доверии к папке
-  ([27](27-subagents.md)) — когда субагенты будут внедряться.
-- [ ] Совместимость версий PHP-инструментов между собой ([32](32-stack-tools.md)).
-- [ ] Задержка свежих релизов в Composer — есть ли настройка ([32](32-stack-tools.md)).
-- [ ] Защита веток на тарифе GitHub — если репозиторий будет приватным ([28](28-hosting-ci-git.md)).
-- [ ] Тестовые пути, манифесты, миграции, конфиги — внести в правила `ask` / хуки
-  ([05](05-tdd.md), [13](13-authority.md)).
-- [ ] После первых замеров — пороги: размер диффа (~400 строк), сложность, дублирование, мутации
-  ([18](18-human-comprehension.md), [26](26-code-quality.md), [06](06-test-quality.md)).
+  ([02](02-sdd-framework.md), [07](07-requirements-intent.md) §6). Создание артефактов через CLI
+  проверено (`openspec new change`, `status`, `instructions`, `validate` в изменении `finish-init`);
+  `verify` — задача 7.3 `finish-init` на этом же изменении (решение владельца, 2026-10-07).
+- [x] Приоритет `autoMemoryEnabled: false` над пользовательскими настройками
+  ([03](03-agent-instructions.md)). Проверено 2026-10-07: проектные настройки перекрывают
+  пользовательские, их перекрывают только локальные, управляемые и переменная
+  `CLAUDE_CODE_DISABLE_AUTO_MEMORY` (https://code.claude.com/docs/en/settings.md); в
+  `.claude/settings.json` — `false`, в `~/.claude/settings.json` и `.claude/settings.local.json` ключа нет,
+  управляемых настроек и переменной нет.
+- [x] Подгружаются ли правила по путям при правке через Bash ([03](03-agent-instructions.md)).
+  Проверено 2026-10-07 (изменение `finish-init`): **нет** — правила из `.claude/rules/` приходили в
+  контекст при Read/Edit/Write, при правках через `sed`/`python` в Bash — ни разу. Следствие: файлы,
+  к которым привязаны правила, правятся инструментами Edit/Write.
+- [x] Время набора pre-commit в Stop-хуке (порог ~1 мин) ([04](04-definition-of-done.md)).
+  Замер 2026-10-07 (`/usr/bin/time make stop-check`): фаза `off` — 12,2 с, фаза `tests` — 10,8 с.
+- [x] Скорость форматтера через `docker compose exec` после каждой правки; если медленно — в Stop
+  ([32](32-stack-tools.md)). Замер 2026-10-07: `make fix-file` — 0,5 с, `make lint-file` — 2,9 с на
+  файл; остаётся после каждой правки.
+- [x] Защита Stop-хука от зацикливания по полям входа хука ([16](16-guardrails-harness.md)).
+  Сделано собственным счётчиком, а не полем `stop_hook_active`: `MAX_BLOCKS = 3` подряд на одном
+  отпечатке дерева (`.claude/hooks/stop_check.py`), тест `test_releases_turn_after_max_blocks`;
+  наблюдалось 2026-10-07 (блоки 1/3–3/3, затем ход отпущен). Шум повторов — `IMP-006`.
+- [x] Песочница: строгий режим bubblewrap; что происходит при обращении к домену вне allowlist;
+  доступ к сокету Docker из песочницы ([15](15-agent-security.md)). Проверено 2026-10-07: на этой
+  машине песочница не запускается ни для одной команды, поэтому песочница **выключена** (решение
+  владельца); попытки, ошибка и условие возврата — `DEBT-001-sandbox-disabled`
+  (`docs/registers/debt.md`).
+- [x] `scripts/phase` пишет файл фазы, а прямая запись агентом блокируется (встроенные инструменты и
+  известные формы Bash) ([16](16-guardrails-harness.md) §2). `deny Edit(./.agent-state/phase)`; тесты
+  `test_phase_file_cannot_be_written_directly`, `…_after_phase_script`, `test_phase_script_is_allowed`
+  (`.claude/hooks/tests/`); непокрытые формы — `.claude/hooks/BYPASSES.md`.
+- [x] `attribution` принимает свой текст `Assisted-by: Claude Code`; можно ли отличить коммит агента
+  ([21](21-attribution.md)). Принимает (`attribution.commit` и `.pr` в `.claude/settings.json`;
+  трейлер в коммитах be164cd, dc68555). Отличить можно: в окружении команд агента `CLAUDECODE=1`
+  (проверено 2026-10-07), git-хуки наследуют окружение — основа задачи 5.2 `finish-init`.
+- [x] Команда установки `doc-coauthoring` ([19](19-agent-writing.md)). Установлен:
+  `.claude/skills/doc-coauthoring/`.
+- [x] Хуки во frontmatter субагентов работают при принятом доверии к папке
+  ([27](27-subagents.md)) — когда субагенты будут внедряться. Не применимо: субагенты внедрены
+  (`.claude/agents/`), но ни один не объявляет хуков во frontmatter (проверено 2026-10-07); проверить,
+  когда первый объявит.
+- [x] Совместимость версий PHP-инструментов между собой ([32](32-stack-tools.md)). `composer install`
+  разрешил зависимости; `make check` зелёный (PHPUnit 13.4.1, PHPStan, PHP-CS-Fixer 3.95.27, Deptrac на
+  PHP 8.4.26), локально и в CI `clean-clone` (PR #10).
+- [x] Задержка свежих релизов в Composer — есть ли настройка ([32](32-stack-tools.md)). Встроенной
+  настройки не найдено (поиск 2026-10-07; по исходникам Composer не проверено); есть сторонние плагины
+  `zingstudios/composer-delay`, `innobrain/soak-time`, Heimdall. Перенесено в роадмап кандидатом (решение
+  владельца, 2026-10-07).
+- [x] Защита веток на тарифе GitHub — если репозиторий будет приватным ([28](28-hosting-ci-git.md)).
+  Репозиторий публичный; `main` защищён набором правил `protect-main` (active); слияние только rebase,
+  автослияние и удаление веток после слияния включены (`gh api`, 2026-10-07).
+- [x] Тестовые пути, манифесты, миграции, конфиги — внести в правила `ask` / хуки
+  ([05](05-tdd.md), [13](13-authority.md)). Манифесты (`composer.*`, `mise.*`), миграции и конфиги
+  инструментов — в `ask` (`.claude/settings.json`); тесты защищает хук фаз: `tests/`, а с задачи 2.3
+  `finish-init` (решение владельца, 2026-10-07) и `scripts/tests/`, `.claude/hooks/tests/` — для
+  Edit/Write и для перенаправления в Bash; тест `test_script_and_hook_tests_are_locked_like_tests`.
+- [x] После первых замеров — пороги: размер диффа (~400 строк), сложность, дублирование, мутации
+  ([18](18-human-comprehension.md), [26](26-code-quality.md), [06](06-test-quality.md)). Разнесено по
+  местам (решение владельца, 2026-10-07): размер диффа — 400 строк, предупреждение в
+  `scripts/git_checks.py`; сложность — `IMP-001-readability-threshold`; мутации — задача 6.3
+  `finish-init`; дублирование (jscpd) — роадмап решения [34](34-core-vs-roadmap.md) §4.
 
 ## Гарантия
 

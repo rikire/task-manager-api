@@ -14,8 +14,10 @@ proposal, Confirmed): such groups name their check instead.
 
 ## 2. Checks at setup (checklist 35)
 
-- [ ] 2.1 Verify each of the 16 items and mark it `[x]` with evidence (command output or commit) in `docs/pre-init/35-init-checklist.md`; verify no item stays unmarked without a move confirmed by the owner
-- [ ] 2.2 Measure the Stop-hook time (`make stop-check`); verify the number is recorded in checklist 35 and decides where later checks run (proposal, Confirmed)
+- [x] 2.1 Verify each of the 16 items and mark it `[x]` with evidence (command output or commit) in `docs/pre-init/35-init-checklist.md`; verify no item stays unmarked without a move confirmed by the owner
+- [x] 2.3 Phase `tests` → `impl`: the TDD hook also locks `scripts/tests/` and `.claude/hooks/tests/` in phases `impl` and `refactor` (owner, 2026-10-07: gap found in the checks at setup); verify hook tests green and an Edit of `scripts/tests/…` blocked in phase `impl`
+- [x] 2.4 Turn the Bash sandbox off in `.claude/settings.json` (owner, 2026-10-07; `DEBT-001-sandbox-disabled`); verify a plain Bash command runs without a sandbox override
+- [x] 2.2 Measure the Stop-hook time (`make stop-check`); verify the number is recorded in checklist 35 and decides where later checks run (proposal, Confirmed)
 
 ## 3. Step 13 — style and skills for the stack
 
@@ -25,7 +27,7 @@ proposal, Confirmed): such groups name their check instead.
 ## 4. Step 11 and FAIL-005
 
 - [ ] 4.1 Write `docs/api/curl-examples.md` (purpose, example format; examples come with product changes) and list it in `docs/README.md`; verify the file exists and is listed
-- [ ] 4.2 Write `FAIL-005` in `docs/registers/failures.md` with the remedy of group 1; verify its `Commit:` names the group-1 commit (entry written with group 1, owner 2026-10-07; ticked once the commit exists)
+- [x] 4.2 Write `FAIL-005` in `docs/registers/failures.md` with the remedy of group 1; verify its `Commit:` names the group-1 commit (entry written with group 1, owner 2026-10-07; ticked once the commit exists)
 
 ## 5. Cheap "if time allows" items (decision record 34 §3: 3, 5, 6, 7)
 

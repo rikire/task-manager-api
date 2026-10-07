@@ -86,7 +86,7 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
   above it is not archived. The remaining initialization is change `finish-init`, roadmap row 1b,
   mandatory, so no product change can start before it is archived. Agent instructions: read
   `docs/roadmap.md` at session start; the notes never hold the plan. Tests: `scripts/tests/test_roadmap.py`.
-- **Commit:** — (group 1 of change `finish-init`, filled in at commit)
+- **Commit:** be164cd, dc68555.
 
 ## FAIL-006-review-findings-only-in-chat
 

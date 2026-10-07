@@ -3,6 +3,26 @@
 `DEBT-` — done below the norm, must be fixed. `IMP-` — works, could be better, with a trigger.
 Format and rules: `docs/pre-init/10-debt-polish-headroom.md` §2.
 
+## DEBT-001-sandbox-disabled
+
+- **What is wrong:** the Claude Code Bash sandbox (decision record 15: filesystem isolation per command,
+  network allowlist) is turned off in `.claude/settings.json`; every agent command runs without
+  isolation, and the network allowlist is not enforced. Protection rests on permission rules and hooks.
+- **Why it was done:** on this machine the sandbox fails for every command, before the command starts:
+  `apply-seccomp: write /proc/self/setgroups (nested userns is capability-restricted; caller must provide
+  CAP_SYS_ADMIN): Permission denied`. Tried 2026-10-07: plain `bwrap --ro-bind / / true` works; the host
+  has `kernel.apparmor_restrict_unprivileged_userns = 1` (Ubuntu default), the probable cause (not
+  verified). With `failIfUnavailable: true` each command needed an explicit sandbox override, so the
+  sandbox gave no protection, only friction. Not tried: an AppArmor profile allowing user namespaces for
+  Claude Code or `bwrap` only (needs `sudo`), or switching the sysctl off (weakens the whole machine). The
+  owner decided (2026-10-07): fixing the sandbox is worth doing, but not for this project.
+- **Risk:** a command the agent runs can read or write anything the user can, and reach any host; a
+  prompt injection in fetched content would meet no isolation layer.
+- **Marker:** `.claude/settings.json`, key `sandbox.enabled`; checklist 35, item "Песочница".
+- **When to fix:** before the agent works with untrusted code or content in this repository, or in the
+  next project on this machine — first a narrow AppArmor profile, then `sandbox.enabled: true` and the
+  checklist item re-run.
+
 ## IMP-001-readability-threshold
 
 - **What could be better:** `QAS-MAINT-readability` has no cognitive complexity threshold yet, so the
@@ -72,3 +92,17 @@ Format and rules: `docs/pre-init/10-debt-polish-headroom.md` §2.
 - **Trigger:** the owner finds the repeated blocks costly, or a session hits the three-block limit while
   waiting.
 - **Size:** the Stop-hook script (reuse its state directory), 2 hook tests.
+
+## IMP-007-protect-ask-paths-false-positives
+
+- **What could be better:** the PreToolUse hook against shell writes to `ask`-protected files
+  (`FAIL-004`) blocks a command whose *text* mentions a protected path (for example `.claude/hooks/…` or
+  `AGENTS.md` inside a register entry) together with any write form, even when the write goes to an
+  unprotected file. It blocked such writes twice on 2026-10-07 (change `finish-init`); the work was redone
+  with Edit, which is the intended path anyway.
+- **Why not now:** it fails closed — the cost is a retry with Edit, never a missed protection; narrowing
+  the match risks the bypass the hook exists to stop.
+- **Trigger:** a false positive blocks a write that Edit/Write cannot do, or more than one retry per day
+  is needed.
+- **Size:** match only write targets (redirection target, `open(...)` path, `sed -i` file) instead of
+  any mention; 3 hook tests.
