@@ -19,7 +19,7 @@ Scope: local.
   The script is run from the repository root; paths `docs/roadmap.md` and `openspec/changes/` are
   constants. Tests run it in a throwaway directory (as `test_git_checks.py` does).
 - Exit codes as in `git_checks.py`: 0 pass, 1 violation; each violation on its own stderr line naming the
-  change or row.
+  change or row; 2 for an unknown argument, nothing written (added after the group-1 `verifier` review).
 - `make roadmap-check` joins `check` and the phase-`tests` subset of `stop-check`, so pre-commit, the
   Stop hook and CI all run it.
 
@@ -126,6 +126,27 @@ Scope: local. Drivers: decision records 19 and 23 (markdownlint in pre-commit, l
 - What: per-file runs make the phase-`tests` check slower than one `unittest discover`; by how much is
   not measured.
 - Revisit-when: the Stop-hook time measured in task 2.2 exceeds the budget of decision record 04.
+
+### S5. Markdown checks skip history and relax three rules
+
+- Source: owner, 2026-10-07 ("3a", config accepted); D6.
+- What: `docs/pre-init/**`, the archive and generated OpenSpec files are not linted; MD036, MD041, MD060
+  off; line length 120; external links of `docs/pre-init` not checked in CI.
+- Revisit-when: a lint finding in those files misleads a reader, or `docs/pre-init` is revised.
+
+### S6. Complexity and mutation score only report
+
+- Source: owner, 2026-10-07 (cards 1a, 2a); `IMP-001`, `IMP-008`.
+- What: the complexity step prints every score (threshold 0) and the mutation step annotates escaped
+  mutants; neither fails CI.
+- Revisit-when: `IMP-001` / `IMP-008` fire (first product change measured).
+
+### S7. The project rule judges only literal returns at the top of a catch block
+
+- Source: owner, 2026-10-07 (card 1a); `tools/PHPStan/CatchReturnsDefaultRule.php`.
+- What: returns nested in `if` / `try`, negative literals, class constants and bare `return;` are not
+  reported; computed fallbacks are left to review.
+- Revisit-when: review finds a swallowed error the rule missed.
 
 ## Candidate cards
 

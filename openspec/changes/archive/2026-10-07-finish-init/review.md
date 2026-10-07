@@ -239,3 +239,51 @@ verified only for the empty diff; a real mutation run waits for product code.
 1. Verify Psalm taint through `#[MapRequestPayload]` with the first endpoint — proposed: a task in
    `status-catalog`.
 2. Set the mutation threshold — `IMP-008`, trigger after the first product change.
+
+## Group 7 — README, decision records, verification, freeze (tasks 7.1–7.4), 2026-10-07
+
+**Ready to commit:** yes. `make check` green; `/opsx:verify` found no critical issue besides the open
+tasks 7.3–7.4; the upstream `security-review.md` is unchanged since the copied commit `c19afa7`.
+
+**What changed:** README section "Проверки сверх базовых требований" (`CON-DELIV-justify-extras`);
+decision records 07, 15, 17, 24, 34 and `docs/architecture/asvs-l1.md` amended to what was built;
+checklist 35 fully marked; the session-start hook and the `change-workflow` skill now point to the
+roadmap (tests first, accepted by the owner); `bwrap`/`socat` no longer requested while the sandbox is
+off; complexity report threshold 0 and a real `continue-on-error` step; new check configs, `tools/**`
+and `scripts/*.py` under `ask`; `docs/pre-init/` frozen; change archived.
+
+**Reviews and their results:**
+
+| Review | Findings | Result |
+|---|---|---|
+| `reader-tester` on amended records and README | 34, mostly unchanged paragraphs contradicting the amendments (sandbox still "on", "if time allows" after the product, statuses "by hand") | fixed in the documents |
+| `verifier` on the whole change | F1 hook and skill ignored the roadmap (contradicted the `FAIL-005` remedy); F2 README missed two extras; F3 new check configs not under `ask`; F4–F6, F10–F13 stale statements; F7 `-` instead of `continue-on-error`; F8 simplifications only here; F9 freeze could not name its own commit; H1 the complexity report printed nothing below the threshold (confirmed with a probe) | F1 tests first; F3 owner "2a"; F9 owner "3a"; the rest fixed; H1 threshold 0 |
+
+**Key decisions (owner, 2026-10-07):** hook tests accepted; `ask` extended (F3); freeze mark "the
+commit that adds this line", freeze and archive in one last commit (F9); `IMP-004` stays registered.
+
+**Simplifications:** `design.md` S5–S7 (recorded in this group for groups 5–6).
+
+**Debt / improvements:** none new; open for later: `forms.py` should fail when the section list from
+`openspec/config.yaml` cannot be read; the project rule misses nested returns (S7); no machine check
+keeps `docs/pre-init/` frozen; the `AGENTS.md` command table lacks `md-fix`, `taint`, `mutation`,
+`complexity`, `forms-check` — proposed for the first `chore/` after `status-catalog`.
+
+**Not done:** none of the tasks; `IMP-004` by the owner's choice.
+
+**Maturity:**
+
+| Axis | Level | Why |
+|---|---|---|
+| Functionality | working minimum | every Done criterion of the proposal has evidence |
+| Reliability | working minimum | checks fail closed; complexity and mutation only report |
+| Performance | production-ready | Stop hook 15.5 s of a ~60 s budget |
+| Security | prototype | sandbox off (`DEBT-001`); taint analysis and `ask` rules hold the rest |
+| Maintainability | working minimum | process documented once, frozen history amended to match |
+| Observability | working minimum | review results and decisions recorded per group |
+| Consumer experience | working minimum | README explains every extra check in one table |
+
+**Top improvements** (the owner chooses now or register):
+
+1. Command table in `AGENTS.md` — proposed: next `chore/` change.
+2. Fail `forms.py` on an unreadable section list — proposed: `IMP` entry if it ever bites.

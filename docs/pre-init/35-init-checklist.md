@@ -57,10 +57,12 @@
 
 ## Проверки при настройке
 
-- [ ] OpenSpec: поведение `continue` и `verify`; если `continue` не подходит — ручная приёмка
-  ([02](02-sdd-framework.md), [07](07-requirements-intent.md) §6). Создание артефактов через CLI
-  проверено (`openspec new change`, `status`, `instructions`, `validate` в изменении `finish-init`);
-  `verify` — задача 7.3 `finish-init` на этом же изменении (решение владельца, 2026-10-07).
+- [x] OpenSpec: поведение `continue` и `verify`; если `continue` не подходит — ручная приёмка
+  ([02](02-sdd-framework.md), [07](07-requirements-intent.md) §6). Проверено на изменении `finish-init`
+  (2026-10-07): артефакты создаются через CLI (`openspec new change`, `status`, `instructions`,
+  `validate`), proposal принимается человеком вручную; `/opsx:verify` сверяет задачи
+  (`openspec instructions apply`: 25 из 27 на момент проверки), пропущенные спеки (`skip_specs`) отмечает
+  как неприменимые, а решения `design.md` — с кодом.
 - [x] Приоритет `autoMemoryEnabled: false` над пользовательскими настройками
   ([03](03-agent-instructions.md)). Проверено 2026-10-07: проектные настройки перекрывают
   пользовательские, их перекрывают только локальные, управляемые и переменная
@@ -72,7 +74,8 @@
   контекст при Read/Edit/Write, при правках через `sed`/`python` в Bash — ни разу. Следствие: файлы,
   к которым привязаны правила, правятся инструментами Edit/Write.
 - [x] Время набора pre-commit в Stop-хуке (порог ~1 мин) ([04](04-definition-of-done.md)).
-  Замер 2026-10-07 (`/usr/bin/time make stop-check`): фаза `off` — 12,2 с, фаза `tests` — 10,8 с.
+  Замер 2026-10-07 (`/usr/bin/time make stop-check`): фаза `off` — 12,2 с, фаза `tests` — 10,8 с; после
+  добавления проверок групп 5–6 `finish-init` (`md`, `forms-check`, правила PHPStan) — 15,5 с.
 - [x] Скорость форматтера через `docker compose exec` после каждой правки; если медленно — в Stop
   ([32](32-stack-tools.md)). Замер 2026-10-07: `make fix-file` — 0,5 с, `make lint-file` — 2,9 с на
   файл; остаётся после каждой правки.
@@ -101,7 +104,8 @@
   когда первый объявит.
 - [x] Совместимость версий PHP-инструментов между собой ([32](32-stack-tools.md)). `composer install`
   разрешил зависимости; `make check` зелёный (PHPUnit 13.4.1, PHPStan, PHP-CS-Fixer 3.95.27, Deptrac на
-  PHP 8.4.26), локально и в CI `clean-clone` (PR #10).
+  PHP 8.4.26), локально и в CI `clean-clone` (PR #10); Psalm 6.19 и Infection 0.35.6 добавлены и прошли в
+  CI (PR #14), Infection с PHPUnit 13.4 проверен пока только на пустом диффе.
 - [x] Задержка свежих релизов в Composer — есть ли настройка ([32](32-stack-tools.md)). Встроенной
   настройки не найдено (поиск 2026-10-07; по исходникам Composer не проверено); есть сторонние плагины
   `zingstudios/composer-delay`, `innobrain/soak-time`, Heimdall. Перенесено в роадмап кандидатом (решение
@@ -117,8 +121,8 @@
 - [x] После первых замеров — пороги: размер диффа (~400 строк), сложность, дублирование, мутации
   ([18](18-human-comprehension.md), [26](26-code-quality.md), [06](06-test-quality.md)). Разнесено по
   местам (решение владельца, 2026-10-07): размер диффа — 400 строк, предупреждение в
-  `scripts/git_checks.py`; сложность — `IMP-001-readability-threshold`; мутации — задача 6.3
-  `finish-init`; дублирование (jscpd) — роадмап решения [34](34-core-vs-roadmap.md) §4.
+  `scripts/git_checks.py`; сложность — `IMP-001-readability-threshold`; мутации —
+  `IMP-008-mutation-score-threshold`; дублирование (jscpd) — роадмап решения [34](34-core-vs-roadmap.md) §4.
 
 ## Гарантия
 

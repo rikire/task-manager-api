@@ -69,15 +69,15 @@ proposal, Confirmed): such groups name their check instead.
       each in `design.md`
 - [x] 6.2 PHPStan rules (dead code, cognitive complexity, swallowed errors) as a CI step with
       `continue-on-error`; verify the step runs in CI
-- [ ] 6.3 Infection on changed lines in CI; verify the CI step is green (cut line: if not green when the
+- [x] 6.3 Infection on changed lines in CI; verify the CI step is green (cut line: if not green when the
       rest is done, move back to the roadmap)
-- [ ] 6.4 Psalm taint analysis in CI; verify the CI step is green (same cut line)
+- [x] 6.4 Psalm taint analysis in CI; verify the CI step is green (same cut line)
 
 ## 7. Polish and freeze
 
-- [ ] 7.1 README: one line per adopted extra check (`CON-DELIV-justify-extras`); verify each adopted item has its line
-- [ ] 7.2 Amend decision records 17, 24, 34 to match what was implemented; verify with `reader-tester` on
+- [x] 7.1 README: one line per adopted extra check (`CON-DELIV-justify-extras`); verify each adopted item has its line
+- [x] 7.2 Amend decision records 17, 24, 34 to match what was implemented; verify with `reader-tester` on
       the amended sections
-- [ ] 7.3 Review brief, `verifier` subagent; verify every Done criterion of the proposal has its evidence
-- [ ] 7.4 Freeze `docs/pre-init/` (mark in its README) as the last commit; archive the change with
+- [x] 7.3 Review brief, `verifier` subagent; verify every Done criterion of the proposal has its evidence
+- [x] 7.4 Freeze `docs/pre-init/` (mark in its README) as the last commit; archive the change with
       `openspec archive --skip-specs`; verify `scripts/roadmap.py --check` shows row 1b `в архиве`
