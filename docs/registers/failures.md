@@ -36,3 +36,20 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
   `docs/constraints.md`; the `architecture` skill says "do not invent driver labels — propose a `CON-`
   entry"; the stack ADRs move into the `architecture-kickoff` change.
 - **Commit:** da1f2e6, dbe3789.
+
+## FAIL-003-explain-back-out-of-context
+
+- **What happened:** at the end of task group 1 of `architecture-kickoff` (2026-10-07) the agent asked
+  explain-back questions about things that do not exist yet ("what does the reviewer see when a migration
+  fails at `docker compose up`" — there is no compose file yet), without context ("a `title` field in the
+  body" — of which request?) and with unexplained jargon (`flush`). The owner could not tell what was
+  asked.
+- **Known weakness:** writes as if the reader shares its context (`docs/pre-init/19-agent-writing.md`,
+  observation of the human).
+- **Probable cause:** the explain-back step of the `change-workflow` skill says only "ask 3–5 short
+  questions"; nothing ties the questions to what the diff contains or requires them to be self-contained.
+- **Remedy (level: instruction):** the `change-workflow` skill's explain-back asks only about what exists
+  in the diff or the accepted decisions, states the context in the question, explains every term, and for
+  a decision-only diff asks "why X and not Y" rather than "what happens at run time". No lower ladder level
+  fits: question quality is a judgement.
+- **Commit:** (filled in when the remedy is committed).
