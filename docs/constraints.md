@@ -23,7 +23,7 @@ assignment item: `docs/task/README.md`.
 
 - Source: docs/task/assignment.txt:17, 101
 - Kind: technical
-- Affects: ADR-0003-api-contract, ADR-0005-validation
+- Affects: ADR-0003-api-contract, ADR-0005-validation, ADR-0007-api-conventions
 - Check: review
 - Confirmed: human, 2026-10-06
 - Status: active
@@ -73,7 +73,7 @@ assignment item: `docs/task/README.md`.
 
 - Source: docs/task/assignment.txt:13, 107-112, 129
 - Kind: convention
-- Affects: docs/pre-init/33-readme.md, ADR-0006-module-structure
+- Affects: docs/pre-init/33-readme.md, ADR-0006-module-structure, ADR-0007-api-conventions
 - Check: review before submission
 - Confirmed: human, 2026-10-06
 - Status: active
@@ -82,7 +82,7 @@ assignment item: `docs/task/README.md`.
 
 - Source: docs/task/assignment.txt:14
 - Kind: convention
-- Affects: —
+- Affects: ADR-0007-api-conventions
 - Check: review of README against Assumptions in archived OpenSpec changes
 - Confirmed: human, 2026-10-06
 - Status: active
@@ -102,7 +102,7 @@ assignment item: `docs/task/README.md`.
 - Kind: organizational
 - Affects: docs/pre-init/18-human-comprehension.md, docs/pre-init/31-task-requirements.md,
   ADR-0001-platform-versions, ADR-0002-php-runtime, ADR-0003-api-contract, ADR-0004-orm,
-  ADR-0005-validation, ADR-0006-module-structure
+  ADR-0005-validation, ADR-0006-module-structure, ADR-0007-api-conventions
 - Check: rehearsal without AI before submission (decision record 31 §2)
 - Confirmed: human, 2026-10-06
 - Status: active
