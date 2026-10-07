@@ -229,14 +229,21 @@ class SessionStart(HookCase):
         self.assertTrue(context.startswith("HARNESS WARNING"))
         self.assertIn("TDD phase: off", context)
 
-    def test_reports_missing_sandbox_dependencies(self):
+    def test_points_to_the_roadmap_first(self):
+        # FAIL-005: the plan is docs/roadmap.md and tasks.md, never the session notes.
+        r = self.run_hook("session_start.py", {"hook_event_name": "SessionStart", "source": "startup"})
+        context = json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
+        self.assertIn("docs/roadmap.md", context)
+
+    def test_does_not_ask_for_sandbox_tools_while_the_sandbox_is_off(self):
+        # DEBT-001-sandbox-disabled: missing bwrap/socat is not a harness problem until the sandbox returns.
         env = dict(os.environ, CLAUDE_PROJECT_DIR=str(self.root), PATH=str(self.root))
         r = subprocess.run([sys.executable, str(HOOKS / "session_start.py")],
                            input=json.dumps({"hook_event_name": "SessionStart", "source": "startup"}),
                            capture_output=True, text=True, env=env, cwd=self.root)
         context = json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
-        self.assertIn("bwrap", context)
-        self.assertIn("socat", context)
+        self.assertNotIn("bwrap", context)
+        self.assertNotIn("socat", context)
 
 
 if __name__ == "__main__":
