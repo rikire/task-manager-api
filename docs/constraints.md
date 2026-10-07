@@ -13,7 +13,7 @@ assignment item: `docs/task/README.md`.
 ### CON-STACK-php-symfony-pg — PHP 8+, Symfony 6+, PostgreSQL, Docker Compose
 - Source: docs/task/assignment.txt:97-100
 - Kind: technical
-- Affects: ADR-0001-platform-versions, ADR-0002-php-runtime
+- Affects: ADR-0001-platform-versions, ADR-0002-php-runtime, ADR-0004-orm
 - Check: review of composer.json and compose.yaml
 - Confirmed: human, 2026-10-06
 - Status: active
@@ -21,7 +21,7 @@ assignment item: `docs/task/README.md`.
 ### CON-STACK-rest — the interface is a REST API over HTTP
 - Source: docs/task/assignment.txt:17, 101
 - Kind: technical
-- Affects: ADR-0003-api-contract
+- Affects: ADR-0003-api-contract, ADR-0005-validation
 - Check: review
 - Confirmed: human, 2026-10-06
 - Status: active
@@ -31,7 +31,7 @@ assignment item: `docs/task/README.md`.
 ### CON-PLAN-deadline — submission by 2026-10-09
 - Source: recruiter correspondence, recorded in docs/pre-init/31-task-requirements.md (the assignment says the recruiter sets the deadline, docs/task/assignment.txt:12)
 - Kind: organizational
-- Affects: docs/pre-init/34-core-vs-roadmap.md
+- Affects: docs/pre-init/34-core-vs-roadmap.md, ADR-0003-api-contract, ADR-0006-module-structure
 - Check: review
 - Confirmed: human, 2026-10-06
 - Status: active
@@ -65,7 +65,7 @@ assignment item: `docs/task/README.md`.
 ### CON-DELIV-readme-sections — README has the sections: how to run; architecture decisions and trade-offs (3–7 items, including how Task and Status are linked, how status deletion is handled, why this project structure, what was deliberately simplified); what next (including what was not done, if time ran out); AI usage (what for and how the result was checked); time spent (an honest number)
 - Source: docs/task/assignment.txt:13, 107-112, 129
 - Kind: convention
-- Affects: docs/pre-init/33-readme.md
+- Affects: docs/pre-init/33-readme.md, ADR-0006-module-structure
 - Check: review before submission
 - Confirmed: human, 2026-10-06
 - Status: active
@@ -89,7 +89,7 @@ assignment item: `docs/task/README.md`.
 ### CON-DELIV-explain-without-ai — the owner understands every line and at the next stage shows the code, explains the decisions and makes a small change without an AI assistant
 - Source: docs/task/assignment.txt:128, 155
 - Kind: organizational
-- Affects: docs/pre-init/18-human-comprehension.md, docs/pre-init/31-task-requirements.md
+- Affects: docs/pre-init/18-human-comprehension.md, docs/pre-init/31-task-requirements.md, ADR-0001-platform-versions, ADR-0002-php-runtime, ADR-0003-api-contract, ADR-0004-orm, ADR-0005-validation, ADR-0006-module-structure
 - Check: rehearsal without AI before submission (decision record 31 §2)
 - Confirmed: human, 2026-10-06
 - Status: active
