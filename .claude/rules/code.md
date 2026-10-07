@@ -35,6 +35,28 @@ Rules for application code. Each rule: why, scope, source.
 - **RUL-SEC-response-models.** Never serialize an entity into a response: a response is built from a read
   model or response DTO that lists exactly the fields the contract promises. Why: entities grow fields
   that must not leak. Source: `docs/architecture/asvs-l1.md` (V15.3.1), `ADR-0006-module-structure`.
+- **RUL-CODE-style.** Formatting is PHP-CS-Fixer's job (`@Symfony`, `@Symfony:risky`, `@PHP8x4Migration`,
+  `ordered_class_elements`, `declare(strict_types=1)` in every file; `.php-cs-fixer.dist.php`); the rules
+  below cover what the config cannot express. Source: Symfony Coding Standards
+  (https://symfony.com/doc/current/contributing/code/standards.html); owner, 2026-10-07 (change
+  `finish-init`, step 13).
+- **RUL-CODE-exception-messages.** Build messages with `sprintf()`; start with a capital letter, end with
+  a period; quote values with double quotes, never backticks; use `get_debug_type()` for types. Why:
+  one format for every error a client or a log reader sees. Source: Symfony Coding Standards.
+- **RUL-CODE-naming.** camelCase for variables, methods and arguments; SCREAMING_SNAKE_CASE for
+  constants; UpperCamelCase for enum cases; snake_case for route names and config parameters; service id
+  = class name. Ports carry no `Interface` suffix (`StatusRepository`, `StatusUsage`), unlike the
+  Symfony contributor standard. Source: Symfony Coding Standards; `ADR-0006-module-structure`.
+- **RUL-CODE-phpdoc.** PHPDoc only for what native types cannot say (generics, `list<…>`, array shapes
+  for PHPStan max); no PHPDoc repeating a native type; `null` last in unions. Source: Symfony Coding
+  Standards.
+- **RUL-CODE-di.** Autowiring and autoconfiguration; services private; no `$container->get()`;
+  `#[Autowire]` only where a value cannot be inferred. Source: Symfony Best Practices
+  (https://symfony.com/doc/current/best_practices.html).
+- **RUL-CODE-config.** Infrastructure settings come from environment variables, secrets from Symfony
+  secrets or the environment (never committed), application options as `app.`-prefixed parameters,
+  options that never change per environment as class constants. Source: Symfony Best Practices;
+  `QAS-DEPLOY-prod-image`.
 - **Comments.** Explain why, not what; `REQ-…` at behaviour entry points and in business logic, `ADR-…`
   where a decision is implemented; `TODO`/`FIXME`/`HACK` only with a `DEBT-`/`IMP-` ID. Source:
   `docs/pre-init/30-code-comments.md`.
