@@ -21,12 +21,12 @@ proposal, Confirmed): such groups name their check instead.
 
 ## 3. Step 13 — style and skills for the stack
 
-- [ ] 3.1 Search Symfony coding standards, best practices and existing skills (`researcher`); candidate cards in `design.md`; verify every card has the owner's decision
-- [ ] 3.2 Apply the adopted items (rules, skills, config); verify `make check` green
+- [x] 3.1 Search Symfony coding standards, best practices and existing skills (`researcher`); candidate cards in `design.md`; verify every card has the owner's decision
+- [x] 3.2 Apply the adopted items (rules, skills, config); verify `make check` green
 
 ## 4. Step 11 and FAIL-005
 
-- [ ] 4.1 Write `docs/api/curl-examples.md` (purpose, example format; examples come with product changes) and list it in `docs/README.md`; verify the file exists and is listed
+- [x] 4.1 Write `docs/api/curl-examples.md` (purpose, example format; examples come with product changes) and list it in `docs/README.md`; verify the file exists and is listed
 - [x] 4.2 Write `FAIL-005` in `docs/registers/failures.md` with the remedy of group 1; verify its `Commit:` names the group-1 commit (entry written with group 1, owner 2026-10-07; ticked once the commit exists)
 
 ## 5. Cheap "if time allows" items (decision record 34 §3: 3, 5, 6, 7)
