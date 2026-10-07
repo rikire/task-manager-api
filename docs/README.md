@@ -23,12 +23,12 @@
 | [docs/registers/debt.md](registers/debt.md) | оба | описательный | вручную: `DEBT` и `IMP` ([10](pre-init/10-debt-polish-headroom.md)) |
 | [docs/registers/failures.md](registers/failures.md) | оба | описательный | вручную: `FAIL` ([22](pre-init/22-process-learning.md)) |
 | [openspec/specs/](../openspec/specs/), [openspec/changes/](../openspec/changes/) | оба | нормативный — требования (`SHALL`) | OpenSpec ([02](pre-init/02-sdd-framework.md)) |
-| [docs/pre-init/](pre-init/README.md) | человек | история решений | замораживается на шаге 14 [чек-листа инициализации](pre-init/35-init-checklist.md) |
+| [docs/pre-init/](pre-init/README.md) | человек | история решений | заморожена 2026-10-07 на шаге 14 [чек-листа инициализации](pre-init/35-init-checklist.md), не правится |
 | [docs/api/curl-examples.md](api/curl-examples.md) | человек, проверяющий | описательный | вручную: примеры добавляет изменение, которое вводит эндпоинт; 2–3 — в README ([33](pre-init/33-readme.md)) |
+| [docs/api/openapi.yaml](api/openapi.yaml) | оба | описательный — копия контракта API, источник — код | генерируется (`make openapi`); приложение отдаёт тот же контракт на `/api/doc.json`, `make openapi-check` в CI сверяет ([ADR-0003](adr/ADR-0003-api-contract.md)) |
 
-Появятся позже: `docs/api/openapi.yaml` (копия контракта, сгенерированного из кода; приложение отдаёт тот же контракт на
-`/api/doc.json`, CI сверяет, ADR-0003) — с первыми эндпоинтами; индекс ADR и матрица трассировки —
-скрипты в роадмапе.
+Не сделаны: индекс ADR и матрица трассировки (требование → тест → код) — скрипты-кандидаты из
+[решения 34](pre-init/34-core-vs-roadmap.md).
 
 ## Префиксы ID
 
