@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Task\Infrastructure\Persistence;
 
+use App\Status\Domain\Status;
 use App\Task\Domain\Task;
 use App\Task\Domain\TaskId;
 use App\Task\Domain\TaskNotFound;
@@ -32,5 +33,23 @@ final readonly class DoctrineTaskRepository implements TaskRepository
     public function get(TaskId $id): Task
     {
         return $this->entityManager->find(Task::class, $id->value) ?? throw TaskNotFound::withId($id);
+    }
+
+    public function list(?Status $status): array
+    {
+        // One query with the status joined in: the list does not grow by a query per task (design D5).
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('task', 'status')
+            ->from(Task::class, 'task')
+            ->join('task.status', 'status')
+            ->orderBy('task.id', 'ASC');
+        if (null !== $status) {
+            $query->where('task.status = :status')->setParameter('status', $status);
+        }
+
+        /** @var list<Task> $tasks */
+        $tasks = $query->getQuery()->getResult();
+
+        return $tasks;
     }
 }

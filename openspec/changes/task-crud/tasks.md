@@ -18,12 +18,12 @@
 
 ## 2. List and filter (REQ-TASK-list)
 
-- [ ] 2.1 Phase `tests`: functional tests for `REQ-TASK-list.*` and the `?status=` and list matrix rows,
+- [x] 2.1 Phase `tests`: functional tests for `REQ-TASK-list.*` and the `?status=` and list matrix rows,
   query-count test 1 vs N tasks; task data by SQL with fixed ascending UUID v7 ids (no endpoint sets a
   status yet); verify they fail for the right reason
-- [ ] 2.2 Phase `impl`: slice `ListTasks` with `ListTasksQuery` (`#[MapQueryString]`, 422), fetch-joined
+- [x] 2.2 Phase `impl`: slice `ListTasks` with `ListTasksQuery` (`#[MapQueryString]`, 422), fetch-joined
   list (design D5, D6), `UnknownStatus` → 422; verify the 2.1 tests pass
-- [ ] 2.3 Phase `refactor`; regenerate the contract; review brief; verify `make check` is green
+- [x] 2.3 Phase `refactor`; regenerate the contract; review brief; verify `make check` is green
 
 ## 3. Delete (REQ-TASK-delete)
 

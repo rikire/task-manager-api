@@ -39,3 +39,31 @@ objects); security — production-ready (strict input, no internals in errors); 
 production-ready; observability — prototype; consumer experience — working minimum (`IMP-009`).
 
 **Extra checks:** `verifier` in task 4.2.
+
+## Group 2 — list and filter (tasks 2.1–2.3), 2026-10-07
+
+**Ready to commit:** yes, after `make check`. PHPUnit `OK (179 tests)`; the prod image (isolated stack)
+answered the list, `?status=new`, `?status=done` (empty), `?status=archived` (422 with `detail`) and
+`?status=Done` (422, violation on `status`).
+
+**Data flow:** `GET /api/tasks` → `#[MapQueryString(validationFailedStatusCode: 422)] ?ListTasksQuery`
+(null without a query string; name rule on `status`) → `ListTasksHandler(ListTasks)`: a status name →
+`StatusRepository::findByName()` or `UnknownStatus` (422, `detail`) → `DoctrineTaskRepository::list()` (one
+query, status fetch-joined, `ORDER BY id`) → `TaskView` list → `{"items": …}`.
+
+**Must read:** `src/Task/Infrastructure/Persistence/DoctrineTaskRepository.php` (`list()`),
+`src/Task/Infrastructure/Http/ListTasks/ListTasksQuery.php`.
+
+**Check by hand:** `curl -s "$API/api/tasks?status=archived"` → 422 `Unknown status "archived".`
+
+**Key decisions:** design D5, D6; ADR-0007 D5.
+
+**Corner-case matrix and red output:** accepted by the owner (chat): 12 red on assertions; the query-count
+test first passed vacuously (both requests 404) and got a check that the list answered.
+
+**Simplifications:** none. **Debt:** none. **Not done:** none in this group.
+
+**Maturity:** as group 1; performance — production-ready for this size (one query per list, test guards
+it; no pagination by the assignment).
+
+**Extra checks:** `verifier` in task 4.2.

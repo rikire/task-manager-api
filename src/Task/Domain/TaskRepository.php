@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Task\Domain;
 
+use App\Status\Domain\Status;
+
 /** Port to the task storage (ADR-0006); the Doctrine adapter lives in Infrastructure/Persistence. */
 interface TaskRepository
 {
@@ -14,4 +16,12 @@ interface TaskRepository
 
     /** @throws TaskNotFound */
     public function get(TaskId $id): Task;
+
+    /**
+     * Tasks in creation order (UUID v7 ids grow with time, ADR-0007 D4), only those with the given status
+     * when one is given.
+     *
+     * @return list<Task>
+     */
+    public function list(?Status $status): array;
 }

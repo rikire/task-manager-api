@@ -16,6 +16,8 @@ framework:
             status_code: 409
         App\Task\Domain\TaskNotFound:
             status_code: 404
+        App\Task\Domain\UnknownStatus:
+            status_code: 422
 
 when@test:
     framework:

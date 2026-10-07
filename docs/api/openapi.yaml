@@ -87,6 +87,38 @@ paths:
               schema:
                 $ref: '#/components/schemas/Problem'
   /api/tasks:
+    get:
+      tags:
+        - Tasks
+      operationId: get_task_list
+      parameters:
+        -
+          name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            pattern: '^[a-z][a-z0-9_]*$'
+            nullable: true
+            default: null
+            maxLength: 50
+      responses:
+        '200':
+          description: 'Tasks in creation order, optionally of one status'
+          content:
+            application/json:
+              schema:
+                required:
+                  - items
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/Task' } }
+                type: object
+        '422':
+          description: 'The status filter is malformed or names no status'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
     post:
       tags:
         - Tasks
@@ -231,6 +263,15 @@ components:
           nullable: true
           default: null
           maxLength: 5000
+      type: object
+    ListTasksQuery:
+      properties:
+        status:
+          type: string
+          pattern: '^[a-z][a-z0-9_]*$'
+          nullable: true
+          default: null
+          maxLength: 50
       type: object
     StatusView:
       required:
