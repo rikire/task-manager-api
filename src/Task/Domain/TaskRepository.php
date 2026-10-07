@@ -16,6 +16,9 @@ interface TaskRepository
 
     public function remove(Task $task): void;
 
+    /** @throws UnknownStatus when the new status was deleted before the change is saved (ADR-0007 D2) */
+    public function saveStatusChange(Task $task): void;
+
     /** @throws TaskNotFound */
     public function get(TaskId $id): Task;
 

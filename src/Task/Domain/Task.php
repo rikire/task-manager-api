@@ -30,6 +30,21 @@ class Task
         $this->updatedAt = $now;
     }
 
+    /**
+     * Moves the task to another status (REQ-TASK-status-change; any status may follow any other, owner).
+     * The same status changes nothing, `updatedAt` included; the return value says whether to save.
+     */
+    public function changeStatus(Status $status, \DateTimeImmutable $now): bool
+    {
+        if ($this->status->id()->value === $status->id()->value) {
+            return false;
+        }
+        $this->status = $status;
+        $this->updatedAt = $now;
+
+        return true;
+    }
+
     public function id(): TaskId
     {
         return new TaskId($this->id);

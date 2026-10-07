@@ -10,8 +10,8 @@ namespace App\Task\Domain;
  */
 final class UnknownStatus extends \DomainException
 {
-    public static function withName(string $name): self
+    public static function withName(string $name, ?\Throwable $previous = null): self
     {
-        return new self(\sprintf('Unknown status "%s".', $name));
+        return new self(\sprintf('Unknown status "%s".', $name), previous: $previous);
     }
 }

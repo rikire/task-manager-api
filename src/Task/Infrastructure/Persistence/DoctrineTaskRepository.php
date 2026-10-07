@@ -9,6 +9,8 @@ use App\Task\Domain\Task;
 use App\Task\Domain\TaskId;
 use App\Task\Domain\TaskNotFound;
 use App\Task\Domain\TaskRepository;
+use App\Task\Domain\UnknownStatus;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -28,6 +30,17 @@ final readonly class DoctrineTaskRepository implements TaskRepository
     {
         $this->entityManager->persist($task);
         $this->entityManager->flush();
+    }
+
+    public function saveStatusChange(Task $task): void
+    {
+        try {
+            $this->entityManager->flush();
+        } catch (ForeignKeyConstraintViolationException $exception) {
+            // The new status was deleted after the handler found it: to the client that is a status that does
+            // not exist (ADR-0007 D2). Only here — creating a task keeps its 500 for a missing `new` (design D2).
+            throw UnknownStatus::withName($task->status()->name()->value, $exception);
+        }
     }
 
     public function remove(Task $task): void
