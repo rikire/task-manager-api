@@ -13,7 +13,8 @@ Sources: `docs/pre-init/04-definition-of-done.md`, `05-tdd.md`, `10-debt-polish-
 
 - Branch `change/<change-name>` exists and is checked out (the active change).
 - Proposal and specs are accepted by the human; `Assumptions` and `Open questions` are resolved.
-- Read `.agent-state/notes.md`, the change `tasks.md` and `git status`.
+- Read `docs/roadmap.md`, the change `tasks.md`, `.agent-state/notes.md` and `git status`; the plan is the
+  roadmap and `tasks.md`, never the notes (FAIL-005).
 
 ## Per task group
 

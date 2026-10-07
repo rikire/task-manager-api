@@ -64,7 +64,11 @@
       "Edit(./psalm.xml)",
       "Edit(./deptrac.yaml)",
       "Edit(./infection.json5)",
-      "Edit(./.php-cs-fixer.dist.php)"
+      "Edit(./.php-cs-fixer.dist.php)",
+      "Edit(./phpstan-complexity.neon)",
+      "Edit(./.markdownlint-cli2.jsonc)",
+      "Edit(./tools/**)",
+      "Edit(./scripts/*.py)"
     ],
     "deny": [
       "Bash(* --no-verify*)",

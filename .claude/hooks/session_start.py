@@ -25,9 +25,7 @@ def checks() -> list[str]:
             problems.append(f"hook {name} missing or not executable")
     if not os.access(root / "scripts" / "phase", os.X_OK):
         problems.append("scripts/phase missing or not executable")
-    for tool in ("bwrap", "socat"):
-        if shutil.which(tool) is None:
-            problems.append(f"{tool} not found: the sandbox cannot run (apt install bubblewrap socat)")
+    # bwrap/socat are not checked while the sandbox is off (DEBT-001-sandbox-disabled).
     if shutil.which("openspec") is None:
         problems.append("openspec not on PATH: activate mise shims in ~/.bashrc "
                         "(eval \"$(mise activate bash --shims)\")")
@@ -45,8 +43,9 @@ def main() -> None:
     lines = []
     if problems:
         lines.append("HARNESS WARNING: " + "; ".join(problems) + ". Tell the human before working.")
-    lines.append(f"TDD phase: {read_phase()}. Read .agent-state/notes.md, tasks.md of the active change "
-                 "and git status before continuing (AGENTS.md, Session state).")
+    lines.append(f"TDD phase: {read_phase()}. Read docs/roadmap.md, tasks.md of the active change, "
+                 ".agent-state/notes.md and git status before continuing; the plan is the roadmap and "
+                 "tasks.md, never the notes (AGENTS.md, Session state; FAIL-005).")
     print(json.dumps({"hookSpecificOutput": {"hookEventName": "SessionStart",
                                              "additionalContext": "\n".join(lines)}}))
 
