@@ -1,0 +1,5 @@
+#!/bin/sh
+# Commit message format (decision records 09, 25). Installed by `make setup`.
+set -e
+mise exec -- commitlint --edit "$1"
+python3 scripts/git_checks.py commit-msg "$1"
