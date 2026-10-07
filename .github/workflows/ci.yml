@@ -75,10 +75,6 @@ jobs:
           git reset -q --hard
       - name: Full checks (make check)
         run: make check
-      # Report only until IMP-001-readability-threshold sets the threshold (QAS-MAINT-readability).
-      - name: Cognitive complexity (report only)
-        continue-on-error: true # findings and tool failures show as a failed step, the job stays green
-        run: make complexity
       - name: Taint analysis (Psalm)
         run: make taint
       # Report only: escaped mutants show as annotations; no --min-msi until IMP-008 sets a threshold.

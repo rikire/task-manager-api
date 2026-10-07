@@ -56,6 +56,13 @@ taint, скрипты формы изменений и ADR, правила PHPSt
   `zingstudios/composer-delay`, `innobrain/soak-time`, Heimdall; каждый — новая зависимость
   ([35](pre-init/35-init-checklist.md), проверки при настройке);
 - песочница Claude Code — выключена, вернуть через узкий профиль AppArmor (`DEBT-001-sandbox-disabled`).
+- проверки на типичные огрехи кода от ИИ: цикломатическая сложность, NPath, запахи кода (длинные методы и
+  классы, много параметров, дублирование) — идея владельца, 2026-10-07. Уже есть: PHPStan max и
+  strict-rules, мёртвый код, проглоченные ошибки, Infection, когнитивная сложность с порогом (метод 5,
+  класс 20, `QAS-MAINT-readability`). Кандидаты:
+  PHPMD (сложность, NPath, «codesize», «design»), правила PHPStan из `tomasvotruba/type-coverage` и
+  `ergebnis/phpstan-rules`, PHPCPD-аналог для дублирования; каждый — новая зависимость, карточка
+  кандидата и решение владельца.
 
 ## Вехи
 
