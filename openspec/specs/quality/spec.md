@@ -109,21 +109,21 @@ tests, with no baseline of suppressed errors; an inline suppression is allowed o
 
 ### Requirement: QAS-MAINT-readability — bounded cognitive complexity
 
-Every method of the application code SHALL stay at or below a cognitive complexity threshold. The
-threshold is set by measuring the code of the first product change and is held by
-`IMP-001-readability-threshold` until then; before it is set, CI prints the per-method complexity score
-without failing. Artifact: application code. Environment: CI on every push. Source:
-`docs/task/assignment.txt:137`, decision record 32.
+Every method of the application code SHALL have a cognitive complexity of at most 5, and every class of at
+most 20. The thresholds were set by the owner on 2026-10-07 from the code of the first product change
+(method maximum 3, class maximum 6; `IMP-001-readability-threshold`). Artifact: application code (`src/`).
+Environment: `make check` — pre-commit and CI on every push. Source: `docs/task/assignment.txt:137`,
+decision record 32.
 
 #### Scenario: QAS-MAINT-readability.within-threshold
 
-- **WHEN** the complexity check runs in CI after the threshold is set
-- **THEN** no method exceeds the threshold
+- **WHEN** the complexity check runs
+- **THEN** no method is above 5 and no class is above 20, and the check passes
 
 #### Scenario: QAS-MAINT-readability.over-threshold
 
-- **WHEN** a change adds a method above the threshold, after the threshold is set
-- **THEN** the complexity check fails CI and names the method
+- **WHEN** a change adds a method above 5 or a class above 20
+- **THEN** the complexity check fails `make check` and names the method or class
 
 ### Requirement: QAS-MAINT-readme-matches-code — README architecture items match their sources
 
