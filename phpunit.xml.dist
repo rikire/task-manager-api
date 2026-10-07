@@ -18,6 +18,8 @@
         <ini name="error_reporting" value="-1" />
         <!-- Environment comes from here and from the container, never from .env files (decision record 15). -->
         <server name="APP_ENV" value="test" force="true" />
+        <!-- The dev container exports APP_ENV=dev, and KernelTestCase reads $_ENV before $_SERVER. -->
+        <env name="APP_ENV" value="test" force="true" />
         <server name="APP_DEBUG" value="1" />
         <server name="KERNEL_CLASS" value="App\Kernel" />
         <server name="APP_SECRET" value="not-a-secret-test-only" />

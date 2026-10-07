@@ -1,6 +1,12 @@
 # ADR-0005: Input validation and error responses — Symfony Validator on DTOs, framework problem details
 
 - **Status:** active, 2026-10-06
+- **Amended:** 2026-10-07 — with debug off the framework writes only the HTTP status text into `detail`
+  (`"Conflict"`), so a client could not tell why a domain rule refused the request; a normalizer for
+  project exceptions now puts their message into `detail`. Request-body rules added: shape errors are
+  reported before value errors, an empty body is validated as `{}`, a JSON body that is not an object gets
+  the framework's code. Owner's decisions; found by the `spec-auditor` subagent in the source of Symfony
+  8.1.8 (change `status-catalog`).
 - **Kind:** architecture
 - **Decided by:** project owner (status codes and error format are part of the API contract)
 - **Drafted by:** agent
@@ -71,6 +77,30 @@ routes default to the JSON format (`_format: json` in the defaults of the `/api`
 `#[MapQueryString]` sets `validationFailedStatusCode: 422`. No custom listener. Whether 404 and 405 for
 unmatched routes also render JSON is not verified; the tests below check it.
 
+Request bodies (amended 2026-10-07):
+
+- Every `#[MapRequestPayload]` sets `mapWhenEmpty: true` (an empty body is validated as `{}`, so missing
+  fields get violations) and the serialization context `allow_extra_attributes: false` with
+  `collect_extra_attributes_errors: true` (an unknown field becomes a violation; without the second option
+  the serializer throws and the request ends in 500).
+- Shape errors (unknown field, wrong type) are reported alone: the framework runs the validator only when
+  the body could be mapped, so value rules (`NotBlank`, `Regex`) show up on the next request. Accepted
+  rather than replacing the framework's resolver.
+- A JSON body that is not an object (`"x"`, `42`, `null`) gets the framework's code if it is 400 or 422;
+  a test fixes which one. A 500 would be a defect.
+
+Error `detail` (amended 2026-10-07): a decorator of the framework's `ProblemNormalizer` puts the exception
+message into `detail` when the exception class is in the `App\` namespace and the status is below 500 —
+the domain exceptions mapped in `framework.exceptions`. Everything else keeps the framework's text, and a
+500 never shows the message. The class lives in `src/Shared/Infrastructure/Http/` (ADR-0006, layer
+`Shared`). Messages follow `RUL-CODE-exception-messages`, for example `Status "done" already exists.`
+
+JSON for unmatched requests (amended 2026-10-07): the `_format: json` route default applies only once a
+route matches, so an unknown `/api/…` path (404) or a wrong method (405) rendered an HTML page for a client
+without an `Accept` header (shown by a test). A request listener in `src/Shared/Infrastructure/Http/` sets
+the request format to JSON for every `/api/…` path except the Swagger UI (`/api/doc`, ADR-0003) before
+routing.
+
 Status codes (decided by the owner, 2026-10-06):
 
 | Situation | Code |
@@ -94,7 +124,9 @@ a media type no driver requires; the owner chose the framework default.
 
 ## Consequences
 
-- Plus: no custom error code; validation rules sit on the request DTOs as attributes.
+- Plus: validation rules sit on the request DTOs as attributes.
+- Minus (amended 2026-10-07): one own class, the `detail` normalizer, and its test; a client sees shape
+  errors and value errors in two rounds.
 - Request DTOs live in the HTTP adapter (`src/<Module>/Infrastructure/Http/<UseCase>/`, ADR-0006): they check the
   shape of the input; domain rules (for example a status name that must be unique) are checked in
   `Domain`/`Application`; their exceptions are mapped to codes with `framework.exceptions` in configuration
@@ -110,6 +142,9 @@ a media type no driver requires; the owner chose the framework default.
   422, unknown ID → 404, wrong method → 405, unexpected error → 500 without internals), each response
   validated against the contract (ADR-0003). The 500 test boots the kernel with debug off and uses a
   throwing route registered only in the `test` environment (no test code in production routes).
+- Amended 2026-10-07: with debug off, a mapped domain exception answers with its message in `detail`, and
+  the 500 test shows the status text only; an empty body gives violations on the required fields; an
+  unknown field gives a violation, not 500; a non-object JSON body gives 400 or 422.
 
 ## Retires
 

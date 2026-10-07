@@ -41,6 +41,9 @@ final class DependencyRulesTest extends TestCase
         yield 'Application on a vendor library' => ['App\Task\Application\CreateTask\UsesSymfonyUidHandler', 'Symfony\Component\Uid\Uuid'];
         yield 'Status on Task' => ['App\Status\Domain\KnowsTasks', 'App\Task\Domain\TaskNotFound'];
         yield 'Task Http on Status domain' => ['App\Task\Infrastructure\Http\UsesStatusDomainController', 'App\Status\Domain\StatusRepository'];
+        yield 'Shared on a module' => ['App\Shared\Infrastructure\Http\KnowsStatuses', 'App\Status\Domain\StatusRepository'];
+        yield 'Shared on the database' => ['App\Shared\Infrastructure\Http\QueriesDatabase', 'Doctrine\DBAL\Connection'];
+        yield 'module on Shared' => ['App\Status\Infrastructure\Http\UsesSharedClass', 'App\Shared\Infrastructure\Http\NormalizesProblems'];
     }
 
     /** @return iterable<string, array{string, string}> */
@@ -52,6 +55,7 @@ final class DependencyRulesTest extends TestCase
         yield 'Task persistence on Doctrine' => ['App\Task\Infrastructure\Persistence\DoctrineTaskRepository', 'Doctrine\ORM\EntityManagerInterface'];
         yield 'Task persistence on a vendor library' => ['App\Task\Infrastructure\Persistence\DoctrineTaskRepository', 'Symfony\Component\Uid\Uuid'];
         yield 'Status persistence on Doctrine DBAL' => ['App\Status\Infrastructure\Persistence\DoctrineStatusRepository', 'Doctrine\DBAL\Connection'];
+        yield 'Shared on a vendor library' => ['App\Shared\Infrastructure\Http\NormalizesProblems', 'Symfony\Component\Serializer\Normalizer\NormalizerInterface'];
     }
 
     #[DataProvider('entryPointsReachingTheDatabase')]
@@ -84,7 +88,7 @@ final class DependencyRulesTest extends TestCase
 
     public function testReportsNothingBeyondTheForbiddenDependencies(): void
     {
-        self::assertCount(11, self::violationsIn(self::FIXTURES));
+        self::assertCount(14, self::violationsIn(self::FIXTURES));
     }
 
     #[Group('QAS-MAINT-layering.clean')]

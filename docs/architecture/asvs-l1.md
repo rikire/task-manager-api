@@ -18,7 +18,7 @@
 | V1.2.3 | JSON собирается кодированием, не склейкой строк | да | `RUL-SEC-boundaries` | ревью; тесты контракта (ADR-0003) — запланировано: изменение `status-catalog` |
 | V1.2.4 | параметризованные запросы против SQL-инъекций | да | `RUL-SEC-boundaries`; Doctrine ORM (ADR-0004) | ревью; Psalm taint-анализ — шаг CI, блокирует (`make taint`, изменение `finish-init`) |
 | V1.5.1, V3.5.1, V3.5.2 | XML не разбирается; запись — только с `Content-Type: application/json` | частично | код 415 ([ADR-0005](../adr/ADR-0005-validation.md)) | тест группы `ADR-0005-validation` — запланировано: изменение `status-catalog` |
-| V2.1.1 | правила валидации документированы | да | контракт OpenAPI из ограничений DTO ([ADR-0003](../adr/ADR-0003-api-contract.md)) | CI `contract-drift` — запланировано: с первым эндпоинтом (`status-catalog`) |
+| V2.1.1 | правила валидации документированы | да | контракт OpenAPI из ограничений DTO ([ADR-0003](../adr/ADR-0003-api-contract.md)) | `make openapi-check` в `make check` (pre-commit и CI) |
 | V2.2.1, V2.2.2 | позитивная валидация на сервере | да | Symfony Validator на DTO ([ADR-0005](../adr/ADR-0005-validation.md)) | сценарии нежелательного поведения в каждом `REQ-…` — запланировано: каждое продуктовое изменение |
 | V2.3.1 | шаги бизнес-процесса в правильном порядке | частично | ограничены ли переходы статусов задачи — решается в требованиях изменения `task-status-change` | тест сценария, если переходы ограничены |
 | V3.2.1 | браузер не исполняет ответ API в неверном контексте | частично | верный `Content-Type` и заголовок `X-Content-Type-Options: nosniff` на всех ответах (Caddy, [ADR-0002](../adr/ADR-0002-php-runtime.md)) | CI `clean-clone` проверяет заголовок |

@@ -1,6 +1,9 @@
 # ADR-0003: API contract — code-first OpenAPI 3.0 with NelmioApiDocBundle, committed and validated
 
 - **Status:** active, 2026-10-06
+- **Amended:** 2026-10-07 — the drift check is `make openapi-check` inside `make check`, so it runs in
+  pre-commit and in CI (job `clean-clone`), instead of a separate CI job `contract-drift`: it fails
+  before a stale contract is committed (owner's decision, change `status-catalog`).
 - **Kind:** architecture
 - **Decided by:** project owner
 - **Drafted by:** agent
@@ -65,7 +68,8 @@ duplication, and the committed dump restores reviewability.
 
 Use **code-first OpenAPI 3.0 with NelmioApiDocBundle** (option 1):
 
-- the generated spec is committed at `docs/api/openapi.yaml`; CI regenerates it and fails on any diff;
+- the generated spec is committed at `docs/api/openapi.yaml`; `make openapi-check` (part of `make check`:
+  pre-commit and CI) regenerates it and fails on any diff;
 - functional tests validate every response against it, and every request except in tests that send
   invalid input on purpose (ADR-0005), with `league/openapi-psr7-validator` through
   `osteel/openapi-httpfoundation-testing`;
@@ -89,8 +93,8 @@ text).
 
 ## Confirmation
 
-- CI job `contract-drift`: dump the spec with Nelmio's dump console command (`nelmio:apidoc:dump`, name
-  confirmed in the skeleton) and compare with `docs/api/openapi.yaml`.
+- `make openapi-check` (in `make check`, so pre-commit and CI): dump the spec with Nelmio's dump console
+  command (`nelmio:apidoc:dump`, name confirmed in the skeleton) and compare with `docs/api/openapi.yaml`.
 - Every functional test runs its response (and its request, unless the input is invalid on purpose)
   through the validator (a shared base test case);
   a test in group `ADR-0003-api-contract` proves the wiring: a response that breaks the contract fails.

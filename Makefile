@@ -59,6 +59,13 @@ audit: dev-running ## Known vulnerabilities in dependencies
 spec: ## OpenSpec structure
 	$(MISE) openspec validate --all
 
+openapi: dev-running ## Regenerate the committed contract docs/api/openapi.yaml from code (ADR-0003)
+	$(PHP) bin/console nelmio:apidoc:dump --format=yaml > docs/api/openapi.yaml
+
+openapi-check: dev-running ## Contract drift: docs/api/openapi.yaml differs from a fresh dump (ADR-0003)
+	$(PHP) bin/console nelmio:apidoc:dump --format=yaml | diff -u docs/api/openapi.yaml - \
+		|| { echo "docs/api/openapi.yaml is stale: run 'make openapi' and review the contract change"; exit 1; }
+
 roadmap-check: ## Roadmap statuses match the OpenSpec changes; change order (decision record 24, FAIL-005)
 	python3 scripts/roadmap.py --check
 
@@ -89,7 +96,7 @@ hooks-test: ## Tests of the Claude Code hooks and of the git-hook scripts
 	python3 -m unittest discover -s .claude/hooks/tests -q
 	python3 -m unittest discover -s scripts/tests -q
 
-check: cs stan deptrac test audit spec roadmap-check forms-check md hooks-test ## Everything the pre-commit hook runs (decision record 04)
+check: cs stan deptrac test audit openapi-check spec roadmap-check forms-check md hooks-test ## Everything the pre-commit hook runs (decision record 04)
 
 fix-file: dev-running ## Format one file (FILE=path); called after each edit by the Claude Code hook
 	$(PHP) vendor/bin/php-cs-fixer fix --quiet $(FILE)
