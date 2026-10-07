@@ -1,0 +1,14 @@
+# Cognitive complexity per method and class — report only until IMP-001-readability-threshold fires
+# (QAS-MAINT-readability). Run by `make complexity` and a CI step that does not fail the build.
+includes:
+    - vendor/tomasvotruba/cognitive-complexity/config/extension.neon
+
+parameters:
+    # Only the complexity rules run here: level 0 keeps the type checks of phpstan.neon out of this report.
+    level: 0
+    paths:
+        - src
+    cognitive_complexity:
+        # Package defaults; the project threshold is set by IMP-001 after the first product change.
+        class: 40
+        function: 9

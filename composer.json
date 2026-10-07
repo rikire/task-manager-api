@@ -27,7 +27,8 @@
         "allow-plugins": {
             "php-http/discovery": true,
             "symfony/flex": true,
-            "symfony/runtime": true
+            "symfony/runtime": true,
+            "infection/extension-installer": false
         },
         "bump-after-update": true,
         "platform": {
@@ -42,7 +43,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "App\\Tests\\": "tests/"
+            "App\\Tests\\": "tests/",
+            "App\\Tools\\": "tools/"
         }
     },
     "replace": {
@@ -86,6 +88,7 @@
         "dama/doctrine-test-bundle": "^8.6",
         "deptrac/deptrac": "^4.7",
         "friendsofphp/php-cs-fixer": "^3.95",
+        "infection/infection": "^0.35.6",
         "league/openapi-psr7-validator": "^0.24.0",
         "osteel/openapi-httpfoundation-testing": "^0.15.0",
         "phpstan/phpstan": "^2.3",
@@ -93,8 +96,13 @@
         "phpstan/phpstan-strict-rules": "^2.1",
         "phpstan/phpstan-symfony": "^2.1",
         "phpunit/phpunit": "^13.4",
+        "psalm/plugin-symfony": "~5.3.0",
+        "shipmonk/dead-code-detector": "^1.4",
         "symfony/browser-kit": "8.1.*",
         "symfony/css-selector": "8.1.*",
+        "thecodingmachine/phpstan-strict-rules": "^2.0",
+        "tomasvotruba/cognitive-complexity": "^1.3",
+        "vimeo/psalm": "^6.19",
         "zenstruck/foundry": "^2.13"
     }
 }

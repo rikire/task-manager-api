@@ -65,9 +65,9 @@ proposal, Confirmed): such groups name their check instead.
 
 ## 6. Dependency items (decision record 34 §3: 4, 1, 2)
 
-- [ ] 6.1 Candidate cards for PHPStan rule extensions, Infection, Psalm; verify the owner's decision on
+- [x] 6.1 Candidate cards for PHPStan rule extensions, Infection, Psalm; verify the owner's decision on
       each in `design.md`
-- [ ] 6.2 PHPStan rules (dead code, cognitive complexity, swallowed errors) as a CI step with
+- [x] 6.2 PHPStan rules (dead code, cognitive complexity, swallowed errors) as a CI step with
       `continue-on-error`; verify the step runs in CI
 - [ ] 6.3 Infection on changed lines in CI; verify the CI step is green (cut line: if not green when the
       rest is done, move back to the roadmap)
