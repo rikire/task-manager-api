@@ -8,9 +8,16 @@ framework:
     #esi: true
     #fragments: true
 
+    # Domain exceptions → HTTP codes; the domain stays free of Symfony (ADR-0005, ADR-0006).
+    exceptions:
+        App\Status\Domain\StatusNotFound:
+            status_code: 404
+
 when@test:
     framework:
         test: true
+        # Lets a test count the SQL queries of one request (list endpoints must not grow with rows).
+        profiler: { collect: false }
         # Stands for a mapped domain exception, to test the error `detail` (ADR-0005).
         exceptions:
             App\Tests\Fixtures\DomainRuleBroken:

@@ -39,7 +39,11 @@ Scope: local. ADR: ADR-0006 (query handlers return read models), ADR-0007 (D4, D
 `REQ-STATUS-read`, `RUL-SEC-response-models`.
 
 - Handlers return `StatusView` (`id`, `name`, `title` as strings); the controller wraps a list in
-  `{"items": …}`.
+  `{"items": …}`. `StatusView` implements `\JsonSerializable` and lists the response fields itself: the
+  serializer's default `ObjectNormalizer` needs `symfony/property-access`, which is only a dev dependency
+  here (through `zenstruck/foundry`) and missing from the prod image, and fields read only by reflection
+  are reported as dead by the dead-code rule. `GetStatusHandler` takes a `GetStatus` query (ADR-0006); the
+  list handler has no input, so it takes no query object.
 - Routes live under the `/api` prefix with the default `_format: json` (ADR-0005); `{id}` carries
   `requirements: Requirement::UUID`.
 - `GetStatusHandler` throws `StatusNotFound`, mapped to 404 in `framework.exceptions`.
@@ -110,7 +114,9 @@ schema, `detail` normalizer and its Deptrac layer, unknown-path 404 and 500 test
 The wiring test ("a response that breaks the contract fails") needs a real operation, so it moves to
 group 2 with `GET /api/statuses`. Codes that need a body (400, 415, 422, 405) come with the create
 endpoint in group 3. `REQ-STATUS-read.list` needs a non-seed status before the create endpoint exists:
-group 2 inserts it through the repository port.
+group 2 inserts it with SQL (DBAL), so the functional tests do not depend on the domain API they test
+through. The domain value objects got their unit tests after the code (a process slip, see `review.md`
+group 2); Infection on `src/Status/Domain` shows them strong (MSI 100%).
 
 ## Risks / Trade-offs
 

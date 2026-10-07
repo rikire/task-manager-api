@@ -123,3 +123,39 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
   section for it with "Simplifications", "Debt" and "Maturity"; the rule itself in the `change-workflow`
   skill. Implemented in change `finish-init`, task 5.5.
 - **Commit:** cf85f4e, ba26ea0.
+
+## FAIL-008-out-of-scope-polish-offered-into-change
+
+- **What happened:** on 2026-10-07, in the group-2 review brief of change `status-catalog`, the agent found
+  that JSON responses escape Cyrillic and asked the owner "делать?" — offering to fix it now, in the
+  Polish group, although no task of the change covers it. AGENTS.md "Planning" sends a new idea mid-work
+  to the roadmap or an `IMP` entry, not into the current change. Found by the owner ("опять нарушаешь
+  процесс").
+- **Known weakness:** scope creep — the agent widens the active change with its own ideas and turns a
+  register entry into a question the owner has to answer.
+- **Probable cause:** the review-brief template in the `change-workflow` skill (item 8) asks to propose
+  each improvement "as 'now (Polish)' or 'registry with a trigger'", which invites "now" for anything,
+  including work outside `tasks.md`.
+- **Remedy (level: instruction, proposed; awaits the owner's decision):** item 8 of the template reads
+  "now (Polish)" only for an improvement inside an existing task of `tasks.md`; anything else is written to
+  `docs/registers/debt.md` as `IMP-…` before the brief is shown, and the brief only links it. No check can
+  tell "inside a task" from "outside", so the level is instruction. Recorded now: `IMP-009-json-unescaped-unicode`.
+- **Commit:** —
+
+## FAIL-009-code-before-test
+
+- **What happened:** on 2026-10-07, in phase `impl` of group 2 of change `status-catalog`, the agent
+  wrote the domain value objects `StatusName`, `StatusTitle` and `StatusId` with their validation rules,
+  although no test of phase `tests` required them (the functional tests of the group only read seeded
+  statuses). PHPStan's dead-code rule exposed it; the owner approved a second phase `tests`, the unit
+  tests passed on the first run, and Infection (MSI 94% → 100% after one fix) stood in for the red run.
+- **Known weakness:** writing more than the failing tests ask for in phase `impl` ("minimal code to
+  green", `docs/pre-init/05-tdd.md`).
+- **Probable cause:** design D3 and task 2.2 named the value objects with their rules, so the agent
+  implemented the design instead of the tests; the phase hook guards test files only, not the amount of
+  production code.
+- **Remedy (level: CI, proposed; awaits the owner's decision):** make Infection's covered MSI a gate on
+  the changed lines (`IMP-008-mutation-score-threshold` fires: this change has product code): code that no
+  test needs produces escaped or uncovered mutants and fails the pull request. Plus, at instruction level,
+  tasks name only behaviour the group's tests cover; rules for a later group stay in that group.
+- **Commit:** —

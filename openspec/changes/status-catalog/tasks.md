@@ -17,17 +17,17 @@
 
 ## 2. Initial statuses, list and read (REQ-STATUS-initial, REQ-STATUS-read)
 
-- [ ] 2.1 Phase `tests`: functional tests for `REQ-STATUS-initial.fresh-database` and `REQ-STATUS-read.*` (the
+- [x] 2.1 Phase `tests`: functional tests for `REQ-STATUS-initial.fresh-database` and `REQ-STATUS-read.*` (the
   non-seed status inserted through the repository, design D8), migrations in `tests/bootstrap.php`; ADR-0007 tests:
   list order, unknown query parameter ignored, `abc` and an uppercase existing id → 404 with JSON and no `Accept`
   header; `/api/doc` stays HTML; wiring test of group `ADR-0003-api-contract` (a response that breaks the `GET
   /api/statuses` schema fails with a schema error); migration test for the unique index on `status.name`; verify they
   fail for the right reason
-- [ ] 2.2 Phase `impl`: `Status` domain (entity, `StatusId`, `StatusName`, `StatusTitle`, ports `StatusRepository`,
+- [x] 2.2 Phase `impl`: `Status` domain (entity, `StatusId`, `StatusName`, `StatusTitle`, ports `StatusRepository`,
   exception `StatusNotFound`), slices `ListStatuses` and `GetStatus` with `StatusView`, routes with
   `Requirement::UUID`, `StatusNotFound` → 404, Doctrine adapter and XML mapping, migration with the seed, error
   responses annotated (design D2, D5); verify the 2.1 tests pass and `make deptrac` reports 0 violations
-- [ ] 2.3 Phase `refactor`; regenerate `docs/api/openapi.yaml`; curl examples for `GET /api/statuses` and `GET
+- [x] 2.3 Phase `refactor`; regenerate `docs/api/openapi.yaml`; curl examples for `GET /api/statuses` and `GET
   /api/statuses/{id}`; review brief; verify `make check` is green and the examples work against `make up`
 
 ## 3. Create a status (REQ-STATUS-create, ADR-0005 codes with a body)

@@ -16,6 +16,9 @@
     <php>
         <ini name="display_errors" value="1" />
         <ini name="error_reporting" value="-1" />
+        <!-- One process runs every kernel the functional tests boot and the PHPStan container of the rule
+             tests; the CLI default of 128M runs out when a rule test comes late in the random order. -->
+        <ini name="memory_limit" value="512M" />
         <!-- Environment comes from here and from the container, never from .env files (decision record 15). -->
         <server name="APP_ENV" value="test" force="true" />
         <!-- The dev container exports APP_ENV=dev, and KernelTestCase reads $_ENV before $_SERVER. -->
