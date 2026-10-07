@@ -24,11 +24,17 @@ Rules for application code. Each rule: why, scope, source.
 - **RUL-CODE-verify-api.** Check framework and library APIs against the installed version (code in
   `vendor/`, docs), not memory. Source: `docs/pre-init/03-agent-instructions.md`.
 - **RUL-ARCH-thin-controllers.** Controllers map HTTP to application calls: no SQL, no business logic.
-  Layer rules are enforced by Deptrac once configured. Source: `docs/task/assignment.txt:137`
-  (to become `QAS-MAINT-layering`), `docs/pre-init/11-architecture-design.md`.
+  "No database access" is enforced by Deptrac (`deptrac.yaml`, `make deptrac`); "no business logic" is
+  checked in review. Source: `QAS-MAINT-layering`, `ADR-0006-module-structure`.
 - **RUL-SEC-boundaries.** Validate input at the boundary; parameterized queries only; check access to
   other users' resources; error responses do not leak internals; no secrets or personal data in logs.
-  Source: `docs/pre-init/14-code-security.md`.
+  JSON only through the serializer (never string concatenation); URLs only through the router; no secrets
+  in URLs or query strings; no CORS — if it is ever needed, an explicit allow-list of origins, never a
+  reflected `Origin` or `*`. Source: `docs/pre-init/14-code-security.md`, `docs/architecture/asvs-l1.md`
+  (V1.2.1–V1.2.4, V3.4.2, V14.2.1).
+- **RUL-SEC-response-models.** Never serialize an entity into a response: a response is built from a read
+  model or response DTO that lists exactly the fields the contract promises. Why: entities grow fields
+  that must not leak. Source: `docs/architecture/asvs-l1.md` (V15.3.1), `ADR-0006-module-structure`.
 - **Comments.** Explain why, not what; `REQ-…` at behaviour entry points and in business logic, `ADR-…`
   where a decision is implemented; `TODO`/`FIXME`/`HACK` only with a `DEBT-`/`IMP-` ID. Source:
   `docs/pre-init/30-code-comments.md`.
