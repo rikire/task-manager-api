@@ -121,13 +121,18 @@ Source: `docs/pre-init/10-debt-polish-headroom.md`, `docs/pre-init/26-code-quali
 
 ## Session state
 
-- At session start read `.agent-state/notes.md`, `tasks.md` of the active change and `git status`.
-- At the end of a work chunk overwrite `.agent-state/notes.md`: what was tried, current hypothesis,
-  dead ends.
+- At session start read `docs/roadmap.md`, `tasks.md` of the active change, `.agent-state/notes.md` and
+  `git status`. The plan is the roadmap and `tasks.md`; the notes never hold the plan.
+- Roadmap statuses are generated: run `scripts/roadmap.py` after ticking tasks or archiving;
+  `make roadmap-check` (part of `make check`) fails on a stale status, a change without a row, or a change
+  started while an earlier mandatory row is not archived.
+- At the end of a work chunk overwrite `.agent-state/notes.md`: where work stopped, what was tried,
+  current hypothesis, dead ends.
 - A decision made in chat goes into its artifact in the same turn (spec, `design.md`, ADR, this file).
 - After archiving a change, suggest `/clear`.
 
-Source: `docs/pre-init/17-session-state.md`.
+Source: `docs/pre-init/17-session-state.md`, `docs/pre-init/24-planning-tracking.md`; roadmap at session
+start and the order check — owner, 2026-10-07 (change `finish-init`, FAIL-005).
 
 ## Planning
 
