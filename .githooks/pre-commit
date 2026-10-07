@@ -1,0 +1,3 @@
+#!/bin/sh
+# Early feedback before a commit (decision record 04); CI is the real gate. Installed by `make setup`.
+exec make --no-print-directory pre-commit
