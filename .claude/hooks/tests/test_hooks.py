@@ -57,6 +57,17 @@ class ProtectTests(HookCase):
         self.set_phase("tests")
         self.assertEqual(self.run_hook("protect_tests.py", self.edit("tests/Unit/X.php")).returncode, 0)
 
+    def test_script_and_hook_tests_are_locked_like_tests(self):
+        # Python tests of scripts and hooks follow the same TDD phases (change finish-init, task 2.3).
+        for path in ("scripts/tests/test_roadmap.py", ".claude/hooks/tests/test_hooks.py"):
+            for phase, code in (("impl", 2), ("refactor", 2), ("tests", 0)):
+                with self.subTest(path=path, phase=phase):
+                    self.set_phase(phase)
+                    self.assertEqual(self.run_hook("protect_tests.py", self.edit(str(self.root / path))).returncode,
+                                     code)
+                    self.assertEqual(self.run_hook("protect_tests.py",
+                                                   self.bash(f"echo x > {path}")).returncode, code)
+
     def test_edit_of_source_file_is_allowed_in_impl(self):
         self.set_phase("impl")
         self.assertEqual(self.run_hook("protect_tests.py", self.edit("src/Task.php")).returncode, 0)

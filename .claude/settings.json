@@ -79,7 +79,7 @@
     ]
   },
   "sandbox": {
-    "enabled": true,
+    "enabled": false,
     "failIfUnavailable": true,
     "excludedCommands": [
       "make",
