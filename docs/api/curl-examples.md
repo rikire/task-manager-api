@@ -173,6 +173,26 @@ curl -s -i "$API/api/tasks?status=archived"
 Ожидаемо: `200`, `{"items": [...]}` по порядку создания; `200`, только задачи со статусом `new`; `422`,
 `detail` — `Unknown status "archived".`
 
+### Сменить статус — `PATCH /api/tasks/{id}/status`
+
+Сценарии: `REQ-TASK-status-change.changed`, `.same-status`, `.invalid`, `.unknown-status`, `.not-found`.
+
+```bash
+curl -s -i -X PATCH "$API/api/tasks/$TASK/status" -H 'Content-Type: application/json' -d '{"status": "done"}'
+curl -s -i -X PATCH "$API/api/tasks/$TASK/status" -H 'Content-Type: application/json' -d '{"status": "done"}'
+curl -s -i -X PATCH "$API/api/tasks/$TASK/status" -H 'Content-Type: application/json' -d '{"status": "Done"}'
+curl -s -i -X PATCH "$API/api/tasks/$TASK/status" -H 'Content-Type: application/json' -d '{"status": "done", "color": "red"}'
+curl -s -i -X PATCH "$API/api/tasks/$TASK/status" -H 'Content-Type: application/json' -d '{"status": "archived"}'
+curl -s -i -X PATCH "$API/api/tasks/019b76da-a800-7000-8000-0000000000ff/status" \
+  -H 'Content-Type: application/json' -d '{"status": "done"}'
+curl -s -i -X PATCH "$API/api/tasks/abc/status" -H 'Content-Type: application/json' -d '{"status": "done"}'
+```
+
+Ожидаемо: `200`, `status: "done"` и новый `updated_at`; повторно — `200`, задача не меняется (тот же
+`updated_at`); `422` с ошибкой на `status`; `422` с ошибкой только на `color`; `422`, `detail` —
+`Unknown status "archived".`; `404` и `404`. Переходы
+свободные: `{"status": "new"}` вернёт задачу обратно.
+
 ### Удалить задачу — `DELETE /api/tasks/{id}`
 
 Сценарии: `REQ-TASK-delete.deleted`, `REQ-TASK-delete.not-found`.
