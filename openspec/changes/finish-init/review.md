@@ -192,3 +192,50 @@ agent had claimed every ADR conformed to the form rules after checking only sect
    most frequent friction.
 2. Check the upstream `security-review.md` for changes before each submission — proposed: Polish
    (task 7.3), one diff.
+
+## Group 6 — PHPStan rules, Infection, Psalm taint (tasks 6.1–6.4), 2026-10-07
+
+**Ready to commit:** yes. `make check` green (PHPUnit 20 tests including the new rule test, PHPStan
+with the new rules over `src`, `tests`, `tools`); `make taint` 0 errors; `make mutation` exits 0 with no
+changed sources. Tasks 6.3 and 6.4 are ticked once their CI steps are green on the pull request (cut
+line of the proposal).
+
+**What changed:** `shipmonk/dead-code-detector`, two rules of `thecodingmachine/phpstan-strict-rules`
+and the project rule `CatchReturnsDefaultRule` (tests first, accepted by the owner) in `make stan`;
+cognitive complexity as a report-only config, target and CI step; Infection with pcov in the dev image
+(report-only CI step on pull requests); Psalm 6.19 with the Symfony plugin 5.3, taint analysis only, a
+failing CI step. Each tool was proven on a temporary probe file, deleted afterwards: dead method, empty
+`catch`, missing rethrow, `TaintedShell`.
+
+**Key decisions:** owner, 2026-10-07: 1a, 2a, 3a (candidate cards in `design.md`). Agent decisions,
+reported: the Infection installer plugin is disallowed (`allow-plugins: false`, no Infection extensions
+used); git and `safe.directory` added to the dev image for `--git-diff-lines`; the project rule lives
+in `tools/` (namespace `App\Tools\`), outside the Deptrac layers.
+
+**Simplifications:** complexity and mutation score report without failing (`IMP-001`, `IMP-008`); the
+project rule judges only literal return values, not computed fallbacks.
+
+**Debt / improvements:** `IMP-008-mutation-score-threshold`. `IMP-007` fired once more (the word
+`docker` in a command matched the protected `docker/` path).
+
+**Not done:** whether Psalm sees input arriving through `#[MapRequestPayload]` DTOs is not verified —
+the first product endpoint is the place to check it (a probe with a DTO). PHPUnit 13.4 with Infection is
+verified only for the empty diff; a real mutation run waits for product code.
+
+**Maturity:**
+
+| Axis | Level | Why |
+|---|---|---|
+| Functionality | working minimum | every tool runs and was shown to report a planted problem |
+| Reliability | working minimum | taint fails CI; complexity and mutation only report until thresholds exist |
+| Performance | working minimum | PHPStan run slightly longer; Psalm ~8 s and Infection run in CI only |
+| Security | working minimum | taint analysis on request input; DTO input coverage not verified |
+| Maintainability | working minimum | one project rule with its own test; tools pinned in `composer.lock` |
+| Observability | working minimum | Infection annotates pull requests; others print per-file findings |
+| Consumer experience | not applicable | — |
+
+**Top improvements** (the owner chooses now or register):
+
+1. Verify Psalm taint through `#[MapRequestPayload]` with the first endpoint — proposed: a task in
+   `status-catalog`.
+2. Set the mutation threshold — `IMP-008`, trigger after the first product change.

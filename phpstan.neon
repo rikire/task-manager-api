@@ -5,12 +5,24 @@ includes:
     - vendor/phpstan/phpstan-doctrine/extension.neon
     - vendor/phpstan/phpstan-doctrine/rules.neon
     - vendor/phpstan/phpstan-strict-rules/rules.neon
+    # Unused methods, properties, constants; needs src and tests together (change finish-init, group 6).
+    - vendor/shipmonk/dead-code-detector/rules.neon
+
+# Swallowed errors (RUL-CODE-fail-fast): only these two rules of the package, not its whole rule set.
+rules:
+    - TheCodingMachine\PHPStan\Rules\Exceptions\EmptyExceptionRule
+    - TheCodingMachine\PHPStan\Rules\Exceptions\MustRethrowRule
+    # Project rule: a catch block returning a literal default (tests/Tools/PHPStan).
+    - App\Tools\PHPStan\CatchReturnsDefaultRule
 
 parameters:
     level: max
     paths:
         - src
         - tests
+        - tools
     excludePaths:
         # Input data for the Deptrac rule tests (deliberately broken dependencies), not application code.
         - tests/Architecture/Fixtures
+        # Input data for the project PHPStan rule tests (deliberately swallowed errors).
+        - tests/Tools/PHPStan/Fixtures

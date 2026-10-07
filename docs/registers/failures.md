@@ -103,7 +103,7 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
 - **Remedy (level: check in the build file, accepted by the owner on 2026-10-07):** `make md-fix` is the
   only auto-fix entry point and excludes `AGENTS.md`, `CLAUDE.md` and `.claude/**`; `make md` still lints
   them, so protected files are fixed through Edit. `BYPASSES.md` names the glob-tool bypass.
-- **Commit:** — (group 5 of change `finish-init`, filled in after merge)
+- **Commit:** cf85f4e, ba26ea0.
 
 ## FAIL-006-review-findings-only-in-chat
 

@@ -149,3 +149,14 @@ support for PHP 8.4 / Symfony 8.1, what it adds, what else it needs, the owner's
 
 Not found: `llms.txt` at symfony.com and doctrine-project.org (404); official Doctrine guidance for
 agents.
+
+### Group 6 — dependency items (search by the `researcher` subagent, versions checked on Packagist 2026-10-07)
+
+| Candidate | Source, version | Adds | Needs, risks | Decision (owner, 2026-10-07) |
+|---|---|---|---|---|
+| `shipmonk/dead-code-detector` | Packagist 1.4.2 (2026-09-18), MIT; phpstan ^2.1.41 | unused methods, properties, constants; aware of Symfony, Doctrine, PHPUnit | one include; false positives on code reached only by reflection | adopt, in `make stan` (1a) |
+| `tomasvotruba/cognitive-complexity` | 1.3.0 (2026-09-29), MIT; phpstan ^2.0 | complexity per method and class | report only until `IMP-001` fires: own config, CI step with `continue-on-error` | adopt, report only (1a) |
+| `thecodingmachine/phpstan-strict-rules`, two rules | 2.0.0 (2026-06-27), MIT; phpstan ^2.0 | empty `catch`; broad `catch` without rethrow | weakly maintained; misses `catch` returning a default | adopt `EmptyExceptionRule`, `MustRethrowRule` only (1a) |
+| own PHPStan rule | — | `catch` that returns a literal or `null` (`RUL-CODE-fail-fast`) | one class and its test | adopt (1a) |
+| `infection/infection` | 0.35.6 (2026-10-02), BSD-3; php ^8.3 | mutation score of changed lines on PRs | pcov in the dev image only (`QAS-DEPLOY-prod-image`); PHPUnit 13.4 and pcov on FrankenPHP ZTS not verified | adopt, CI only, report only until a threshold is measured (`IMP-008`) (2a) |
+| `vimeo/psalm` + `psalm/plugin-symfony` | 6.19.1 (2026-09-29) + 5.3.0 (plugin 5.4.0 needs Psalm 7), MIT | taint flows from input to SQL, HTML, shell | `psalm.xml`; many dev dependencies (resolution not verified); `#[MapRequestPayload]` sources not verified | adopt via Composer, CI only `--taint-analysis`; phar if resolution fails (3a) |

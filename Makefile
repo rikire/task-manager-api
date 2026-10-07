@@ -9,7 +9,7 @@ MISE   := mise exec --
 PHASE  ?= off
 FILE   ?=
 
-.PHONY: help setup up dev down dev-running test stan cs cs-fix deptrac audit spec roadmap-check forms-check md md-fix hooks-test check \
+.PHONY: help setup up dev down dev-running test stan cs cs-fix deptrac audit spec roadmap-check forms-check md md-fix complexity taint mutation hooks-test check \
         fix-file lint-file stop-check pre-commit
 
 help: ## List targets
@@ -63,6 +63,16 @@ roadmap-check: ## Roadmap statuses match the OpenSpec changes; change order (dec
 
 forms-check: ## Form of OpenSpec changes, review briefs and ADRs (decision records 07, 12; FAIL-006)
 	python3 scripts/forms.py --check
+
+complexity: dev-running ## Cognitive complexity report; does not fail until IMP-001 sets the threshold
+	-$(PHP) vendor/bin/phpstan analyse -c phpstan-complexity.neon --no-progress --memory-limit=512M
+
+taint: dev-running ## Psalm taint analysis: request input reaching SQL, HTML or shell (decision record 14)
+	$(PHP) vendor/bin/psalm --taint-analysis --no-progress
+
+BASE ?= origin/main
+mutation: dev-running ## Infection on lines changed against BASE; report only until a threshold is set (IMP-008)
+	$(PHP) vendor/bin/infection --threads=max --no-progress --git-diff-lines --git-diff-base=$(BASE) $(INFECTION_ARGS)
 
 LYCHEE_EXCLUDES := --exclude-path vendor --exclude-path node_modules --exclude-path var
 

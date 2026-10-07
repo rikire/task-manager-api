@@ -23,6 +23,13 @@ RUN composer dump-autoload --no-dev --classmap-authoritative --no-interaction
 
 FROM base AS dev
 ENV APP_ENV=dev
+# Coverage driver for Infection (mutation testing in CI); dev only, the prod image stays without it
+# (QAS-DEPLOY-prod-image; change finish-init, group 6).
+RUN install-php-extensions pcov
+# Infection's --git-diff-lines needs git; the source is mounted from the host (another owner), hence
+# safe.directory. Dev only: the prod image has neither git nor .git (docs/architecture/asvs-l1.md).
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/* \
+    && git config --system --add safe.directory /app
 COPY composer.json composer.lock symfony.lock ./
 RUN composer install --no-scripts --no-autoloader --prefer-dist --no-progress --no-interaction
 COPY . .

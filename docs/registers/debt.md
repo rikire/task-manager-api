@@ -93,6 +93,17 @@ Format and rules: `docs/pre-init/10-debt-polish-headroom.md` §2.
   waiting.
 - **Size:** the Stop-hook script (reuse its state directory), 2 hook tests.
 
+## IMP-008-mutation-score-threshold
+
+- **What could be better:** Infection runs on the changed lines of every pull request but only reports
+  escaped mutants (GitHub annotations); without `--min-covered-msi` a weak test suite still passes CI.
+- **Why not now:** there is no product code yet (`src/` holds only `Kernel.php`), so no mutation score to
+  measure; checklist 35 sets thresholds after the first measurements (owner, 2026-10-07; change
+  `finish-init`, group 6).
+- **Trigger:** the first product change is merged and its pull request shows a mutation score.
+- **Size:** 1 flag in the `mutation` target (`--min-covered-msi=<measured>`), the CI step comment, this
+  entry closed.
+
 ## IMP-007-protect-ask-paths-false-positives
 
 - **What could be better:** the PreToolUse hook against shell writes to `ask`-protected files
