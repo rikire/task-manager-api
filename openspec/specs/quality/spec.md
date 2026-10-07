@@ -1,6 +1,7 @@
 # quality Specification
 
 ## Purpose
+
 Quality attribute scenarios of the task manager API: measurable deployability and maintainability
 targets that drive architecture decisions and are checked by tests or CI.
 
@@ -15,19 +16,23 @@ Check: the CI clean-clone job, or a manual run from a fresh clone before submiss
 exists; the 200 response applies once the endpoint exists. Source: `docs/task/assignment.txt:108,135`.
 
 #### Scenario: QAS-DEPLOY-clean-clone-start.fresh-clone
+
 - **WHEN** the reviewer clones the repository and runs the start commands from README (at most 2)
 - **THEN** `GET /api/statuses` answers 200 without any other action
 
 #### Scenario: QAS-DEPLOY-clean-clone-start.database-not-ready
+
 - **WHEN** the database is not yet accepting connections when the stack starts
 - **THEN** the application does not start serving until the database is ready, and the start does not
   fail because of the order in which containers came up
 
 #### Scenario: QAS-DEPLOY-clean-clone-start.no-migrations-yet
+
 - **WHEN** the stack starts on a fresh clone before any migration exists
 - **THEN** the migration step succeeds with nothing to apply and the application starts
 
 #### Scenario: QAS-DEPLOY-clean-clone-start.migration-fails
+
 - **WHEN** a database migration fails during start-up
 - **THEN** start-up stops with a non-zero exit (which process reports it — the start command or the
   application container — is decided in the runtime ADR), the error is in the logs, the failed migration
@@ -38,19 +43,23 @@ exists; the 200 response applies once the endpoint exists. Source: `docs/task/as
 The production build of the application image SHALL contain no development dependencies and run with
 debugging off, and SHALL take every environment-specific setting (database connection, secrets) from
 environment variables, so the same image runs in any environment without a rebuild; the application
-environment and debug flag are fixed by the production build, not configuration. Artifact: the application image, production build. Environment: the reviewer's start and CI.
+environment and debug flag are fixed by the production build, not configuration. Artifact: the
+application image, production build. Environment: the reviewer's start and CI.
 Source: owner decision 2026-10-07 (deployment as an architecture driver; deploying itself is out of
 scope, `docs/task/assignment.txt:141`; extras are justified in README, line 124).
 
 #### Scenario: QAS-DEPLOY-prod-image.env-only
+
 - **WHEN** the production image starts with the required environment variables set
 - **THEN** the API answers HTTP requests, debugging is off and no development dependency is installed
 
 #### Scenario: QAS-DEPLOY-prod-image.no-internals
+
 - **WHEN** a request in the production image causes an unexpected error
 - **THEN** the response is 500 without a stack trace or other internals
 
 #### Scenario: QAS-DEPLOY-prod-image.missing-variable
+
 - **WHEN** a required environment variable is not set
 - **THEN** start-up fails with a non-zero exit and names the missing variable; no default is used
 
@@ -62,14 +71,17 @@ outside controllers is a rule checked in review, not part of this measure. Artif
 Environment: CI on every push. Source: `docs/task/assignment.txt:137`.
 
 #### Scenario: QAS-MAINT-layering.clean
+
 - **WHEN** the dependency-rule check runs in CI
 - **THEN** it reports 0 violations
 
 #### Scenario: QAS-MAINT-layering.controller-queries-database
+
 - **WHEN** a change makes an HTTP entry point depend on the persistence layer or the database connection
 - **THEN** the dependency-rule check reports a violation and CI fails
 
 #### Scenario: QAS-MAINT-layering.cycle
+
 - **WHEN** a change creates a dependency cycle between layers
 - **THEN** the dependency-rule check reports a violation and CI fails
 
@@ -81,14 +93,17 @@ tests, with no baseline of suppressed errors; an inline suppression is allowed o
 `docs/task/assignment.txt:137`.
 
 #### Scenario: QAS-MAINT-typing.clean
+
 - **WHEN** the static type analyser runs in CI at its strictest level
 - **THEN** it reports 0 errors and uses no baseline file
 
 #### Scenario: QAS-MAINT-typing.type-error
+
 - **WHEN** a change introduces a missing or mismatched type
 - **THEN** the analyser reports an error and CI fails
 
 #### Scenario: QAS-MAINT-typing.suppression-without-id
+
 - **WHEN** a change adds an inline suppression without a `DEBT-` or `IMP-` ID, or adds a baseline
 - **THEN** CI fails
 
@@ -101,10 +116,12 @@ without failing. Artifact: application code. Environment: CI on every push. Sour
 `docs/task/assignment.txt:137`, decision record 32.
 
 #### Scenario: QAS-MAINT-readability.within-threshold
+
 - **WHEN** the complexity check runs in CI after the threshold is set
 - **THEN** no method exceeds the threshold
 
 #### Scenario: QAS-MAINT-readability.over-threshold
+
 - **WHEN** a change adds a method above the threshold, after the threshold is set
 - **THEN** the complexity check fails CI and names the method
 
@@ -117,14 +134,17 @@ the pre-submission review. Artifact: README and ADRs. Environment: CI on every p
 pre-submission review. Source: `docs/task/assignment.txt:138`.
 
 #### Scenario: QAS-MAINT-readme-matches-code.linked
+
 - **WHEN** README is checked
 - **THEN** each architecture item links an existing `active` ADR, `REQ-` requirement or `DEBT-`/`IMP-`
   entry
 
 #### Scenario: QAS-MAINT-readme-matches-code.stale-link
+
 - **WHEN** a README architecture item links a missing or `deprecated` ADR, or has no link
 - **THEN** the check fails and names the item
 
 #### Scenario: QAS-MAINT-readme-matches-code.confirmation-fails
+
 - **WHEN** the machine-checkable Confirmation of an active ADR fails (its test or dependency rule)
 - **THEN** CI fails, so README cannot describe a decision the code no longer follows

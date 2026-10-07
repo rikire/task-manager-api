@@ -6,13 +6,15 @@
 - **Drafted by:** agent
 
 > Reading notes: "decision record NN" is `docs/pre-init/NN-*.md`. `CON-…` IDs are defined in
-> `docs/constraints.md`, `QAS-…` in the `quality` spec (`openspec/specs/quality/spec.md`), `RUL-…` in `.claude/rules/code.md`. "The skeleton" is
+> `docs/constraints.md`, `QAS-…` in the `quality` spec (`openspec/specs/quality/spec.md`), `RUL-…` in
+> `.claude/rules/code.md`. "The skeleton" is
 > step 8 of `docs/pre-init/35-init-checklist.md`: the empty Symfony application running in Docker.
 
 ## Context and drivers
 
 - `QAS-DEPLOY-clean-clone-start` — a fresh clone starts with at most 2 commands (`git clone …`,
-  `docker compose up -d`) and no manual steps on any machine with Docker (amd64 or arm64); the database may not be ready yet; no migrations may exist yet; a failed migration
+  `docker compose up -d`) and no manual steps on any machine with Docker (amd64 or arm64); the database
+  may not be ready yet; no migrations may exist yet; a failed migration
   stops start-up with a non-zero exit, is not re-run, and the API is not served on an unmigrated schema.
 - `QAS-DEPLOY-prod-image` — one production image without development dependencies and with debugging off,
   configured only by environment variables; a missing required variable fails start-up.
@@ -29,14 +31,14 @@ Facts (checked 2026-10-06):
 
 | Fact | Source |
 |---|---|
-| FrankenPHP 1.13.0 (2026-10-04), stable; image `dunglas/frankenphp:1.13-php8.5` | https://github.com/php/frankenphp/releases |
-| Symfony's Docker page points to `dunglas/symfony-docker` (FrankenPHP, worker mode, automatic HTTPS) | https://symfony.com/doc/current/setup/docker.html |
-| Symfony's web server page covers FrankenPHP/Caddy, Nginx + PHP-FPM and Apache 2.4 with `mod_proxy_fcgi` (PHP-FPM); Apache with `mod_php` is not covered; `symfony/apache-pack` (`.htaccess`) is "for quick tests", production moves the rules into the vhost | https://symfony.com/doc/current/setup/web_server_configuration.html |
-| FrankenPHP 1.13.0 fixes 5 CVEs (2 high) | https://github.com/php/frankenphp/releases |
-| "Since Symfony 7.4, FrankenPHP worker mode is natively supported"; worker mode keeps state between requests; Doctrine connections can go stale after DB idle timeouts | https://frankenphp.dev/docs/symfony/, https://frankenphp.dev/docs/worker/, https://github.com/doctrine/dbal/pull/6351 |
+| FrankenPHP 1.13.0 (2026-10-04), stable; image `dunglas/frankenphp:1.13-php8.5` | <https://github.com/php/frankenphp/releases> |
+| Symfony's Docker page points to `dunglas/symfony-docker` (FrankenPHP, worker mode, automatic HTTPS) | <https://symfony.com/doc/current/setup/docker.html> |
+| Symfony's web server page covers FrankenPHP/Caddy, Nginx + PHP-FPM and Apache 2.4 with `mod_proxy_fcgi` (PHP-FPM); Apache with `mod_php` is not covered; `symfony/apache-pack` (`.htaccess`) is "for quick tests", production moves the rules into the vhost | <https://symfony.com/doc/current/setup/web_server_configuration.html> |
+| FrankenPHP 1.13.0 fixes 5 CVEs (2 high) | <https://github.com/php/frankenphp/releases> |
+| "Since Symfony 7.4, FrankenPHP worker mode is natively supported"; worker mode keeps state between requests; Doctrine connections can go stale after DB idle timeouts | <https://frankenphp.dev/docs/symfony/>, <https://frankenphp.dev/docs/worker/>, <https://github.com/doctrine/dbal/pull/6351> |
 | `dunglas/frankenphp:1.13-php8.4` (2026-10-04) and `1.12-php8.4` (2026-09-25), `php:8.5-fpm`, `php:8.5-apache`, `postgres:18-alpine` are published for amd64 and arm64 | Docker Hub API, `/v2/repositories/<repo>/tags/<tag>` |
-| `service_completed_successfully`: "a dependency is expected to run to successful completion before starting a dependent service"; what `up` returns when it does not is not documented there; default restart policy is `no` | https://docs.docker.com/reference/compose-file/services/ |
-| Recommended readiness: `healthcheck` with `pg_isready` + `depends_on: condition: service_healthy` | https://docs.docker.com/compose/how-tos/startup-order/ |
+| `service_completed_successfully`: "a dependency is expected to run to successful completion before starting a dependent service"; what `up` returns when it does not is not documented there; default restart policy is `no` | <https://docs.docker.com/reference/compose-file/services/> |
+| Recommended readiness: `healthcheck` with `pg_isready` + `depends_on: condition: service_healthy` | <https://docs.docker.com/compose/how-tos/startup-order/> |
 | `doctrine:migrations:migrate --no-interaction --allow-no-migration` exits 0 with no migrations or nothing pending; without `--allow-no-migration` and no migrations it exits 1 | doctrine/migrations 3.9 `MigrateCommand` source |
 
 ## Considered options
@@ -88,7 +90,8 @@ development server only.
 ## Decision and rationale
 
 - **FrankenPHP in classic mode** (option 3), image `dunglas/frankenphp:1.13-php8.4` pinned by digest
-  (PHP from ADR-0001), plain HTTP — the image's default Caddyfile with `SERVER_NAME=:80`, no own Caddyfile (Caddy is the web
+  (PHP from ADR-0001), plain HTTP — the image's default Caddyfile with `SERVER_NAME=:80`, no own
+  Caddyfile (Caddy is the web
   server built into FrankenPHP); no `worker` directive. 1.13 was released two days
   before this decision: decision record 15's 7-day cooldown on new releases is set aside for it because 1.13 fixes CVEs
   that 1.12 has (owner, 2026-10-06).

@@ -6,7 +6,8 @@
 - **Drafted by:** agent
 
 > Reading notes: "decision record NN" is `docs/pre-init/NN-*.md`. `CON-…` IDs are defined in
-> `docs/constraints.md`, `QAS-…` in the `quality` spec (`openspec/specs/quality/spec.md`), `RUL-…` in `.claude/rules/code.md`. "The skeleton" is
+> `docs/constraints.md`, `QAS-…` in the `quality` spec (`openspec/specs/quality/spec.md`), `RUL-…` in
+> `.claude/rules/code.md`. "The skeleton" is
 > step 8 of `docs/pre-init/35-init-checklist.md`: the empty Symfony application running in Docker.
 
 ## Context and drivers
@@ -26,7 +27,7 @@ Facts (checked 2026-10-06):
 |---|---|
 | NelmioApiDocBundle 5.13.1 supports Symfony `^6.4 \|\| ^7.2 \|\| ^8.0`; generates OpenAPI from routes, attributes and DTO types (`MapRequestPayload` included: class `SymfonyMapRequestPayloadDescriber` in the 5.x source); serves it at `/api/doc` | Packagist `p2/nelmio/api-doc-bundle.json` |
 | Nelmio emits OpenAPI 3.0.0 unless a version is set (swagger-php default) | swagger-php `src/Annotations/OpenApi.php`, Nelmio `src/ApiDocGenerator.php` |
-| `league/openapi-psr7-validator` 0.24 (2026-05) validates OpenAPI 3.0.x only (3.1 issue open since 2022) | https://github.com/thephpleague/openapi-psr7-validator |
+| `league/openapi-psr7-validator` 0.24 (2026-05) validates OpenAPI 3.0.x only (3.1 issue open since 2022) | <https://github.com/thephpleague/openapi-psr7-validator> |
 | `osteel/openapi-httpfoundation-testing` 0.15 wraps it for HttpFoundation in tests (Symfony 8 allowed) | Packagist |
 | No maintained bundle validates requests against OpenAPI at runtime on Symfony 8 (`cydrickn/…` Symfony ^5.1, `gpht/…` Symfony ^6–^7) | Packagist |
 | API Platform 5.0.2 supports Symfony `^7.4 \|\| ^8.0` | Packagist |

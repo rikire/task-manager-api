@@ -11,10 +11,12 @@ Rules and their sources:
 - agent instructions are committed separately from everything else (21);
 - soft limit: warn when product code in the commit exceeds 400 lines (18);
 - skill frontmatter: `name` equal to the folder, non-empty `description` (20);
+- agent commits (`CLAUDECODE=1`) carry `Assisted-by: Claude Code` (21);
 - `Refs:` holds requirement or quality-scenario IDs (`REQ-`, `QAS-`); required on `change/*` branches
   when code outside tests and docs changes (09).
 Exit codes: 0 — pass (warnings go to stderr), 1 — violation.
 """
+import os
 import re
 import subprocess
 import sys
@@ -125,6 +127,13 @@ def check_refs(message: str, branch: str, files: list[str]) -> list[str]:
     return problems
 
 
+def check_attribution(message: str) -> list[str]:
+    # Decision record 21 §3: agent commits carry the trailer; agent commands run with CLAUDECODE=1.
+    if os.environ.get("CLAUDECODE") == "1" and not re.search(r"^Assisted-by: Claude Code$", message, re.M):
+        return ["Assisted-by: an agent commit needs the trailer `Assisted-by: Claude Code` (decision record 21)"]
+    return []
+
+
 def diff_warning(changes: Changes, files: list[str]) -> str:
     size = sum(len(changes.added_lines(f)) for f in files if f.startswith(PRODUCT_PREFIXES))
     if size > DIFF_LIMIT:
@@ -151,7 +160,8 @@ def pre_commit() -> int:
 
 def commit_msg(message_file: str) -> int:
     branch = git("rev-parse", "--abbrev-ref", "HEAD").strip()
-    return report(check_refs(Path(message_file).read_text(), branch, Changes().files()))
+    message = Path(message_file).read_text()
+    return report(check_refs(message, branch, Changes().files()) + check_attribution(message))
 
 
 def ci(base: str, branch: str) -> int:

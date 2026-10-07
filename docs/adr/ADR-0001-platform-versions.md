@@ -6,7 +6,8 @@
 - **Drafted by:** agent
 
 > Reading notes: "decision record NN" is `docs/pre-init/NN-*.md`. `CON-…` IDs are defined in
-> `docs/constraints.md`, `QAS-…` in the `quality` spec (`openspec/specs/quality/spec.md`), `RUL-…` in `.claude/rules/code.md`. "The skeleton" is
+> `docs/constraints.md`, `QAS-…` in the `quality` spec (`openspec/specs/quality/spec.md`), `RUL-…` in
+> `.claude/rules/code.md`. "The skeleton" is
 > step 8 of `docs/pre-init/35-init-checklist.md`: the empty Symfony application running in Docker.
 
 ## Context and drivers
@@ -25,20 +26,25 @@ Facts (checked 2026-10-06):
 
 | Item | Fact | Source |
 |---|---|---|
-| Symfony 8.1 | stable 8.1.8, PHP ≥ 8.4; supported until 2027-01 | https://symfony.com/releases.json, https://symfony.com/releases |
+| Symfony 8.1 | stable 8.1.8, PHP ≥ 8.4; supported until 2027-01 | <https://symfony.com/releases.json>, <https://symfony.com/releases> |
 | Symfony 7.4 | LTS 7.4.20, PHP ≥ 8.2 | same |
-| Documentation | `symfony.com/doc/current` is 8.1; `/doc/7.4/` is maintained | https://symfony.com/doc/current/index.html |
-| 7.4 → 8.1 | 8.0 removed 7.4's deprecated APIs; 8.1 adds `#[Serialize]`, `mapWhenEmpty` and other features the assignment does not require | https://raw.githubusercontent.com/symfony/symfony/8.0/UPGRADE-8.0.md, https://symfony.com/blog/symfony-8-1-curated-new-features |
-| PHP 8.5 / 8.4 | 8.5.11 and 8.4.26; both supported; 8.4 released 2024-11, 8.5 released 2025-11 | https://www.php.net/supported-versions.php |
-| PostgreSQL | 18.6 latest; 14–18 supported | https://www.postgresql.org/support/versioning/ |
+| Documentation | `symfony.com/doc/current` is 8.1; `/doc/7.4/` is maintained | <https://symfony.com/doc/current/index.html> |
+| 7.4 → 8.1 | 8.0 removed 7.4's deprecated APIs; 8.1 adds `#[Serialize]`, `mapWhenEmpty` and other features the assignment does not require | <https://raw.githubusercontent.com/symfony/symfony/8.0/UPGRADE-8.0.md>, <https://symfony.com/blog/symfony-8-1-curated-new-features> |
+| PHP 8.5 / 8.4 | 8.5.11 and 8.4.26; both supported; 8.4 released 2024-11, 8.5 released 2025-11 | <https://www.php.net/supported-versions.php> |
+| PostgreSQL | 18.6 latest; 14–18 supported | <https://www.postgresql.org/support/versioning/> |
 | Tools (decision record 32), DoctrineBundle 3.3, Nelmio 5.13, DAMA, Foundry | Composer constraints allow Symfony `^8.0` and PHP 8.5; Psalm and PHP-CS-Fixer state 8.5 support; that the others **run** on 8.5 is not verified | Packagist `p2/<vendor>/<pkg>.json` |
 | DoctrineBundle 3.x, DoctrineMigrationsBundle 4.x | require PHP ≥ 8.4 | Packagist |
 
 ## Considered options
 
-- **Symfony:** 7.4 LTS / 8.1.
-- **PHP:** 8.4 / 8.5.
-- **PostgreSQL:** 17 / 18.
+Versions are chosen per component; each table under Trade-offs compares one pair.
+
+1. **Symfony 7.4 LTS.**
+2. **Symfony 8.1.**
+3. **PHP 8.4.**
+4. **PHP 8.5.**
+5. **PostgreSQL 17.**
+6. **PostgreSQL 18.**
 
 ## Trade-offs
 
@@ -75,7 +81,8 @@ owner will work from the documentation, and the default documentation is 8.1; re
 removes a class of mistakes. All tools accept both Symfony versions, so `QAS-MAINT-typing` does not
 decide there. For PHP the evidence is the same for both (Composer constraints; Psalm and PHP-CS-Fixer
 state support), so the choice is a risk call: 8.4 has been out a year longer, which makes an untested
-tool incompatibility less likely (interpretation, not verified); 8.5's language features have no driver. Symfony 8.1 requires PHP ≥ 8.4, so 8.4 is the lowest
+tool incompatibility less likely (interpretation, not verified); 8.5's language features have no driver.
+Symfony 8.1 requires PHP ≥ 8.4, so 8.4 is the lowest
 version that fits. PostgreSQL 18 is the current release and no driver separates it from 17. All three
 are cheap to change (reversible decision).
 

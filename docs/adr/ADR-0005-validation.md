@@ -6,7 +6,8 @@
 - **Drafted by:** agent
 
 > Reading notes: "decision record NN" is `docs/pre-init/NN-*.md`. `CON-…` IDs are defined in
-> `docs/constraints.md`, `QAS-…` in the `quality` spec (`openspec/specs/quality/spec.md`), `RUL-…` in `.claude/rules/code.md`. "The skeleton" is
+> `docs/constraints.md`, `QAS-…` in the `quality` spec (`openspec/specs/quality/spec.md`), `RUL-…` in
+> `.claude/rules/code.md`. "The skeleton" is
 > step 8 of `docs/pre-init/35-init-checklist.md`: the empty Symfony application running in Docker.
 
 ## Context and drivers
@@ -25,15 +26,15 @@ and 8.1 by the `researcher` subagent; the 422/404 defaults checked on the page b
 
 | Case | Symfony 8.1 default | Source |
 |---|---|---|
-| `#[MapRequestPayload]` / `#[MapQueryString]` | available since 6.3; deserialize into a DTO and validate it | https://symfony.com/blog/new-in-symfony-6-3-mapping-request-data-to-typed-objects |
+| `#[MapRequestPayload]` / `#[MapQueryString]` | available since 6.3; deserialize into a DTO and validate it | <https://symfony.com/blog/new-in-symfony-6-3-mapping-request-data-to-typed-objects> |
 | Malformed JSON | 400 | resolver source |
 | Unsupported Content-Type | 415 | resolver source |
-| Validation failure, body | 422 (`validationFailedStatusCode`, configurable) | https://symfony.com/doc/current/controller.html |
+| Validation failure, body | 422 (`validationFailedStatusCode`, configurable) | <https://symfony.com/doc/current/controller.html> |
 | Validation failure, query string | 404 by default (configurable) | same page |
 | Type mismatch (string where int expected) | turned into violations, same code as validation (422) | resolver source |
-| Error body | `ProblemNormalizer`: `type`, `title`, `status`, `detail`, plus `violations` for validation errors | https://symfony.com/doc/current/controller/error_pages.html |
+| Error body | `ProblemNormalizer`: `type`, `title`, `status`, `detail`, plus `violations` for validation errors | <https://symfony.com/doc/current/controller/error_pages.html> |
 | Error media type | `application/json`, not `application/problem+json`; HTML when the request does not prefer JSON (HTML fallback: reading of `Request`, not verified) | `SerializerErrorRenderer` 8.1 source |
-| `framework.exceptions` maps an exception class to `status_code` (and log level) in configuration; `#[WithHttpStatus]` does the same as an attribute on the exception class | https://symfony.com/doc/current/reference/configuration/framework.html |
+| Exception class → status code | `framework.exceptions` maps it (and the log level) in configuration; `#[WithHttpStatus]` does the same as an attribute on the exception class | <https://symfony.com/doc/current/reference/configuration/framework.html> |
 | `respect/validation` 3.1.2 | active; PHP ≥ 8.5; a second validator next to the one the resolver already uses | Packagist |
 
 ## Considered options
@@ -42,7 +43,7 @@ and 8.1 by the `researcher` subagent; the 422/404 defaults checked on the page b
    framework (`ProblemNormalizer`: RFC 9457-shaped body, `application/json`), API routes default to the
    JSON format.
 1b. **As 1, plus an exception listener** that sets `application/problem+json` (the RFC 9457 media type,
-   which the RFC does not require — https://www.rfc-editor.org/rfc/rfc9457.html).
+   which the RFC does not require — <https://www.rfc-editor.org/rfc/rfc9457.html>).
 2. **Manual validation** in controllers or application services (decode JSON, check fields, build errors).
 3. **`respect/validation`** in application services.
 4. **Validation against the OpenAPI spec at runtime** — rejected before comparison: no maintained Symfony

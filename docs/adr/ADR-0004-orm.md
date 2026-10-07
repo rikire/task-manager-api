@@ -6,7 +6,8 @@
 - **Drafted by:** agent
 
 > Reading notes: "decision record NN" is `docs/pre-init/NN-*.md`. `CON-…` IDs are defined in
-> `docs/constraints.md`, `QAS-…` in the `quality` spec (`openspec/specs/quality/spec.md`), `RUL-…` in `.claude/rules/code.md`. "The skeleton" is
+> `docs/constraints.md`, `QAS-…` in the `quality` spec (`openspec/specs/quality/spec.md`), `RUL-…` in
+> `.claude/rules/code.md`. "The skeleton" is
 > step 8 of `docs/pre-init/35-init-checklist.md`: the empty Symfony application running in Docker.
 
 ## Context and drivers
@@ -23,9 +24,9 @@ Facts (checked 2026-10-06):
 
 | Fact | Source |
 |---|---|
-| Symfony docs: Doctrine ORM is "the recommended way to work with relational databases" (`symfony/orm-pack`); DBAL is a separate article for low-level access | https://symfony.com/doc/current/doctrine.html |
+| Symfony docs: Doctrine ORM is "the recommended way to work with relational databases" (`symfony/orm-pack`); DBAL is a separate article for low-level access | <https://symfony.com/doc/current/doctrine.html> |
 | doctrine/orm 3.7.4 (PHP ^8.1, Symfony up to ^8.0); doctrine/doctrine-bundle 3.3.2 (PHP ^8.4, Symfony ^6.4–^8.0, DBAL ^4); doctrine/doctrine-migrations-bundle 4.0.1 (PHP ^8.4, Symfony ^6.4–^8.0) | Packagist `p2/doctrine/*.json` |
-| doctrine/migrations works on top of DBAL or ORM | https://www.doctrine-project.org/projects/doctrine-migrations/en/stable/reference/introduction.html |
+| doctrine/migrations works on top of DBAL or ORM | <https://www.doctrine-project.org/projects/doctrine-migrations/en/stable/reference/introduction.html> |
 | cycle/orm 2.18.1 is active, but its Symfony bundles (`slince/cycle-bundle` 0.0.3, `slince_2/cycle-bundle` 0.0.1) allow at most Symfony ^7.0 | Packagist |
 | DAMA DoctrineTestBundle (runs each test in a rolled-back transaction) and Zenstruck Foundry (test data factories), chosen in decision record 32, require Doctrine | Packagist |
 
@@ -57,7 +58,8 @@ which the query-count tests of decision record 32 catch.
 
 Use **Doctrine ORM 3** with **DoctrineBundle 3** and **DoctrineMigrationsBundle 4**:
 
-- domain classes (`src/<Module>/Domain`) are mapped with XML files in `src/<Module>/Infrastructure/Persistence` and carry no
+- domain classes (`src/<Module>/Domain`) are mapped with XML files in
+  `src/<Module>/Infrastructure/Persistence` and carry no
   Doctrine attributes (ADR-0006); repository adapters there implement the domain's ports and are the only
   classes that build queries;
 - the schema changes only through migrations, generated from the mapping and reviewed before commit;
