@@ -9,7 +9,7 @@ MISE   := mise exec --
 PHASE  ?= off
 FILE   ?=
 
-.PHONY: help setup up dev down dev-running test stan cs cs-fix deptrac audit spec roadmap-check forms-check md md-fix complexity taint mutation hooks-test check \
+.PHONY: help setup up dev down dev-running test stan cs cs-fix deptrac audit spec roadmap-check forms-check md md-fix complexity taint mutation badges hooks-test check \
         fix-file lint-file stop-check pre-commit
 
 help: ## List targets
@@ -85,6 +85,11 @@ taint: dev-running ## Psalm taint analysis: request input reaching SQL, HTML or 
 BASE ?= origin/main
 mutation: dev-running ## Infection on lines changed against BASE; report only until a threshold is set (IMP-008)
 	$(PHP) vendor/bin/infection --threads=max --no-progress --git-diff-lines --git-diff-base=$(BASE) $(INFECTION_ARGS)
+
+# README badges (roadmap row 9): the whole code, not only changed lines; CI publishes the numbers from main.
+badges: dev-running ## Test coverage and mutation score (MSI) of all code, reports in build/badges/
+	$(PHP) vendor/bin/phpunit --coverage-clover=build/badges/clover.xml
+	$(PHP) vendor/bin/infection --threads=max --no-progress --logger-summary-json=build/badges/infection.json
 
 LYCHEE_EXCLUDES := --exclude-path vendor --exclude-path node_modules --exclude-path var
 
