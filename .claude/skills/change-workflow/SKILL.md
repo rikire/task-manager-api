@@ -54,6 +54,13 @@ Ask 3–5 short questions ("what is returned if…", "where is … checked", "wh
 answer briefly, explain the gaps. The human may say "skip"; advise against skipping for architecturally
 significant changes or new concepts.
 
+Each question (source: `docs/registers/failures.md` FAIL-003):
+- is about what exists in this diff or its accepted decisions — not about code or files that do not exist
+  yet; for a decision-only diff ask "why X and not Y", not "what happens at run time";
+- carries its own context: name the endpoint, field, file or ADR it refers to;
+- explains every term on first use (for example "`flush()` — Doctrine writes the collected changes to the
+  database").
+
 ## Commit
 
 - Only on the human's request; one green commit per task group; message per AGENTS.md "Commits".

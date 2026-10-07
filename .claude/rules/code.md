@@ -16,8 +16,9 @@ Rules for application code. Each rule: why, scope, source.
   your own; for a non-trivial problem name it and record "Known solutions" in `design.md`. Why: home-made
   code duplicates solved problems. Source: `docs/pre-init/11-architecture-design.md`.
 - **RUL-CODE-yagni.** No functionality nobody asked for; no abstraction without a second real
-  implementation or a fired `IMP` trigger; no wrappers around the framework. Source:
-  `docs/pre-init/11-architecture-design.md`, `docs/pre-init/26-code-quality.md`.
+  implementation or a fired `IMP` trigger, except the ports of `ADR-0006-module-structure`; no wrappers
+  around the framework. Source: `docs/pre-init/11-architecture-design.md`,
+  `docs/pre-init/26-code-quality.md`, `docs/adr/ADR-0006-module-structure.md`.
 - **RUL-CODE-no-dead-code.** No dead code, no debug output; temporary debug code only with `DEBUG:` and
   never committed. Source: `docs/pre-init/26-code-quality.md`, `docs/pre-init/30-code-comments.md`.
 - **RUL-CODE-verify-api.** Check framework and library APIs against the installed version (code in
