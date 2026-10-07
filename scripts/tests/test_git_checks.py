@@ -178,5 +178,48 @@ class CommitMsgTest(unittest.TestCase):
         self.assertIn("TASK-1", r.stderr)
 
 
+class CiRangeTest(unittest.TestCase):
+    """`ci <base> <branch>`: the pre-commit and commit-msg rules applied to every commit of a pull request,
+    because local hooks can be skipped (decision record 28 §4)."""
+
+    def setUp(self) -> None:
+        self.repo = Repo()
+        self.base = self.repo.git("rev-parse", "HEAD").strip()
+
+    def tearDown(self) -> None:
+        self.repo.close()
+
+    def commit(self, files: dict[str, str], message: str) -> None:
+        for rel, content in files.items():
+            self.repo.stage(rel, content)
+        self.repo.git("commit", "-q", "-m", message)
+
+    def test_clean_commits_pass(self):
+        self.commit({"src/A.php": "<?php\n"}, "chore: код")
+        self.commit({"AGENTS.md": "# rules\n"}, "chore(agent): правила")
+        r = self.repo.run("ci", self.base, "chore/demo")
+        self.assertEqual(r.returncode, 0, r.stderr)
+
+    def test_commit_mixing_instructions_and_code_fails(self):
+        self.commit({"src/A.php": "<?php\n", "AGENTS.md": "# rules\n"}, "chore: всё вместе")
+        r = self.repo.run("ci", self.base, "chore/demo")
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("separate commit", r.stderr)
+        self.assertIn("всё вместе", r.stderr)
+
+    def test_debug_marker_in_any_commit_fails(self):
+        self.commit({"src/A.php": "<?php\n// DEBUG: x\n"}, "chore: отладка")
+        self.commit({"src/B.php": "<?php\n"}, "chore: ещё")
+        r = self.repo.run("ci", self.base, "chore/demo")
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("DEBUG:", r.stderr)
+
+    def test_change_branch_code_commit_without_refs_fails(self):
+        self.commit({"src/A.php": "<?php\n"}, "feat(demo): код")
+        r = self.repo.run("ci", self.base, "change/demo")
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("Refs:", r.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()

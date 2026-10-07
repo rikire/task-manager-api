@@ -1,0 +1,69 @@
+# The gate the agent cannot switch off locally (decision record 28 §4). Required checks of `protect-main`.
+# Third-party actions are pinned by commit SHA; versions older than 7 days (decision record 15).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  commits:
+    name: commits
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    env:
+      BASE: origin/${{ github.base_ref }}
+      HEAD_BRANCH: ${{ github.head_ref }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      - name: Per-commit rules — instructions separate, no DEBUG:, TODO with register ID, Refs
+        run: python3 scripts/git_checks.py ci "$BASE" "$HEAD_BRANCH"
+      - name: Commit messages (Conventional Commits)
+        run: commitlint --from "$BASE" --to HEAD
+      - name: Secrets in the pull request's commits
+        run: gitleaks git --log-opts="$BASE..HEAD" --redact --no-banner .
+
+  clean-clone:
+    name: clean-clone
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Reviewer's start — docker compose up -d (QAS-DEPLOY-clean-clone-start)
+        run: docker compose up -d --build
+      - name: The API answers
+        run: |
+          for attempt in $(seq 1 30); do
+            curl -fsS -o /dev/null http://localhost:8080/api/doc.json && exit 0
+            sleep 2
+          done
+          docker compose logs
+          exit 1
+      - name: Second start on the same volume
+        run: |
+          docker compose up -d
+          curl -fsS -o /dev/null --retry 15 --retry-delay 2 --retry-all-errors http://localhost:8080/api/doc.json
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      - name: make setup
+        run: make setup
+      - name: Git hooks are installed and reject a bad commit
+        run: |
+          printf '<?php\n// DEBUG: must be rejected\n' > src/Bad.php
+          git add src/Bad.php
+          if git -c user.name=ci -c user.email=ci@example.com commit -q -m "chore: must be rejected"; then
+            echo "pre-commit did not block a DEBUG: marker"
+            exit 1
+          fi
+          git reset -q --hard
+      - name: Full checks (make check)
+        run: make check
