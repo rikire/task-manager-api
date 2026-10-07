@@ -187,7 +187,8 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
   will run"), and a claim stated as fact without verification.
 - **Probable cause:** the agent checked only the first step (the daemon starts) and treated the rest of the
   path (image pulls, package downloads) as given; the Stop hook does not tell "cannot run here" from "red".
-- **Remedy (level: hook, proposed; awaits the owner's decision):** `IMP-013-stop-hook-without-docker` — the
-  hook reports "not run here" instead of red when Docker is absent; with it, starting or not starting a
-  daemon no longer changes what the hook says. No instruction is added: one observed case.
+- **Remedy (level: hook; accepted by the owner 2026-10-07, done after submission):**
+  `IMP-013-stop-hook-without-docker` — the hook reports "not run here" instead of red when Docker is
+  absent; with it, starting or not starting a daemon no longer changes what the hook says. No instruction
+  is added: one observed case.
 - **Commit:** —
