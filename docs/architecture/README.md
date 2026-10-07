@@ -7,8 +7,7 @@
 ## 1. Цели качества
 
 Сценарии качества с измеримыми мерами — капабилити `quality`
-([спека](../../openspec/changes/architecture-kickoff/specs/quality/spec.md), после архивации
-изменения — `openspec/specs/quality/spec.md`):
+([спека](../../openspec/specs/quality/spec.md)):
 
 | Цель | Сценарии |
 |---|---|

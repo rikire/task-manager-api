@@ -28,4 +28,4 @@ here per `openspec/config.yaml`).
 ## 3. Polish
 
 - [x] 3.1 Names, error handling wording, boundary cases, docs updated, no out-of-scope changes in the diff; verify with the review brief and the `verifier` subagent
-- [ ] 3.2 Archive the change; verify `openspec/specs/quality/spec.md` exists and every `design.md` decision carries `Scope: local` or `ADR:`
+- [x] 3.2 Archive the change; verify `openspec/specs/quality/spec.md` exists and every `design.md` decision carries `Scope: local` or `ADR:`
