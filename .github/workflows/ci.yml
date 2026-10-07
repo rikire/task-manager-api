@@ -140,6 +140,7 @@ jobs:
           os.makedirs("badges", exist_ok=True)
           for name, label, value in (("coverage", "coverage", coverage), ("msi", "mutation score (MSI)", msi)):
               json.dump(badge(label, value), open(f"badges/{name}.json", "w"))
+          print(f"Coverage: {coverage:.1f}%, MSI: {msi:.1f}%")
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as summary:
               summary.write(f"Coverage: {coverage:.1f}%, MSI: {msi:.1f}%\n")
           EOF
