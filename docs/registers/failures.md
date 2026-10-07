@@ -62,7 +62,10 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
 - **Known weakness:** "bypasses checks" (`docs/pre-init/research/README.md`, section 3).
 - **Probable cause:** batching several file edits into one script is convenient; the `ask` rules match only
   the Edit/Write tools, not shell writes, and nothing stops a shell write to the same path.
-- **Remedy (proposed, level: hook):** a PreToolUse hook on Bash that blocks a command which names an
-  `ask`-protected path together with a write (redirection, `open(...,'w')`, `sed -i`, `cp`/`mv` onto it),
-  like `protect_tests.py` does for test paths. Awaiting the owner's decision.
+- **Remedy (level: hook, accepted by the owner on 2026-10-07):** `.claude/hooks/protect_ask_paths.py`, a
+  PreToolUse hook on Bash. It blocks a command that names an `ask`-protected path together with a write
+  (redirection onto the path, `open(...,'w')`, `write_text`, `sed -i`, `cp`/`mv`/`rm`, `git checkout`). The
+  paths are read from the `Edit(./…)` entries of `permissions.ask`, so the two lists cannot drift apart.
+  Unit tests: class `ProtectAskPaths` in `.claude/hooks/tests/test_hooks.py`; uncovered forms are listed in
+  `.claude/hooks/BYPASSES.md`.
 - **Commit:** (filled in when the remedy is committed).
