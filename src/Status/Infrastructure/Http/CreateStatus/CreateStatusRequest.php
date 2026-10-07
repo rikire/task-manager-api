@@ -16,7 +16,8 @@ final readonly class CreateStatusRequest
     public function __construct(
         #[Assert\NotBlank]
         #[Assert\Length(max: 50)]
-        #[Assert\Regex('/^[a-z][a-z0-9_]*\z/', message: 'Use lowercase Latin letters, digits and "_", starting with a letter.')]
+        // htmlPattern is what the OpenAPI contract shows: an ECMA-262 regex, where `\z` would be a literal "z".
+        #[Assert\Regex('/^[a-z][a-z0-9_]*\z/', message: 'Use lowercase Latin letters, digits and "_", starting with a letter.', htmlPattern: '^[a-z][a-z0-9_]*$')]
         public string $name,
         // Control characters are refused before trimming (owner, 2026-10-07): "\nReview" is not "Review".
         #[Assert\Regex('/^\P{Cc}*\z/u', message: 'Control characters are not allowed.')]

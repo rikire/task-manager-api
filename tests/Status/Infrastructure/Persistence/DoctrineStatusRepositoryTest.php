@@ -15,8 +15,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
  * The adapter against the real test database (design D4, D5): ids are UUID v7, a saved status can be read
- * back, and a duplicate name that slips past the handler's check (two concurrent requests) still ends as
- * StatusNameTaken — the unique index decides, not a 500.
+ * back, and a duplicate name ends as StatusNameTaken — the unique index is the one check, so two
+ * concurrent requests are refused the same way, never with a 500 (design D4).
  */
 final class DoctrineStatusRepositoryTest extends KernelTestCase
 {

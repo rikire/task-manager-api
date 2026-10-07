@@ -15,21 +15,21 @@
 | ID | Суть | Применимо | Чем закрыто | Проверка |
 |---|---|---|---|---|
 | V1.2.1, V1.2.2 | кодирование вывода; URL строятся безопасно | частично (только JSON и заголовки) | `RUL-SEC-boundaries`: ответы — только через сериализатор, URL — только через маршрутизатор | ревью |
-| V1.2.3 | JSON собирается кодированием, не склейкой строк | да | `RUL-SEC-boundaries` | ревью; тесты контракта (ADR-0003) — запланировано: изменение `status-catalog` |
+| V1.2.3 | JSON собирается кодированием, не склейкой строк | да | `RUL-SEC-boundaries` | ревью; каждый ответ функциональных тестов проверяется по контракту (`tests/Functional/ApiTestCase.php`, ADR-0003) |
 | V1.2.4 | параметризованные запросы против SQL-инъекций | да | `RUL-SEC-boundaries`; Doctrine ORM (ADR-0004) | ревью; Psalm taint-анализ — шаг CI, блокирует (`make taint`, изменение `finish-init`) |
-| V1.5.1, V3.5.1, V3.5.2 | XML не разбирается; запись — только с `Content-Type: application/json` | частично | код 415 ([ADR-0005](../adr/ADR-0005-validation.md)) | тест группы `ADR-0005-validation` — запланировано: изменение `status-catalog` |
+| V1.5.1, V3.5.1, V3.5.2 | XML не разбирается; запись — только с `Content-Type: application/json` | частично | код 415 ([ADR-0005](../adr/ADR-0005-validation.md)) | `CreateStatusTest::testRejectsUnsupportedContentType` (группа `ADR-0005-validation`) |
 | V2.1.1 | правила валидации документированы | да | контракт OpenAPI из ограничений DTO ([ADR-0003](../adr/ADR-0003-api-contract.md)) | `make openapi-check` в `make check` (pre-commit и CI) |
 | V2.2.1, V2.2.2 | позитивная валидация на сервере | да | Symfony Validator на DTO ([ADR-0005](../adr/ADR-0005-validation.md)) | сценарии нежелательного поведения в каждом `REQ-…` — запланировано: каждое продуктовое изменение |
 | V2.3.1 | шаги бизнес-процесса в правильном порядке | частично | ограничены ли переходы статусов задачи — решается в требованиях изменения `task-status-change` | тест сценария, если переходы ограничены |
 | V3.2.1 | браузер не исполняет ответ API в неверном контексте | частично | верный `Content-Type` и заголовок `X-Content-Type-Options: nosniff` на всех ответах (Caddy, [ADR-0002](../adr/ADR-0002-php-runtime.md)) | CI `clean-clone` проверяет заголовок |
 | V3.4.2 | CORS без отражения чужого Origin | частично | CORS не включён; если понадобится — только список разрешённых источников (`RUL-SEC-boundaries`) | ревью |
-| V3.5.3 | запись — только POST, PATCH, DELETE | да | маршруты из задания; код 405 ([ADR-0005](../adr/ADR-0005-validation.md)) | тест группы `ADR-0005-validation` — запланировано: изменение `status-catalog` |
-| V4.1.1 | `Content-Type` соответствует телу | да | ответы фреймворка; проверка ответов по контракту (ADR-0003) | тесты контракта — запланировано: изменение `status-catalog` |
+| V3.5.3 | запись — только POST, PATCH, DELETE | да | маршруты из задания; код 405 ([ADR-0005](../adr/ADR-0005-validation.md)) | `CreateStatusTest::testAnswersMethodNotAllowedInJson` (группа `ADR-0005-validation`) |
+| V4.1.1 | `Content-Type` соответствует телу | да | ответы фреймворка; проверка ответов по контракту (ADR-0003) | проверка ответов по контракту в `tests/Functional/ApiTestCase.php`; JSON на всех путях `/api` — `ErrorResponsesTest` |
 | V13.4.1 | в развёртывании нет `.git`, он недоступен | да | `.dockerignore` исключает `.git` | CI `clean-clone`: в образе нет `.git`, `GET /.git/HEAD` → 404 |
 | V14.2.1 | секретов в URL и строке запроса нет | частично (секретов в API нет) | `RUL-SEC-boundaries` | ревью |
 | V15.1.1 | сроки устранения уязвимых зависимостей задокументированы | да | политика ниже | — |
 | V15.2.1 | уязвимые зависимости не просрочены | да | `composer audit` в `make check` | pre-commit и CI |
-| V15.3.1 | ответ содержит только нужные поля | да | `RUL-SEC-response-models`: сущности не сериализуются, ответ — модель чтения (ADR-0006) | ревью; тесты контракта — запланировано: изменение `status-catalog` |
+| V15.3.1 | ответ содержит только нужные поля | да | `RUL-SEC-response-models`: сущности не сериализуются, ответ — модель чтения (ADR-0006) | ревью; ответы — модели чтения с явным списком полей (`StatusView::jsonSerialize()`), тесты сверяют ровно `id`, `name`, `title` (`ReadStatusesTest`, `CreateStatusTest`) |
 
 ## Не применимы
 

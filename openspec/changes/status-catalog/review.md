@@ -94,7 +94,8 @@ red on assertions.
   `impl` before their tests. The owner approved a second phase `tests`; the unit tests were green on the
   first run except the entity constructor test. Their strength was checked with Infection instead: 17
   mutants, 16 killed; the escaped one (`StatusTitle::trim` public) was fixed by making it private → MSI
-  100%.
+  100%. Correction (group 4, `verifier`): group 3 made it public again — the request DTO trims with it — so
+  that mutant no longer applies.
 - `phpstan.neon`: `containerXmlPath` (services built by the container count as used) and
   `objectManagerLoader` (`tools/PHPStan/object-manager.php`, Doctrine-written entity fields count as
   written); `make container-xml` warms the dev cache before `stan`, `lint-file` and `complexity`.
@@ -180,3 +181,51 @@ production-ready; observability — prototype; consumer experience — working m
 
 **Extra checks:** `/security-review` recommended for the change before archiving (input parsing added);
 `verifier` in task 4.3.
+
+## Group 4 — Polish (tasks 4.1–4.3), 2026-10-07
+
+**Ready to commit:** yes, after `make check` (output in the chat brief); the CI steps of 4.1 are confirmed by
+the pull request's `clean-clone` run.
+
+**Data flow:** unchanged; this group adds checks and fixes found by the `verifier` subagent.
+
+**Must read:** `.github/workflows/ci.yml` (`clean-clone`: initial statuses, `POST` on the prod image,
+restart on the same volume).
+
+**Check by hand:** 4.2 done on an isolated stack (`COMPOSE_PROJECT_NAME=cisim`): with the database stopped,
+`GET /api/statuses` answers 500, `application/json`, `detail: "Internal Server Error"` — no trace, no
+internals. The 4.1 steps were run the same way before the push: `new,in_progress,done`, `POST` → 201,
+after the restart `new,in_progress,done,ci_check`.
+
+**Key decisions:** ADR-0006 amended (module-level read models in `Application/`, owner); the contract's
+`name` pattern via `htmlPattern` (owner).
+
+**`verifier` findings and what was done:**
+
+- F1 (contract): the generated `name` pattern was `[a-z][a-z0-9_]*\z.*` — `\z` is a literal "z" in
+  ECMA-262. Fixed with `htmlPattern: '^[a-z][a-z0-9_]*$'`; contract regenerated.
+- F2 (CI): the restart step did not stop the stack; now `docker compose down` (volume kept), then `up -d`.
+- F3 (contract checks): every `POST /api/statuses` in the tests now goes through a helper that checks the
+  response against the POST operation; removing the 422 annotation made 30 tests fail (probe, restored).
+- F4 (matrix over HTTP): added `name` leading digit / underscore / Cyrillic / hyphen / array, `title`
+  null / empty / missing, and stored-title cases (NBSP trimmed, `<script>` kept as text, U+202E kept).
+- F5: `StatusView` serves three slices; ADR-0006 amended to allow it.
+- F6, F9: stale records and comments corrected (`trim` visibility, "handler's check", "group 3", listener
+  priority wording, task 2.1 text).
+- F7: field-rule tests also carry the group `ADR-0007-api-conventions`.
+- F8 (note): the `QAS-MAINT-readability` scenarios are backed by `make check` and the probe of change
+  `status-catalog` (IMP-001 commit), not by a test — accepted, no new test.
+- H1–H3 (unverified hypotheses): not acted on; logging level of mapped exceptions belongs to observability,
+  which stays "prototype".
+
+**Simplifications:** none new.
+
+**Debt:** none new.
+
+**Not done:** none.
+
+**Maturity:** as group 3; maintainability up — every documented response code is now checked against the
+contract.
+
+**Extra checks:** `verifier` run (findings above). `/security-review` not run: input parsing is covered by
+the corner-case matrix tests; the owner may run it before submission.

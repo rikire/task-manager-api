@@ -18,7 +18,7 @@
 ## 2. Initial statuses, list and read (REQ-STATUS-initial, REQ-STATUS-read)
 
 - [x] 2.1 Phase `tests`: functional tests for `REQ-STATUS-initial.fresh-database` and `REQ-STATUS-read.*` (the
-  non-seed status inserted through the repository, design D8), migrations in `tests/bootstrap.php`; ADR-0007 tests:
+  non-seed status inserted with SQL, design D8), migrations in `tests/bootstrap.php`; ADR-0007 tests:
   list order, unknown query parameter ignored, `abc` and an uppercase existing id → 404 with JSON and no `Accept`
   header; `/api/doc` stays HTML; wiring test of group `ADR-0003-api-contract` (a response that breaks the `GET
   /api/statuses` schema fails with a schema error); migration test for the unique index on `status.name`; verify they
@@ -45,13 +45,13 @@
 
 ## 4. Polish
 
-- [ ] 4.1 CI `clean-clone` (`QAS-DEPLOY-clean-clone-start`, `REQ-STATUS-initial.restart`): after the first and the
+- [x] 4.1 CI `clean-clone` (`QAS-DEPLOY-clean-clone-start`, `REQ-STATUS-initial.restart`): after the first and the
   second `up`, `GET /api/statuses` → 200 listing `new`, `in_progress`, `done` once each, in that order; and
   `POST /api/statuses` → 201 on the prod image (tests run with dev dependencies and missed a 500 there, group 3);
   verify the job is green
-- [ ] 4.2 ADR-0002 check: with the database stopped, `GET /api/statuses` on the `prod` image answers 500 without a
+- [x] 4.2 ADR-0002 check: with the database stopped, `GET /api/statuses` on the `prod` image answers 500 without a
   stack trace; verify by hand, output in the review brief
-- [ ] 4.3 Names; error message wording (`RUL-CODE-exception-messages`); boundary input; `docs/architecture/asvs-l1.md`
+- [x] 4.3 Names; error message wording (`RUL-CODE-exception-messages`); boundary input; `docs/architecture/asvs-l1.md`
   rows marked "запланировано: изменение `status-catalog`" point to their tests; `docs/architecture/README.md` §9
   sentence on `AbstractController` replaced by design D1, §5 gets the `Shared` layer; no out-of-scope changes in the
   diff; verify with the review brief and the `verifier` subagent
