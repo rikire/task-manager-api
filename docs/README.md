@@ -16,7 +16,7 @@
 | [.claude/rules/](../.claude/rules/), [.claude/skills/](../.claude/skills/) | агент | нормативный | вручную, так же |
 | [docs/task/](task/README.md) | оба | описательный (первоисточник требований) | вручную; текст задания, из которого удалена инструкция, адресованная ИИ-агенту (подробности — там же), и таблица покрытия |
 | [docs/constraints.md](constraints.md) | оба | нормативный | вручную, каждая запись подтверждается человеком ([36](pre-init/36-constraints-and-ids.md)) |
-| [docs/roadmap.md](roadmap.md) | человек | описательный | агент предлагает, человек утверждает ([24](pre-init/24-planning-tracking.md)) |
+| [docs/roadmap.md](roadmap.md) | человек | описательный | агент предлагает, человек утверждает ([24](pre-init/24-planning-tracking.md)); колонку «Статус» генерирует `scripts/roadmap.py`, вручную не правится |
 | [docs/architecture/README.md](architecture/README.md) | человек | описательный | вручную, урезанный arc42 ([11](pre-init/11-architecture-design.md)) |
 | [docs/architecture/asvs-l1.md](architecture/asvs-l1.md) | оба | описательный (выборка требований безопасности; правила — в `RUL-SEC-…`) | вручную, классификацию принимает человек |
 | [docs/adr/](adr/) | оба | нормативный — раздел «Decision and rationale» | агент пишет черновик, принимает человек коммитом ([12](pre-init/12-adr.md)) |

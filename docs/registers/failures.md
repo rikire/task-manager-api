@@ -122,4 +122,4 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
   `scripts/` check in `make check` that an active change with a ticked task group has a `review.md`
   section for it with "Simplifications", "Debt" and "Maturity"; the rule itself in the `change-workflow`
   skill. Implemented in change `finish-init`, task 5.5.
-- **Commit:** —
+- **Commit:** cf85f4e, ba26ea0.

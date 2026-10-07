@@ -18,7 +18,8 @@ help: ## List targets
 setup: ## Prepare this machine: tools from mise.lock, git hooks (safe to re-run)
 	mise install
 	git config core.hooksPath .githooks
-	@for tool in docker git gh claude bwrap socat; do \
+	@# bwrap and socat return with the sandbox (DEBT-001-sandbox-disabled).
+	@for tool in docker git gh claude; do \
 		command -v $$tool >/dev/null || echo "hint: '$$tool' not found — see README, section Development"; \
 	done
 	@echo "Next: run 'claude' once in this folder and accept the workspace trust prompt."
@@ -65,7 +66,7 @@ forms-check: ## Form of OpenSpec changes, review briefs and ADRs (decision recor
 	python3 scripts/forms.py --check
 
 complexity: dev-running ## Cognitive complexity report; does not fail until IMP-001 sets the threshold
-	-$(PHP) vendor/bin/phpstan analyse -c phpstan-complexity.neon --no-progress --memory-limit=512M
+	$(PHP) vendor/bin/phpstan analyse -c phpstan-complexity.neon --no-progress --memory-limit=512M
 
 taint: dev-running ## Psalm taint analysis: request input reaching SQL, HTML or shell (decision record 14)
 	$(PHP) vendor/bin/psalm --taint-analysis --no-progress

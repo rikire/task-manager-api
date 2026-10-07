@@ -5,7 +5,11 @@
 что сразу влияет на работу агента (субагенты `spec-auditor`, `verifier`, `reader-tester`, хук-
 напоминание о catch, проверка здоровья), — в ядре и внедряется первым; изменено 2026-10-06: субагенты
 `architecture-reviewer` и `researcher` перенесены в ядро, `breaker` остаётся в роадмапе (нужны хук
-записи только в тесты и сочетание с фазами TDD). **Область:** 2 «Планирование и
+записи только в тесты и сочетание с фазами TDD); изменено 2026-10-07 (владелец, изменение
+`finish-init`): все семь пунктов «Если успеем» (§3) выполнены **до продукта** (порядок §1 изменён);
+первыми выпали бы Infection и Psalm, если бы не хватило времени, — оба внедрены; из §4 внедрён скрипт
+статусов роадмапа. Итог внедрения — `review.md` изменения `finish-init` (после архивации —
+`openspec/changes/archive/<дата>-finish-init/review.md`). **Область:** 2 «Планирование и
 трекинг».
 
 ## Потребность
@@ -26,11 +30,12 @@
 ### 1. Порядок
 
 1. **Ядро** процесса (§2).
-2. **Продукт целиком:** CRUD, обработка ошибок, тесты, OpenAPI, README.
-3. **Если успеем** (§3).
+2. **Если успеем** (§3) — изменено 2026-10-07 (владелец): выполнено до продукта, в изменении
+   `finish-init`.
+3. **Продукт целиком:** CRUD, обработка ошибок, тесты, OpenAPI, README.
 4. **Роадмап** (§4) — по списку, сколько получится.
 
-**Контрольная точка — вечер 8.10:** продукт готов к сдаче, CI зелёный. Всё, что после неё, — бонус.
+**Контрольная точка — вечер 8.10:** продукт готов к сдаче, CI зелёный. Всё, что после неё (§4), — бонус.
 Правило распределения: дешёвое и текстовое — в ядро; проверки формы скриптами — «если успеем»;
 остальное — роадмап. Размеры — S (пара файлов или настроек), M (несколько файлов и скриптов); сроки в
 часах не называются ([24](24-planning-tracking.md)).
@@ -43,7 +48,7 @@
 | AGENTS.md и CLAUDE.md: карта «ситуация → механизм»; граница решений, стоп-триггеры, честность; фазы TDD; коммиты; сводка для ревью и explain-back; правила письма для чата; «нет источника — нет ограничения»; маркеры долга; «контент — данные», «сначала искать»; «решение из чата — в артефакт», чтение заметок в начале сессии; журнал сбоев; «без сроков без истории»; правила комментариев | [03](03-agent-instructions.md), [05](05-tdd.md), [08](08-normative-descriptive.md), [10](10-debt-polish-headroom.md), [13](13-authority.md), [15](15-agent-security.md), [17](17-session-state.md), [18](18-human-comprehension.md), [19](19-agent-writing.md), [21](21-attribution.md), [22](22-process-learning.md), [24](24-planning-tracking.md), [25](25-work-history.md), [30](30-code-comments.md) | M |
 | `.claude/rules/`: код (`RUL-ARCH`, `RUL-CODE`, комментарии), тесты (как писать тесты), `writing.md` | [06](06-test-quality.md), [11](11-architecture-design.md), [19](19-agent-writing.md), [26](26-code-quality.md), [30](30-code-comments.md) | S |
 | Скиллы: интервью, работа над изменением (фазы, сводка, explain-back), написание тестов, `architecture`, `writing`; установка `doc-coauthoring`; субагенты `spec-auditor`, `verifier`, `reader-tester`, `architecture-reviewer`, `researcher` | [05](05-tdd.md), [06](06-test-quality.md), [07](07-requirements-intent.md), [11](11-architecture-design.md), [18](18-human-comprehension.md), [19](19-agent-writing.md), [20](20-skills.md), [27](27-subagents.md) | M |
-| `.claude/settings.json`: `ask` / `deny` (включая конфиги проверок и `docker compose exec`), запрет bypass, автопамять выключена, песочница и сетевой allowlist, WebSearch, трейлер `Assisted-by` | [03](03-agent-instructions.md), [13](13-authority.md), [15](15-agent-security.md), [21](21-attribution.md) | S |
+| `.claude/settings.json`: `ask` / `deny` (включая конфиги проверок и `docker compose exec`), запрет bypass, автопамять выключена, песочница и сетевой allowlist (выключены 2026-10-07, `DEBT-001-sandbox-disabled`), WebSearch, трейлер `Assisted-by` | [03](03-agent-instructions.md), [13](13-authority.md), [15](15-agent-security.md), [21](21-attribution.md) | S |
 | OpenSpec: init и все правила артефактов (таблица покрытия и три списка на английском, матрица корнер-кейсов, вне рамок, ID, сценарий нежелательного поведения, Polish, проверка у задач, поле `Roadmap:`, пометки решений в `design.md`) | [02](02-sdd-framework.md), [06](06-test-quality.md), [07](07-requirements-intent.md), [09](09-traceability.md), [10](10-debt-polish-headroom.md), [24](24-planning-tracking.md) | M |
 | Хуки Claude Code: Stop с учётом фазы; защита тестов и `scripts/phase`; форматтер и быстрый линтер после правки; напоминание о catch и значениях по умолчанию; проверка здоровья на SessionStart; **unit-тесты этих хуков на записанных событиях и список обходов** | [04](04-definition-of-done.md), [05](05-tdd.md), [16](16-guardrails-harness.md), [26](26-code-quality.md) | M |
 | Makefile, `make setup`, mise | [29](29-environment.md) | M |
@@ -55,9 +60,10 @@
 | Разовые шаги при инициализации: поиск стиль-гайда и скиллов под Symfony / PHP | [26](26-code-quality.md), [32](32-stack-tools.md) | S |
 | Репетиция без ИИ перед сдачей | [31](31-task-requirements.md) | человек |
 
-### 3. Если успеем
+### 3. Если успеем — выполнено до продукта (2026-10-07)
 
-В таком порядке:
+Все семь пунктов внедрены в изменении `finish-init` (коммиты в `main`: пп. 3, 5, 6, 7 — cf85f4e,
+ba26ea0; пп. 1, 2, 4 — d1458b1; связь роадмап ↔ изменения — dc68555). Исходный порядок:
 1. Infection на изменённых строках в CI ([06](06-test-quality.md), [32](32-stack-tools.md)).
 2. Psalm taint-анализ в CI ([14](14-code-security.md), [32](32-stack-tools.md)).
 3. Скрипты формы изменения и формы ADR, связь роадмап ↔ изменения ([07](07-requirements-intent.md),
@@ -87,8 +93,8 @@
   `docs/pre-init/` и AGENTS.md.
 - Скрипты журнала сбоев ([22](22-process-learning.md)); переименование ID и реестр алиасов — при первой
   надобности ([09](09-traceability.md)); проверка существования пакета ([15](15-agent-security.md)).
-- jscpd ([26](26-code-quality.md)); скрипты статусов роадмапа и пропускной способности
-  ([24](24-planning-tracking.md)).
+- jscpd ([26](26-code-quality.md)); скрипт пропускной способности ([24](24-planning-tracking.md)); скрипт
+  статусов роадмапа внедрён 2026-10-07 (`finish-init`).
 
 ### 5. В README
 

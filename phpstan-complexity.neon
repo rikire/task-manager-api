@@ -9,6 +9,7 @@ parameters:
     paths:
         - src
     cognitive_complexity:
-        # Package defaults; the project threshold is set by IMP-001 after the first product change.
-        class: 40
-        function: 9
+        # Threshold 0 prints the score of every method and class with any branching (the rule reports only
+        # values above the threshold); IMP-001 sets the failing threshold after the first product change.
+        class: 0
+        function: 0

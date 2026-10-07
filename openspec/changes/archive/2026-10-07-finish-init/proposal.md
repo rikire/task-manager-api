@@ -16,10 +16,10 @@ still showed `architecture-kickoff` as "in progress" after it was archived.
 
 - This change is roadmap row 1b; every remaining initialization step is a task in `tasks.md` with its
   check.
-- `scripts/roadmap` writes the status column of the changes table in `docs/roadmap.md` from
+- `scripts/roadmap.py` writes the status column of the changes table in `docs/roadmap.md` from
   `openspec/changes/` and its archive. Status strings, exactly: `запланировано`; `в работе` or
   `в работе: N/M` (N checked of M task boxes in `tasks.md`); `в архиве`.
-- `scripts/roadmap --check` runs in `make check` (so pre-commit, the Stop hook outside phase `tests`,
+- `scripts/roadmap.py --check` runs in `make check` (so pre-commit, the Stop hook outside phase `tests`,
   and CI) and in the phase-`tests` subset of the Stop hook. It compares the status **word** only; the
   `N/M` count is written by the generator and never checked, so ticking a task never turns a check red.
   It fails when:
@@ -56,7 +56,8 @@ still showed `architecture-kickoff` as "in progress" after it was archived.
 2. Psalm taint analysis in CI.
 3. Change-form and ADR-form check scripts.
 4. PHPStan rules: dead code, cognitive complexity, no swallowed errors — a separate CI step with
-   `continue-on-error` until `IMP-001-readability-threshold` fires, not part of `make check`.
+   `continue-on-error` (threshold 0, every score printed) until `IMP-001-readability-threshold` fires,
+   not part of `make check`.
 5. `Assisted-by` check in `commit-msg`, required only on agent commits (decision record 21 §3), and only
    if checklist item "attribution … можно ли отличить коммит агента" shows they can be told apart;
    otherwise the item moves to the roadmap with that reason.
@@ -96,7 +97,7 @@ None.
 
 ## Impact
 
-- New: `scripts/roadmap` and its tests; `scripts/stop_check.py unittest` mode (task 1.0, design D3); the
+- New: `scripts/roadmap.py` and its tests; `scripts/stop_check.py unittest` mode (task 1.0, design D3); the
   review-brief check (task 5.5, `FAIL-006`); change-form and ADR-form check scripts and their tests,
   `docs/api/curl-examples.md`, `FAIL-005` entry, `design.md` (candidate cards, script decisions).
 - Modified: `docs/roadmap.md` (row 1b, generated statuses, "if time allows" paragraph),
@@ -127,7 +128,7 @@ None.
 
 | Deliverable | Check |
 |---|---|
-| Tracking | tests of `scripts/roadmap` green; `scripts/roadmap --check` passes in `make check` and CI |
+| Tracking | tests of `scripts/roadmap.py` green; `scripts/roadmap.py --check` passes in `make check` and CI |
 | Checks at setup | every item in checklist 35 is `[x]` with evidence or moved with the owner's confirmation |
 | Step 13 | every candidate card in `design.md` has the owner's decision |
 | Step 11 | `docs/api/curl-examples.md` exists and is listed in `docs/README.md` |
@@ -139,7 +140,7 @@ None.
 
 ## Corner cases
 
-Input: `docs/roadmap.md` and `openspec/changes/` as read by `scripts/roadmap`.
+Input: `docs/roadmap.md` and `openspec/changes/` as read by `scripts/roadmap.py`.
 
 The changes table is found by its exact header `| # | Изменение | Что даёт | Приоритет | Статус |`;
 other tables in the file (milestones) are ignored. A row names a change when its name cell is exactly
@@ -161,7 +162,7 @@ An archived folder `archive/YYYY-MM-DD-<name>` matches `<name>`. Task boxes are 
 | `tasks.md` | emptiness: missing or no boxes | `в работе` without a count |
 | `tasks.md` | state: all boxes checked, not archived | `в работе: M/M` (archiving is a separate step) |
 | `tasks.md` | structure: boxes inside a code fence | not counted |
-| status cell | state: word edited by hand, differs from generated | `--check` fails; `scripts/roadmap` rewrites it |
+| status cell | state: word edited by hand, differs from generated | `--check` fails; `scripts/roadmap.py` rewrites it |
 | status cell | state: only the count differs | `--check` passes; the generator rewrites it |
 | active folder | state: an earlier `обязательно` row not `в архиве` | `--check` fails, names both rows (`FAIL-005`) |
 | row | state: priority `не делаем` | treated like any other row |
