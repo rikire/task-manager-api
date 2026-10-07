@@ -126,7 +126,7 @@ run is green (the step ran by hand on the prod image of an isolated stack).
 
 **Debt:** none new.
 
-**Not done:** 4.1 waits for CI.
+**Not done:** none — 4.1 confirmed by the `clean-clone` run of PR #24.
 
 **Maturity:** functionality — working minimum (CRUD of tasks without status change); reliability —
 production-ready for this scope; performance — production-ready (list one query); security — production-ready;
