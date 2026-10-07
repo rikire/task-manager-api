@@ -9,7 +9,7 @@ use App\Task\Domain\TaskTitle;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Body of POST /api/tasks (REQ-TASK-create; ADR-0007 D3, D4; design D4). Broken rules answer 422 with a
+ * Body of POST /api/tasks (REQ-TASK-create; owner's rules of 2026-10-07; ADR-0007 D4, D5; design D4). Broken rules answer 422 with a
  * violation per field; the domain value objects hold the same rules as the last line.
  */
 final readonly class CreateTaskRequest

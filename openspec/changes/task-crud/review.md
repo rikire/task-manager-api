@@ -67,3 +67,69 @@ test first passed vacuously (both requests 404) and got a check that the list an
 it; no pagination by the assignment).
 
 **Extra checks:** `verifier` in task 4.2.
+
+## Group 3 — delete (tasks 3.1–3.3), 2026-10-07
+
+**Ready to commit:** yes. PHPUnit `OK (182 tests)`; on the prod image (isolated stack) `DELETE` answered 204
+and, repeated, 404.
+
+**Data flow:** `DELETE /api/tasks/{id}` → `Requirement::UUID` (else no route → 404) → `DeleteTaskController`
+→ `DeleteTaskHandler(DeleteTask)` → `TaskRepository::get()` (`TaskNotFound` → 404) → `remove()` → 204 without a
+body.
+
+**Must read:** `src/Task/Application/DeleteTask/DeleteTaskHandler.php`.
+
+**Check by hand:** curl examples "Удалить задачу" in `docs/api/curl-examples.md`.
+
+**Key decisions:** ADR-0007 D4 (204), D5 (404).
+
+**Corner-case matrix and red output:** the owner asked for groups 3 and 4 together (chat); red run: 2 of 3
+on assertions (405 instead of 204); the malformed-id test was already green (no route → 404 in JSON).
+
+**Deviation:** after adding the route the tests still saw 405 until the test kernel's no-debug cache was
+cleared (the known stale-cache trap, `.agent-state/notes.md`).
+
+**Simplifications:** none. **Debt:** none. **Not done:** none in this group.
+
+**Maturity:** as groups 1–2.
+
+**Extra checks:** `verifier` on the whole change (task 4.2), findings below with group 4.
+
+## Group 4 — Polish (tasks 4.1–4.2), 2026-10-07
+
+**Ready to commit:** yes, after `make check`; task 4.1 is ticked only when the pull request's `clean-clone`
+run is green (the step ran by hand on the prod image of an isolated stack).
+
+**Data flow:** unchanged.
+
+**Must read:** `docs/api/curl-examples.md`, section "Задачи".
+
+**Check by hand:** every curl example of "Задачи" against `make up` — done on the isolated stack: 201 with
+`Location`; 422 on `title` and on `status`; 200 / 404; list, `?status=new`, `?status=archived` → 422; delete
+204, again 404.
+
+**`verifier` findings and what was done:**
+
+- Non-object JSON bodies (`42`, `null`, `[]`) were tested only with `"x"` for tasks — added (owner): 422.
+- Dates in list items were not checked to end in `Z` (ADR-0007 Confirmation) — added (owner).
+- The CI step accepted any 2xx — now checks 201 and `status` `new`.
+- Design D3 described the time source differently from the code — corrected; a DTO comment cited ADR-0007
+  D3 for task rules — corrected.
+- Accepted as covered by the same code path (owner): a title of ASCII spaces only, a control character in the
+  middle of a title, `DELETE` with an uppercase id, the order of a filtered list, the query count of a
+  filtered list.
+- Not acted on (notes): an unused `ListTasksQuery` component in the generated contract (Nelmio leftover);
+  `TaskView` formats without `setTimezone()` — correct while PHP's default timezone is UTC; two concurrent
+  `DELETE`s may both answer 204 (unverified); `GET /api/tasks/{id}` loads the status lazily (2 queries).
+
+**Simplifications:** the coverage gaps accepted above.
+
+**Debt:** none new.
+
+**Not done:** 4.1 waits for CI.
+
+**Maturity:** functionality — working minimum (CRUD of tasks without status change); reliability —
+production-ready for this scope; performance — production-ready (list one query); security — production-ready;
+maintainability — production-ready; observability — prototype; consumer experience — working minimum.
+
+**Extra checks:** `verifier` run (findings above).

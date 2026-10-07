@@ -120,4 +120,66 @@ curl -s -i -X POST "$API/api/statuses" -H 'Content-Type: application/json' \
 
 ## Задачи
 
-Появятся с изменениями `task-crud` и `task-status-change`.
+### Создать задачу — `POST /api/tasks`
+
+Сценарий: `REQ-TASK-create.created`.
+
+```bash
+curl -s -i -X POST "$API/api/tasks" -H 'Content-Type: application/json' \
+  -d '{"title": "Подготовить отчет", "description": "Отчет по продажам за май"}'
+```
+
+Ожидаемо: `201`, `Location: /api/tasks/<id>`, задача со `status: "new"` и равными `created_at` и
+`updated_at` в формате `2026-10-07T12:00:00Z`. Запомните id для следующих примеров:
+
+```bash
+TASK=$(curl -s -X POST "$API/api/tasks" -H 'Content-Type: application/json' -d '{"title": "Пример"}' \
+  | sed 's/.*"id":"\([^"]*\)".*/\1/')
+```
+
+### Неверные поля — `POST /api/tasks`
+
+Сценарии: `REQ-TASK-create.invalid`, `REQ-TASK-create.status-field`.
+
+```bash
+curl -s -i -X POST "$API/api/tasks" -H 'Content-Type: application/json' -d '{"title": ""}'
+curl -s -i -X POST "$API/api/tasks" -H 'Content-Type: application/json' -d '{"title": "Отчет", "status": "done"}'
+```
+
+Ожидаемо: `422`; в `violations` — `title` в первом случае и `status` («This attribute was not expected.») во
+втором: статус новой задачи всегда `new`.
+
+### Одна задача — `GET /api/tasks/{id}`
+
+Сценарии: `REQ-TASK-read.get`, `REQ-TASK-read.not-found`.
+
+```bash
+curl -s -i "$API/api/tasks/$TASK"
+curl -s -i "$API/api/tasks/019b76da-a800-7000-8000-0000000000ff"
+```
+
+Ожидаемо: `200` с задачей; `404`, `detail` — `Task "…" not found.`
+
+### Список и фильтр — `GET /api/tasks`
+
+Сценарии: `REQ-TASK-list.all`, `REQ-TASK-list.filtered`, `REQ-TASK-list.unknown-status`.
+
+```bash
+curl -s -i "$API/api/tasks"
+curl -s -i "$API/api/tasks?status=new"
+curl -s -i "$API/api/tasks?status=archived"
+```
+
+Ожидаемо: `200`, `{"items": [...]}` по порядку создания; `200`, только задачи со статусом `new`; `422`,
+`detail` — `Unknown status "archived".`
+
+### Удалить задачу — `DELETE /api/tasks/{id}`
+
+Сценарии: `REQ-TASK-delete.deleted`, `REQ-TASK-delete.not-found`.
+
+```bash
+curl -s -i -X DELETE "$API/api/tasks/$TASK"
+curl -s -i -X DELETE "$API/api/tasks/$TASK"
+```
+
+Ожидаемо: `204` без тела; повторно — `404`.

@@ -171,6 +171,11 @@ final class ListTasksTest extends ApiTestCase
             self::assertSame(['id', 'title', 'description', 'status', 'created_at', 'updated_at'], array_keys($task));
             self::assertIsString($task['title']);
             self::assertIsString($task['status']);
+            // Dates in UTC with `Z` (ADR-0007 D4); the contract's date-time would also accept `+00:00`.
+            self::assertIsString($task['created_at']);
+            self::assertIsString($task['updated_at']);
+            self::assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/', $task['created_at']);
+            self::assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/', $task['updated_at']);
             $tasks[] = [$task['title'], $task['status']];
         }
 

@@ -132,10 +132,24 @@ final class CreateTaskTest extends ApiTestCase
         self::assertSame(0, $this->countTasks());
     }
 
-    #[Group('ADR-0005-validation')]
-    public function testRejectsJsonThatIsNotAnObject(): void
+    /** @return iterable<string, array{string}> */
+    public static function nonObjectBodies(): iterable
     {
-        self::assertProblem($this->post('"x"'), 422);
+        yield 'string' => ['"x"'];
+        yield 'number' => ['42'];
+        yield 'null' => ['null'];
+        yield 'array' => ['[]'];
+    }
+
+    /** The owner accepts the framework's 400 or 422; a 500 would be a defect (ADR-0005, amended). */
+    #[DataProvider('nonObjectBodies')]
+    #[Group('ADR-0005-validation')]
+    public function testRejectsJsonThatIsNotAnObject(string $body): void
+    {
+        $response = $this->post($body);
+
+        self::assertContains($response->getStatusCode(), [400, 422], (string) $response->getContent());
+        self::assertProblem($response, $response->getStatusCode());
         self::assertSame(0, $this->countTasks());
     }
 
