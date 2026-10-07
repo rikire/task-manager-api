@@ -111,3 +111,39 @@ same task.
    (owner's decision).
 2. Fewer false positives of the shell-write guard — `IMP-007`; proposed: register with trigger.
 3. Repeated identical Stop-hook blocks — `IMP-006`; proposed: register with trigger.
+
+## Groups 3–4 — style and skills, curl examples, FAIL-005 (tasks 3.1–3.2, 4.1–4.2), 2026-10-07
+
+**Ready to commit:** yes. `make check` green (PHP-CS-Fixer with the new config, PHPStan, Deptrac 0
+violations, PHPUnit 19 tests, hooks 31, scripts 52, `openspec validate` 2/2, `roadmap-check`).
+
+**What changed:** PHP-CS-Fixer adds `@Symfony:risky`, `@PHP8x4Migration`, `ordered_class_elements` and
+mandatory `declare(strict_types=1)` (dry run first: 4 files changed — `strict_types` in `src/Kernel.php`,
+`config/preload.php`, `public/index.php`; `\sprintf` in one test); six `RUL-CODE-…` rules; deviations
+from Symfony Best Practices in `docs/architecture/README.md` §9; no skill or plugin installed; candidate
+cards in `design.md`. `docs/api/curl-examples.md` skeleton; `FAIL-005` was written with group 1.
+
+**Key decisions:** owner, 2026-10-07, answers 1a–4a (`design.md`, step 13 cards).
+
+**Simplifications:** none.
+
+**Debt / improvements:** none new. Open: PER-CS 3.1 has no fixer set yet — revisit when PHP-CS-Fixer
+ships one (noted in the card, not a register entry: nothing to fix on our side).
+
+**Not done:** whether controllers extend `AbstractController` — decided with the first endpoint
+(`status-catalog`), noted in `docs/architecture/README.md` §9.
+
+**Maturity:**
+
+| Axis | Level | Why |
+|---|---|---|
+| Functionality | working minimum | style guide expressed in config, the rest in rules with sources |
+| Reliability | not applicable | no runtime behaviour |
+| Performance | not applicable | — |
+| Security | not applicable | no skill or plugin installed, so no new code from outside |
+| Maintainability | production-ready | formatting automated; rules cite their source; deviations listed in one place |
+| Observability | not applicable | — |
+| Consumer experience | working minimum | `curl-examples.md` defines the example format; the examples come with product changes |
+
+**Top improvements:** none proposed now; `RUL-CODE-…` rules other than formatting are checked in review
+only — a PHPStan rule for exception messages could be an `IMP` if review finds violations.

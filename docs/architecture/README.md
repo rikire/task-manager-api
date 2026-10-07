@@ -100,3 +100,22 @@ flowchart LR
   заголовок `X-Content-Type-Options: nosniff` (Caddy).
 - **Конфигурация.** Только переменные окружения; Symfony не читает `.env` (его читает только Docker
   Compose) ([решение 15](../pre-init/15-agent-security.md)).
+- **Стиль кода.** Стандарт Symfony (PER-CS 3.0 и правила Symfony) плюс небезопасные модернизации,
+  синтаксис PHP 8.4 и обязательный `declare(strict_types=1)` — в конфигурации PHP-CS-Fixer; то, что
+  конфигом не выразить (сообщения исключений, имена, PHPDoc, DI, конфигурация), — правила
+  `RUL-CODE-…` в `.claude/rules/code.md`.
+
+## 9. Отступления от Symfony Best Practices
+
+Рекомендации Symfony (https://symfony.com/doc/current/best_practices.html), от которых проект отходит
+сознательно; причина — в решении по ссылке.
+
+| Рекомендация Symfony | Что в проекте | Почему |
+|---|---|---|
+| Маппинг Doctrine атрибутами на сущностях | XML-мэппинг в `Infrastructure/Persistence` | домен не зависит от Doctrine — [ADR-0004](../adr/ADR-0004-orm.md), [ADR-0006](../adr/ADR-0006-module-structure.md) |
+| Структура каталогов по умолчанию (`src/Entity`, `src/Controller`) | модули Task и Status, внутри — `Domain`, `Application`, `Infrastructure` | ядро без фреймворка, слайс на сценарий — [ADR-0006](../adr/ADR-0006-module-structure.md) |
+| Резолверы сущностей (`#[MapEntity]`) — сущность прямо в аргументе контроллера | контроллер получает DTO и вызывает обработчик сценария | HTTP-слой не обращается к базе — `QAS-MAINT-layering`, [ADR-0006](../adr/ADR-0006-module-structure.md); ответ строится из модели чтения — `RUL-SEC-response-models` |
+| Суффикс `Interface` у интерфейсов (стандарт для контрибьюторов Symfony) | порты без суффикса: `StatusRepository`, `StatusUsage` | порт называется по роли в домене — [ADR-0006](../adr/ADR-0006-module-structure.md), `RUL-CODE-naming` |
+
+Наследовать ли контроллеры от `AbstractController`, решается с первым эндпоинтом (изменение
+`status-catalog`).

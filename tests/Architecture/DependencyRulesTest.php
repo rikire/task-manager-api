@@ -123,7 +123,7 @@ final class DependencyRulesTest extends TestCase
         file_put_contents($tempConfig, Yaml::dump($config, 8));
 
         try {
-            exec(sprintf(
+            exec(\sprintf(
                 'cd %s && php vendor/bin/deptrac analyse --config-file=%s --formatter=json --output=%s --no-progress 2>&1',
                 escapeshellarg($projectDir),
                 escapeshellarg($tempConfig),

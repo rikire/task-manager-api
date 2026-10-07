@@ -78,3 +78,21 @@ blocks. Outside phase `tests` nothing changes: `make check` runs `hooks-test` st
 
 Filled in by tasks 3.x (step 13) and 6.x (items 1, 2, 4); each card: what, source, version and its
 support for PHP 8.4 / Symfony 8.1, what it adds, what else it needs, the owner's decision.
+
+### Step 13 — style guides and skills (search by the `researcher` subagent, 2026-10-07)
+
+| Candidate | Source, version | Adds | Needs, risks | Decision (owner, 2026-10-07) |
+|---|---|---|---|---|
+| Symfony Coding Standards + PER-CS 3.0 | symfony.com/doc/current/contributing/code/standards.html; php-fig.org/per/coding-style (3.1 exists, fixer has sets up to 3.0) | already covered by `@Symfony` (extends `@PER-CS3x0`, checked in `vendor/…/SymfonySet.php`) | — | keep |
+| `@Symfony:risky` + `@PHP8x4Migration` + `ordered_class_elements` | PHP-CS-Fixer 3.95.27 (installed) | risky modernisations (`void_return`, `native_function_invocation`, …), PHP 8.4 syntax, member order of the standard | `@Symfony:risky` removes `declare(strict_types=1)`; an explicit `declare_strict_types` rule overrides it (dry run: adds it to 3 files) | adopt, with `strict_types` mandatory (answer 1a) |
+| Rules the config cannot express | Symfony Coding Standards, Best Practices | `RUL-CODE-style`, `-exception-messages`, `-naming`, `-phpdoc`, `-di`, `-config` | — | adopt (2a) |
+| Deviations from Symfony Best Practices | symfony.com/doc/current/best_practices.html | documented once, linked to ADRs | — | `docs/architecture/README.md` §9 (3a) |
+| `php-lsp` plugin (official Anthropic) | claude-plugins-official, 1.0.0 | Intelephense LSP: definitions, references | global `npm install -g intelephense` outside the containers; freemium licence (not verified); overlaps PHPStan max and reading `vendor/` | skip (4a) |
+| `superpowers-symfony` (community) | github.com/dev-toolings/superpowers-symfony, 0.4.0, 2026-10-05 | 44 skills, 7 agents, SessionStart hook | own TDD workflow overlaps OpenSpec and phase hooks; targets PHPUnit 10/11, attributes, Foundry | skip (4a) |
+| `symfony-hexagonal-skill` (community) | github.com/aligundogdu/symfony-hexagonal-skill, 2026-03-30 | hexagonal skills, XML mapping | layer-first layout and CQRS buses contradict ADR-0006; no licence file | skip (4a) |
+| Symfony UX skills (official Symfony) | github.com/smnandre/symfony-ux-skills | Stimulus, Turbo, Twig components | frontend only | skip (4a) |
+| Symfony AI Mate (official Symfony AI) | github.com/symfony/ai-mate, 0.13 | profiler, logs, services via MCP | pre-1.0; `mate discover` writes into AGENTS.md and CLAUDE.md; a new dependency | skip (4a) |
+| Generic PHP skills | jeffallan/claude-skills (`php-pro`), efficience-it/claude-skills-php | generic PHP advice | nothing over PHPStan max and project rules; one has no licence | skip (4a) |
+
+Not found: `llms.txt` at symfony.com and doctrine-project.org (404); official Doctrine guidance for
+agents.
