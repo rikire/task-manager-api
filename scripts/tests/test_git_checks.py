@@ -159,6 +159,13 @@ class CommitMsgTest(unittest.TestCase):
             "feat(demo): код\n\nRefs: REQ-TASK-create-task, REQ-TASK-create-task.invalid-json\n")))
         self.assertEqual(r.returncode, 0, r.stderr)
 
+    def test_change_branch_code_commit_with_quality_scenario_refs_passes(self):
+        self.repo.git("switch", "-q", "-c", "change/demo")
+        self.repo.stage("src/A.php", "<?php\n")
+        r = self.repo.run("commit-msg", str(self.msg(
+            "feat(demo): код\n\nRefs: QAS-MAINT-layering, QAS-DEPLOY-clean-clone-start.fresh-clone\n")))
+        self.assertEqual(r.returncode, 0, r.stderr)
+
     def test_change_branch_tests_only_commit_needs_no_refs(self):
         self.repo.git("switch", "-q", "-c", "change/demo")
         self.repo.stage("tests/ATest.php", "<?php\n")

@@ -11,7 +11,8 @@ Rules and their sources:
 - agent instructions are committed separately from everything else (21);
 - soft limit: warn when product code in the commit exceeds 400 lines (18);
 - skill frontmatter: `name` equal to the folder, non-empty `description` (20);
-- `Refs:` well-formed; required on `change/*` branches when code outside tests and docs changes (09).
+- `Refs:` holds requirement or quality-scenario IDs (`REQ-`, `QAS-`); required on `change/*` branches
+  when code outside tests and docs changes (09).
 Exit codes: 0 — pass (warnings go to stderr), 1 — violation.
 """
 import re
@@ -30,7 +31,7 @@ REGISTER = Path("docs/registers/debt.md")
 DEBUG_RE = re.compile(r"\bDEBUG:")
 TODO_RE = re.compile(r"\b(TODO|FIXME|HACK)\b(\(([^)]*)\))?")
 REGISTER_ID_RE = re.compile(r"^(DEBT|IMP)-\d{3}-[a-z0-9-]+$")
-REFS_ID_RE = re.compile(r"^REQ-[A-Z][A-Z0-9]*-[a-z0-9-]+(\.[a-z0-9-]+)?$")
+REFS_ID_RE = re.compile(r"^(REQ|QAS)-[A-Z][A-Z0-9]*-[a-z0-9-]+(\.[a-z0-9-]+)?$")
 
 
 def git(*args: str) -> str:
@@ -115,12 +116,12 @@ def check_skills(changes: Changes, files: list[str]) -> list[str]:
 
 def check_refs(message: str, branch: str, files: list[str]) -> list[str]:
     refs = [r.strip() for line in re.findall(r"^Refs:(.*)$", message, re.M) for r in line.split(",")]
-    problems = [f"Refs: `{r}` is not a requirement or scenario ID (REQ-<CAP>-<slug>[.<scenario>])"
+    problems = [f"Refs: `{r}` is not a requirement or scenario ID (REQ-<CAP>-<slug> or QAS-<ATTR>-<slug>, optional .<scenario>)"
                 for r in refs if r and not REFS_ID_RE.match(r)]
     touches_code = any(f.startswith(CODE_PREFIXES) or f in CODE_FILES for f in files)
     if branch.startswith("change/") and touches_code and not refs:
         problems.append("Refs: required — this commit on a change branch changes code outside tests and "
-                        "docs (decision record 09); add `Refs: REQ-…`")
+                        "docs (decision record 09); add `Refs: REQ-…` or `QAS-…`")
     return problems
 
 
