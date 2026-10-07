@@ -6,8 +6,7 @@ namespace App\Status\Domain;
 
 /**
  * A status of the catalog (assignment: id, name, title). Fields are stored as strings so the XML mapping
- * needs no custom types; the value objects guard them on the way out (and on the way in once statuses are
- * created, group 3). Not final: Doctrine creates lazy proxies for the Task → Status relation (ADR-0006).
+ * needs no custom types; the value objects guard them on the way in and out. Not final: Doctrine creates lazy proxies for the Task → Status relation (ADR-0006).
  */
 class Status
 {

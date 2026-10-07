@@ -57,10 +57,24 @@ jobs:
           curl -sS -D - -o /dev/null http://localhost:8080/no-such-page | grep -qi '^x-content-type-options: nosniff'
           test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/.git/HEAD)" = 404
           docker compose exec -T app sh -c '! test -e /app/.git'
-      - name: Second start on the same volume
+      - name: Initial statuses (QAS-DEPLOY-clean-clone-start, REQ-STATUS-initial.fresh-database)
         run: |
+          names=$(curl -fsS http://localhost:8080/api/statuses | jq -r '[.items[].name] | join(",")')
+          test "$names" = "new,in_progress,done" || { echo "got: $names"; exit 1; }
+      # Tests run with dev dependencies; this request runs the prod image's request parsing (change
+      # status-catalog: a dependency missing from prod made it answer 500).
+      - name: Create a status on the prod image (REQ-STATUS-create.created)
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:8080/api/statuses \
+            -H 'Content-Type: application/json' -d '{"name": "ci_check", "title": "CI"}')
+          test "$code" = 201 || { echo "got: $code"; docker compose logs app; exit 1; }
+      - name: Second start on the same volume (REQ-STATUS-initial.restart)
+        run: |
+          docker compose down
           docker compose up -d
           curl -fsS -o /dev/null --retry 15 --retry-delay 2 --retry-all-errors http://localhost:8080/api/doc.json
+          names=$(curl -fsS http://localhost:8080/api/statuses | jq -r '[.items[].name] | join(",")')
+          test "$names" = "new,in_progress,done,ci_check" || { echo "got: $names"; exit 1; }
       - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
       - name: make setup
         run: make setup

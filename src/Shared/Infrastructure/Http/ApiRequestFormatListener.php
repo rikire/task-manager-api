@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 /**
  * Every response under /api is JSON, errors included (ADR-0005, amended 2026-10-07). The `_format: json`
  * route default applies only once a route matches, so an unknown path (404) or a wrong method (405) would
- * render an HTML error page for a client that sends no `Accept` header. Runs before the router (priority 32).
+ * render an HTML error page for a client that sends no `Accept` header. Priority 64 runs it before the router, whose listener has priority 32.
  * Swagger UI at /api/doc renders HTML whatever the request format, so it needs no exception here.
  */
 #[AsEventListener(event: KernelEvents::REQUEST, priority: 64)]

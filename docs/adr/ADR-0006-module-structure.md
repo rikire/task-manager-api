@@ -12,6 +12,9 @@
 - **Amended:** 2026-10-07 — layer `Shared` (`src/Shared/Infrastructure/`) for infrastructure that serves
   both modules and is wired only by configuration; first class: the error `detail` normalizer of ADR-0005
   (owner's decision, change `status-catalog`).
+  2026-10-07 — a read model returned by several slices of one module lives in that module's `Application/`
+  outside the slices (`Status\Application\StatusView` serves list, get and create); one per slice would be
+  three identical classes (owner's decision; found by the `verifier` subagent, change `status-catalog`).
 - **Kind:** architecture
 - **Decided by:** project owner (proposed the style; chose full hexagonal and two modules over the agent's
   lighter recommendation)
@@ -138,7 +141,8 @@ directed restriction the quality scenario needs: `Http` never reaches persistenc
 - A handler receives a command or query object, not the HTTP request DTO; the controller maps one to the
   other. Controllers call handlers directly (no command bus). Query handlers return read models defined in
   their slice (for example a task view with the status name), so Task's `Http` never needs Status's
-  `Domain`.
+  `Domain`; a read model that several slices of the module return lives in the module's `Application/`
+  (amended 2026-10-07).
 - Writes go through port methods (`save()`, `remove()`); the adapter flushes (`flush()` — Doctrine writes
   the collected changes to the database).
 - A slice does not use another slice's classes; shared behaviour goes to its module's `Domain`. Checked in

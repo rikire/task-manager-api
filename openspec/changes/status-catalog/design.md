@@ -120,7 +120,8 @@ group 2 with `GET /api/statuses`. Codes that need a body (400, 415, 422, 405) co
 endpoint in group 3. `REQ-STATUS-read.list` needs a non-seed status before the create endpoint exists:
 group 2 inserts it with SQL (DBAL), so the functional tests do not depend on the domain API they test
 through. The domain value objects got their unit tests after the code (a process slip, see `review.md`
-group 2); Infection on `src/Status/Domain` shows them strong (MSI 100%).
+group 2); Infection on `src/Status/Domain` showed them strong (MSI 100% in group 2; `StatusTitle::trim`
+became public again in group 3 for the request DTO).
 
 ## Risks / Trade-offs
 

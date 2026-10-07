@@ -8,6 +8,7 @@ use App\Tests\Functional\ApiTestCase;
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * POST /api/statuses (REQ-STATUS-create; ADR-0005 amended, ADR-0007 D3, D5; the proposal's corner-case
@@ -46,17 +47,38 @@ final class CreateStatusTest extends ApiTestCase
     #[Group('REQ-STATUS-create.created')]
     public function testAcceptsEdgeValue(string $body, string $storedName): void
     {
-        $response = $this->send('POST', '/api/statuses', $body, self::JSON);
+        $response = $this->post($body);
 
         self::assertSame(201, $response->getStatusCode(), (string) $response->getContent());
         self::assertSame($storedName, self::decode($response)['name']);
         self::assertSame(1, $this->countStatuses($storedName));
     }
 
+    /** @return iterable<string, array{string, string}> */
+    public static function storedTitles(): iterable
+    {
+        yield 'no-break spaces around are trimmed' => ["\u{a0}Ревью\u{a0}", 'Ревью'];
+        yield 'HTML-looking text is kept as text' => ['<script>alert(1)</script>', '<script>alert(1)</script>'];
+        yield 'format character U+202E is accepted' => ["Ре\u{202E}вью", "Ре\u{202E}вью"];
+    }
+
+    #[DataProvider('storedTitles')]
+    #[Group('REQ-STATUS-create.created')]
+    public function testStoresTitleAsGivenAfterTrimming(string $title, string $stored): void
+    {
+        $response = $this->post(json_encode(['name' => 'stored', 'title' => $title], \JSON_THROW_ON_ERROR));
+
+        self::assertSame(201, $response->getStatusCode(), (string) $response->getContent());
+        self::assertSame($stored, self::decode($response)['title']);
+        $connection = self::getContainer()->get(Connection::class);
+        self::assertInstanceOf(Connection::class, $connection);
+        self::assertSame($stored, $connection->fetchOne("SELECT title FROM status WHERE name = 'stored'"));
+    }
+
     #[Group('REQ-STATUS-create.invalid-values')]
     public function testRejectsInvalidValues(): void
     {
-        $response = $this->send('POST', '/api/statuses', '{"name": "Code Review", "title": "\nРевью"}', self::JSON, debug: false);
+        $response = $this->post('{"name": "Code Review", "title": "\nРевью"}', self::JSON);
 
         self::assertSame(['name', 'title'], self::violatedFields(self::assertProblem($response, 422)));
         self::assertSame(3, $this->countStatuses());
@@ -72,6 +94,13 @@ final class CreateStatusTest extends ApiTestCase
         yield 'name of 51 characters' => ['{"name": "'.str_repeat('a', 51).'", "title": "T"}', ['name']];
         yield 'name with a final newline' => ['{"name": "done\n", "title": "T"}', ['name']];
         yield 'name with a leading space' => ['{"name": " done", "title": "T"}', ['name']];
+        yield 'name with a leading digit' => ['{"name": "1st", "title": "T"}', ['name']];
+        yield 'name with a leading underscore' => ['{"name": "_new", "title": "T"}', ['name']];
+        yield 'Cyrillic name' => ['{"name": "готово", "title": "T"}', ['name']];
+        yield 'name with a hyphen' => ['{"name": "code-review", "title": "T"}', ['name']];
+        yield 'title null' => ['{"name": "nulltitle", "title": null}', ['title']];
+        yield 'title empty' => ['{"name": "emptytitle", "title": ""}', ['title']];
+        yield 'title missing' => ['{"name": "notitle"}', ['title']];
         yield 'title only spaces' => ['{"name": "spaces", "title": "   "}', ['title']];
         yield 'title only no-break spaces' => ["{\"name\": \"nbsp\", \"title\": \"\u{a0}\u{a0}\"}", ['title']];
         yield 'title with a tab inside' => ['{"name": "tab", "title": "Ре\tвью"}', ['title']];
@@ -81,11 +110,12 @@ final class CreateStatusTest extends ApiTestCase
 
     /** @param list<string> $fields */
     #[DataProvider('invalidValues')]
+    #[Group('ADR-0007-api-conventions')]
     #[Group('REQ-STATUS-create.invalid-values')]
     #[Group('ADR-0005-validation')]
     public function testReportsEachInvalidField(string $body, array $fields): void
     {
-        $response = $this->send('POST', '/api/statuses', $body, self::JSON, debug: false);
+        $response = $this->post($body);
 
         self::assertSame($fields, self::violatedFields(self::assertProblem($response, 422)));
         self::assertSame(3, $this->countStatuses());
@@ -98,6 +128,7 @@ final class CreateStatusTest extends ApiTestCase
         yield 'name is a number' => ['{"name": 42, "title": "T"}', 'name'];
         yield 'name is a boolean' => ['{"name": true, "title": ""}', 'name'];
         yield 'title is an array' => ['{"name": "", "title": ["T"]}', 'title'];
+        yield 'name is an array' => ['{"name": ["a"], "title": "T"}', 'name'];
     }
 
     /** Shape errors come alone: value rules wait for the next request (ADR-0005, amended). */
@@ -106,16 +137,17 @@ final class CreateStatusTest extends ApiTestCase
     #[Group('ADR-0007-api-conventions')]
     public function testReportsShapeErrorAlone(string $body, string $field): void
     {
-        $response = $this->send('POST', '/api/statuses', $body, self::JSON, debug: false);
+        $response = $this->post($body);
 
         self::assertSame([$field], self::violatedFields(self::assertProblem($response, 422)));
         self::assertSame(3, $this->countStatuses());
     }
 
     #[Group('REQ-STATUS-create.duplicate-name')]
+    #[Group('ADR-0007-api-conventions')]
     public function testRefusesDuplicateName(): void
     {
-        $response = $this->send('POST', '/api/statuses', '{"name": "done", "title": "Сделано"}', self::JSON, debug: false);
+        $response = $this->post('{"name": "done", "title": "Сделано"}', self::JSON);
 
         $problem = self::assertProblem($response, 409);
         self::assertSame('Status "done" already exists.', $problem['detail']);
@@ -136,7 +168,7 @@ final class CreateStatusTest extends ApiTestCase
     #[Group('ADR-0005-validation')]
     public function testValidatesEmptyBodyWithoutContentTypeAsEmptyObject(): void
     {
-        $response = $this->send('POST', '/api/statuses', '', debug: false);
+        $response = $this->post('', []);
 
         self::assertSame(['name', 'title'], self::violatedFields(self::assertProblem($response, 422)));
     }
@@ -146,7 +178,7 @@ final class CreateStatusTest extends ApiTestCase
     #[Group('ADR-0005-validation')]
     public function testRejectsUnsupportedContentType(string $body, array $headers): void
     {
-        self::assertProblem($this->send('POST', '/api/statuses', $body, $headers, debug: false), 415);
+        self::assertProblem($this->post($body, $headers), 415);
     }
 
     /** @return iterable<string, array{string}> */
@@ -160,7 +192,7 @@ final class CreateStatusTest extends ApiTestCase
     #[Group('ADR-0005-validation')]
     public function testRejectsMalformedJson(string $body): void
     {
-        self::assertProblem($this->send('POST', '/api/statuses', $body, self::JSON, debug: false), 400);
+        self::assertProblem($this->post($body), 400);
     }
 
     /**
@@ -172,7 +204,7 @@ final class CreateStatusTest extends ApiTestCase
     {
         $invalidUtf8 = \chr(0xC3).\chr(0x28);
 
-        self::assertProblem($this->send('POST', '/api/statuses', '{"name": "'.$invalidUtf8.'", "title": "T"}', self::JSON, debug: false), 400);
+        self::assertProblem($this->post('{"name": "'.$invalidUtf8.'", "title": "T"}', self::JSON), 400);
     }
 
     /** @return iterable<string, array{string}> */
@@ -189,7 +221,7 @@ final class CreateStatusTest extends ApiTestCase
     #[Group('ADR-0005-validation')]
     public function testRejectsJsonThatIsNotAnObject(string $body): void
     {
-        $response = $this->send('POST', '/api/statuses', $body, self::JSON, debug: false);
+        $response = $this->post($body);
 
         self::assertContains($response->getStatusCode(), [400, 422], (string) $response->getContent());
         self::assertProblem($response, $response->getStatusCode());
@@ -210,6 +242,20 @@ final class CreateStatusTest extends ApiTestCase
     public function testAnswersMethodNotAllowedInJson(string $method, string $uri): void
     {
         self::assertProblem($this->send($method, $uri, debug: false), 405);
+    }
+
+    /**
+     * Sends a POST to /api/statuses with debug off and checks the response against the POST operation of the
+     * contract, so a status code the contract does not document fails the test (ADR-0003).
+     *
+     * @param array<string, string> $headers
+     */
+    private function post(string $body, array $headers = self::JSON): Response
+    {
+        $response = $this->send('POST', '/api/statuses', $body, $headers, debug: false);
+        self::assertMatchesContract($response, '/api/statuses', 'POST');
+
+        return $response;
     }
 
     /**

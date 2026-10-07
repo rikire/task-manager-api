@@ -64,6 +64,7 @@ Status от Task — нет; цикл «удалить статус → есть
 | `Application` | один слайс на сценарий: команда или запрос + обработчик |
 | `Http` | контроллер слайса и DTO запроса: разбор и валидация ввода, коды ответов |
 | `Persistence` | адаптеры Doctrine для портов, XML-мэппинг, генерация UUID v7 |
+| `Shared` (`src/Shared/Infrastructure/`, вне модулей) | общая инфраструктура обоих модулей, подключается конфигурацией: JSON для всех путей `/api` и текст доменных правил в `detail` ошибки ([ADR-0005](../adr/ADR-0005-validation.md)); зависит только от Symfony, модули от него не зависят ([ADR-0006](../adr/ADR-0006-module-structure.md)) |
 
 ## 7. Развёртывание
 
@@ -121,5 +122,5 @@ flowchart LR
 | Резолверы сущностей (`#[MapEntity]`) — сущность прямо в аргументе контроллера | контроллер получает DTO и вызывает обработчик сценария | HTTP-слой не обращается к базе — `QAS-MAINT-layering`, [ADR-0006](../adr/ADR-0006-module-structure.md); ответ строится из модели чтения — `RUL-SEC-response-models` |
 | Суффикс `Interface` у интерфейсов (стандарт для контрибьюторов Symfony) | порты без суффикса: `StatusRepository`, `StatusUsage` | порт называется по роли в домене — [ADR-0006](../adr/ADR-0006-module-structure.md), `RUL-CODE-naming` |
 
-Наследовать ли контроллеры от `AbstractController`, решается с первым эндпоинтом (изменение
-`status-catalog`).
+Контроллеры наследуют `AbstractController` — по одному вызываемому классу на эндпоинт: документированный
+путь Symfony (`$this->json()`, `$this->generateUrl()`), решение D1 изменения `status-catalog`.
