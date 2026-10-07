@@ -9,7 +9,7 @@ MISE   := mise exec --
 PHASE  ?= off
 FILE   ?=
 
-.PHONY: help setup up dev down dev-running test stan cs cs-fix deptrac audit spec hooks-test check \
+.PHONY: help setup up dev down dev-running test stan cs cs-fix deptrac audit spec roadmap-check hooks-test check \
         fix-file lint-file stop-check pre-commit
 
 help: ## List targets
@@ -58,11 +58,14 @@ audit: dev-running ## Known vulnerabilities in dependencies
 spec: ## OpenSpec structure
 	$(MISE) openspec validate --all
 
+roadmap-check: ## Roadmap statuses match the OpenSpec changes; change order (decision record 24, FAIL-005)
+	python3 scripts/roadmap.py --check
+
 hooks-test: ## Tests of the Claude Code hooks and of the git-hook scripts
 	python3 -m unittest discover -s .claude/hooks/tests -q
 	python3 -m unittest discover -s scripts/tests -q
 
-check: cs stan deptrac test audit spec hooks-test ## Everything the pre-commit hook runs (decision record 04)
+check: cs stan deptrac test audit spec roadmap-check hooks-test ## Everything the pre-commit hook runs (decision record 04)
 
 fix-file: dev-running ## Format one file (FILE=path); called after each edit by the Claude Code hook
 	$(PHP) vendor/bin/php-cs-fixer fix --quiet $(FILE)
@@ -73,7 +76,8 @@ lint-file: dev-running ## Static analysis of one file (FILE=path); called by the
 # In phase `tests` only new or changed tests may fail (decision record 04); otherwise everything is green.
 stop-check: ## End-of-turn check of the Claude Code Stop hook (PHASE=off|tests|impl|refactor)
 ifeq ($(PHASE),tests)
-	$(MAKE) --no-print-directory cs stan deptrac spec hooks-test
+	$(MAKE) --no-print-directory cs stan deptrac spec roadmap-check
+	python3 scripts/stop_check.py unittest .claude/hooks/tests scripts/tests
 	$(DC_DEV) exec -T app rm -f .phpunit.cache/junit.xml # written by the container's user, not the host's
 	-$(PHP) vendor/bin/phpunit --log-junit .phpunit.cache/junit.xml
 	python3 scripts/stop_check.py .phpunit.cache/junit.xml

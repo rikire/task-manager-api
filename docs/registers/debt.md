@@ -22,3 +22,53 @@ Format and rules: `docs/pre-init/10-debt-polish-headroom.md` §2.
 - **Trigger:** before any real deployment of the production image (`QAS-DEPLOY-prod-image`).
 - **Size:** 1 `USER` line and ownership of `var/` in the `Dockerfile`; FrankenPHP's data and config
   directories made writable for that user; the clean-clone check re-run.
+
+## IMP-003-roadmap-pipe-in-cells
+
+- **What could be better:** `scripts/roadmap.py` splits a table row on every `|`, so a cell containing a
+  literal or escaped pipe (for example `` `a|b` `` or `\|`) shifts the columns: the row is then skipped as
+  a candidate, or its priority and status are read from the wrong cell.
+- **Why not now:** no row of `docs/roadmap.md` contains a pipe inside a cell (checked 2026-10-07); a
+  Markdown table parser would be the first dependency of the project scripts (change `finish-init`,
+  group 1).
+- **Trigger:** a roadmap row needs a pipe inside a cell, or a row is reported wrongly by
+  `make roadmap-check`.
+- **Size:** 1 function (`cells`) honouring backticks and `\|`, 2 tests in `scripts/tests/test_roadmap.py`.
+
+## IMP-004-roadmap-missing-file-message
+
+- **What could be better:** when `docs/roadmap.md` is missing (for example the script is run outside the
+  repository root), `scripts/roadmap.py` stops with a Python traceback instead of one line naming the
+  path; it still exits non-zero. When `openspec/changes/` is missing, the script sees no changes: every
+  started row then fails as "no change folder", so nothing passes silently, but the message does not say
+  the directory itself is missing.
+- **Why not now:** both paths exist in this repository and `make` runs the script from the root; found in
+  the group-1 review of change `finish-init` (the first wording of this entry, wrong about the second
+  path, was corrected after the `verifier` review).
+- **Trigger:** either message is seen outside a deliberate test, or the Polish group of `finish-init`
+  (task 7.3) takes it.
+- **Size:** 2 checks at the start of `main`, 2 tests.
+
+## IMP-005-roadmap-parsing-edges
+
+- **What could be better:** `scripts/roadmap.py` recognises only backtick code fences in `tasks.md`
+  (`~~~` fences are counted as text), and a row whose name cell has backticks but does not match the name
+  rule (for example `` `x` (v2) ``) is silently treated as a candidate — it escapes every check, the order
+  gate included. A warning for such rows and a printed list of rewritten statuses would make both visible.
+- **Why not now:** no `tasks.md` uses `~~~` and no roadmap row has such a name cell (checked 2026-10-07);
+  found by the `verifier` review of group 1 of change `finish-init`.
+- **Trigger:** a `~~~` fence appears in a `tasks.md`, or a roadmap row with backticks is reported as a
+  candidate.
+- **Size:** 1 regex, 1 warning, 1 print; 3 tests.
+
+## IMP-006-stop-hook-repeats-unchanged-red
+
+- **What could be better:** while the agent waits for the owner's decision, the Stop hook re-runs the full
+  check after every reply and blocks up to three times with identical output, although the working tree
+  did not change. It could remember the fingerprint of the last red run and stay quiet on an unchanged
+  tree.
+- **Why not now:** the blocks are noise, not a hole: the agent cannot finish green anyway; observed three
+  times in change `finish-init` on 2026-10-07.
+- **Trigger:** the owner finds the repeated blocks costly, or a session hits the three-block limit while
+  waiting.
+- **Size:** the Stop-hook script (reuse its state directory), 2 hook tests.

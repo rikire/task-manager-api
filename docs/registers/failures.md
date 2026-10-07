@@ -69,3 +69,40 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
   Unit tests: class `ProtectAskPaths` in `.claude/hooks/tests/test_hooks.py`; uncovered forms are listed in
   `.claude/hooks/BYPASSES.md`.
 - **Commit:** ce4b12f.
+
+## FAIL-005-product-work-before-init-finished
+
+- **What happened:** on 2026-10-07, after `/clear`, the agent read its session notes ("next: first
+  product change `status-catalog`") and started the interview for that change, although the
+  initialization checklist (`docs/pre-init/35-init-checklist.md`) was not finished: step 11 lacked
+  `docs/api/curl-examples.md`, steps 13 and 14 were not done, none of the checks at setup was marked. The
+  roadmap was also stale (`architecture-kickoff` "in progress" after archiving). Found by the owner.
+- **Known weakness:** "drifts from the plan" — acting on its own summary instead of the source of truth.
+- **Probable cause:** the plan lived in `.agent-state/notes.md` (not in git, invisible to the owner), and
+  roadmap statuses were kept by hand; nothing compared either with the checklist or the changes.
+- **Remedy (level: check, accepted by the owner on 2026-10-07):** `scripts/roadmap.py` generates roadmap
+  statuses from OpenSpec changes; `make roadmap-check` (part of `make check`: pre-commit, Stop hook, CI)
+  fails when a status is stale, a change has no row, or an active change exists while a mandatory row
+  above it is not archived. The remaining initialization is change `finish-init`, roadmap row 1b,
+  mandatory, so no product change can start before it is archived. Agent instructions: read
+  `docs/roadmap.md` at session start; the notes never hold the plan. Tests: `scripts/tests/test_roadmap.py`.
+- **Commit:** — (group 1 of change `finish-init`, filled in at commit)
+
+## FAIL-006-review-findings-only-in-chat
+
+- **What happened:** on 2026-10-07, in the group-1 review brief of change `finish-init`, the agent listed
+  simplifications, an improvement (pipes inside roadmap cells) and the maturity per axis only in the chat
+  message. Decision record 10 §2–3 requires simplifications in `design.md` and improvements in
+  `docs/registers/debt.md`; maturity had no place in the repository at all. Found by the owner ("для кого
+  процессы придумываем?").
+- **Known weakness:** "reports instead of recording" — the chat is not an artifact; AGENTS.md "a decision
+  made in chat goes into its artifact in the same turn" was not applied to review findings.
+- **Probable cause:** the review-brief template in the `change-workflow` skill describes a message, not a
+  file; nothing checks that sections 7–8 of the brief exist anywhere after the turn ends.
+- **Remedy (level: check, accepted by the owner on 2026-10-07):** the brief of every task group is written to
+  `openspec/changes/<name>/review.md` (archived with the change); its simplifications go to `design.md`
+  and its improvements to the register before the brief is shown. A
+  `scripts/` check in `make check` that an active change with a ticked task group has a `review.md`
+  section for it with "Simplifications", "Debt" and "Maturity"; the rule itself in the `change-workflow`
+  skill. Implemented in change `finish-init`, task 5.5.
+- **Commit:** —
