@@ -147,3 +147,48 @@ ships one (noted in the card, not a register entry: nothing to fix on our side).
 
 **Top improvements:** none proposed now; `RUL-CODE-…` rules other than formatting are checked in review
 only — a PHPStan rule for exception messages could be an `IMP` if review finds violations.
+
+## Group 5 — form checks, attribution, markdown, security review (tasks 5.1–5.5), 2026-10-07
+
+**Ready to commit:** yes, once this section exists (`make forms-check` found it missing — the check of
+`FAIL-006` working on its own change). `make check` otherwise green: scripts 73 tests, hooks 31,
+markdownlint 0 issues in 38 files, lychee offline 0 errors.
+
+**What changed:** `scripts/forms.py` (11 form rules, `design.md` D4) in `make check`; `Assisted-by`
+required on agent commits (`CLAUDECODE=1`, D5); `make md` / `make md-fix` and a CI step for external
+links (D6); `/security-review` copied from upstream with DoS and rate limiting in scope; the
+`change-workflow` skill writes review briefs to `review.md`. ADR-0001 options numbered (owner, "a").
+
+**Key decisions:** owner, 2026-10-07: check list D4 ("a"), ADR-0001 reformat ("a"), keep the auto-fix
+edits of protected files and exclude them from `make md-fix` (`FAIL-007`, "1a 2a"). Agent decisions,
+reported: markdownlint config (D6); the external-link step skips `docs/pre-init` and accepts 403/429.
+
+**Simplifications:** markdownlint rules MD036, MD041, MD060 off and line length 120 (D6); external links
+of the frozen `docs/pre-init` history are not checked.
+
+**Debt / improvements:** none new; `IMP-007` (false positives of the shell-write guard) fired three
+more times in this group.
+
+**Not done:** none in this group.
+
+**Agent errors in this group:** `markdownlint-cli2 --fix` rewrote six protected files (`FAIL-007`); the
+agent had claimed every ADR conformed to the form rules after checking only sections and fields.
+
+**Maturity:**
+
+| Axis | Level | Why |
+|---|---|---|
+| Functionality | working minimum | each D4 rule has a failing-then-green test; markdown and links checked locally and in CI |
+| Reliability | working minimum | checks fail closed; external links can still flap on sites that change status codes |
+| Performance | production-ready | the new local checks add about a second to the Stop hook |
+| Security | working minimum | `/security-review` now covers DoS and rate limiting; the guard bypass of `FAIL-007` closed for markdown fixes only |
+| Maintainability | working minimum | form rules live in one script; the security command stays diffable against upstream |
+| Observability | working minimum | one message per violation naming file and rule |
+| Consumer experience | working minimum | the form check names the missing section or field |
+
+**Top improvements** (the owner chooses now or register):
+
+1. `IMP-007` (false positives of the shell-write guard) — proposed: register with trigger; it is now the
+   most frequent friction.
+2. Check the upstream `security-review.md` for changes before each submission — proposed: Polish
+   (task 7.3), one diff.

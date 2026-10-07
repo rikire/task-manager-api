@@ -19,8 +19,8 @@ docker compose up -d
 автоматически. Убедиться, что всё поднялось: `docker compose ps` — `db` и `app` в состоянии running,
 `migrate` завершился с кодом 0. Остановить: `docker compose down` (с удалением данных — `down -v`).
 
-- API: http://localhost:8080
-- Документация и контракт OpenAPI: http://localhost:8080/api/doc (JSON — `/api/doc.json`); контракт
+- API: <http://localhost:8080>
+- Документация и контракт OpenAPI: <http://localhost:8080/api/doc> (JSON — `/api/doc.json`); контракт
   генерируется из кода, его копия будет закоммичена в `docs/api/openapi.yaml`, CI сверяет их
 
 Если порт 8080 занят: `cp .env.example .env` и поменяйте `HTTP_PORT`. Файл `.env` читает Docker Compose,

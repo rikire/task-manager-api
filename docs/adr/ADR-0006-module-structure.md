@@ -15,7 +15,8 @@
 - **Drafted by:** agent
 
 > Reading notes: "decision record NN" is `docs/pre-init/NN-*.md`. `CON-…` IDs are defined in
-> `docs/constraints.md`, `QAS-…` in the `quality` spec (`openspec/specs/quality/spec.md`), `RUL-…` in `.claude/rules/code.md`. "The skeleton" is
+> `docs/constraints.md`, `QAS-…` in the `quality` spec (`openspec/specs/quality/spec.md`), `RUL-…` in
+> `.claude/rules/code.md`. "The skeleton" is
 > step 8 of `docs/pre-init/35-init-checklist.md`: the empty Symfony application running in Docker.
 
 ## Context and drivers
@@ -41,8 +42,8 @@ Facts (checked 2026-10-07):
 
 | Fact | Source |
 |---|---|
-| Doctrine ORM 3.7.4 supports XML mapping; no deprecation notice | https://www.doctrine-project.org/projects/doctrine-orm/en/stable/reference/xml-mapping.html |
-| Deptrac collects layers by `directory` (file path regex), `classNameRegex` and other collectors | https://deptrac.github.io/deptrac/collectors/ |
+| Doctrine ORM 3.7.4 supports XML mapping; no deprecation notice | <https://www.doctrine-project.org/projects/doctrine-orm/en/stable/reference/xml-mapping.html> |
+| Deptrac collects layers by `directory` (file path regex), `classNameRegex` and other collectors | <https://deptrac.github.io/deptrac/collectors/> |
 
 ## Considered options
 
@@ -79,7 +80,7 @@ the cost of interfaces with one implementation and more files.
 
 Use **vertical slices on a hexagonal core** (option 3), in **two modules, Task and Status**:
 
-```
+```text
 src/
   Status/
     Domain/                   Status, value objects, domain exceptions; ports: StatusRepository,
@@ -120,7 +121,8 @@ directed restriction the quality scenario needs: `Http` never reaches persistenc
 - **Between modules:** Task may depend on Status's `Domain` only; **Status never depends on Task**. The
   cycle is broken by the `StatusUsage` port: Status asks it before deleting; Task's persistence implements
   it.
-- `Http` never depends on `Persistence` or the database (Doctrine, its Symfony bridge, `PDO`) (`QAS-MAINT-layering`); `Domain` and `Application`
+- `Http` never depends on `Persistence` or the database (Doctrine, its Symfony bridge, `PDO`)
+  (`QAS-MAINT-layering`); `Domain` and `Application`
   never depend on any vendor code. No cycles.
 - **Identifiers:** UUID v7 for tasks and statuses (owner, 2026-10-07; v7 values grow with time, so
   inserts into the PostgreSQL index stay ordered). Each repository port has `nextId()`; the `Persistence`

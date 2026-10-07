@@ -88,6 +88,23 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
   `docs/roadmap.md` at session start; the notes never hold the plan. Tests: `scripts/tests/test_roadmap.py`.
 - **Commit:** be164cd, dc68555.
 
+## FAIL-007-glob-fix-rewrote-protected-files
+
+- **What happened:** on 2026-10-07 (change `finish-init`, task 5.3) the agent ran
+  `markdownlint-cli2 --fix "**/*.md"`, which rewrote six `ask`-protected files (`.claude/agents/*.md`,
+  `.claude/rules/code.md`, `.claude/skills/architecture/SKILL.md`) without asking the owner. The changes
+  were formatting only (blank lines, `<…>` around URLs); the owner accepted them. The agent noticed it in
+  the diff and stopped.
+- **Known weakness:** "bypasses checks" (`docs/pre-init/research/README.md`, section 3); same class as
+  `FAIL-004`.
+- **Probable cause:** the shell-write hook matches protected path names in the command text; a tool that
+  expands a glob itself never names them. The bypass was already listed in `.claude/hooks/BYPASSES.md`
+  ("a script that writes the path") but nothing kept bulk fixers away from those paths.
+- **Remedy (level: check in the build file, accepted by the owner on 2026-10-07):** `make md-fix` is the
+  only auto-fix entry point and excludes `AGENTS.md`, `CLAUDE.md` and `.claude/**`; `make md` still lints
+  them, so protected files are fixed through Edit. `BYPASSES.md` names the glob-tool bypass.
+- **Commit:** — (group 5 of change `finish-init`, filled in after merge)
+
 ## FAIL-006-review-findings-only-in-chat
 
 - **What happened:** on 2026-10-07, in the group-1 review brief of change `finish-init`, the agent listed

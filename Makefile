@@ -9,7 +9,7 @@ MISE   := mise exec --
 PHASE  ?= off
 FILE   ?=
 
-.PHONY: help setup up dev down dev-running test stan cs cs-fix deptrac audit spec roadmap-check hooks-test check \
+.PHONY: help setup up dev down dev-running test stan cs cs-fix deptrac audit spec roadmap-check forms-check md md-fix hooks-test check \
         fix-file lint-file stop-check pre-commit
 
 help: ## List targets
@@ -61,11 +61,24 @@ spec: ## OpenSpec structure
 roadmap-check: ## Roadmap statuses match the OpenSpec changes; change order (decision record 24, FAIL-005)
 	python3 scripts/roadmap.py --check
 
+forms-check: ## Form of OpenSpec changes, review briefs and ADRs (decision records 07, 12; FAIL-006)
+	python3 scripts/forms.py --check
+
+LYCHEE_EXCLUDES := --exclude-path vendor --exclude-path node_modules --exclude-path var
+
+md: ## Markdown style and local links (decision records 19, 23); external links are checked in CI
+	$(MISE) markdownlint-cli2 "**/*.md"
+	$(MISE) lychee --offline --no-progress $(LYCHEE_EXCLUDES) './**/*.md'
+
+# Auto-fix never rewrites ask-protected instruction files: they change only through Edit (FAIL-007).
+md-fix: ## Fix markdown style automatically, except agent instructions
+	$(MISE) markdownlint-cli2 --fix "**/*.md" "#AGENTS.md" "#CLAUDE.md" "#.claude/**"
+
 hooks-test: ## Tests of the Claude Code hooks and of the git-hook scripts
 	python3 -m unittest discover -s .claude/hooks/tests -q
 	python3 -m unittest discover -s scripts/tests -q
 
-check: cs stan deptrac test audit spec roadmap-check hooks-test ## Everything the pre-commit hook runs (decision record 04)
+check: cs stan deptrac test audit spec roadmap-check forms-check md hooks-test ## Everything the pre-commit hook runs (decision record 04)
 
 fix-file: dev-running ## Format one file (FILE=path); called after each edit by the Claude Code hook
 	$(PHP) vendor/bin/php-cs-fixer fix --quiet $(FILE)
@@ -76,7 +89,7 @@ lint-file: dev-running ## Static analysis of one file (FILE=path); called by the
 # In phase `tests` only new or changed tests may fail (decision record 04); otherwise everything is green.
 stop-check: ## End-of-turn check of the Claude Code Stop hook (PHASE=off|tests|impl|refactor)
 ifeq ($(PHASE),tests)
-	$(MAKE) --no-print-directory cs stan deptrac spec roadmap-check
+	$(MAKE) --no-print-directory cs stan deptrac spec roadmap-check forms-check md
 	python3 scripts/stop_check.py unittest .claude/hooks/tests scripts/tests
 	$(DC_DEV) exec -T app rm -f .phpunit.cache/junit.xml # written by the container's user, not the host's
 	-$(PHP) vendor/bin/phpunit --log-junit .phpunit.cache/junit.xml

@@ -107,7 +107,7 @@ flowchart LR
 
 ## 9. Отступления от Symfony Best Practices
 
-Рекомендации Symfony (https://symfony.com/doc/current/best_practices.html), от которых проект отходит
+Рекомендации Symfony (<https://symfony.com/doc/current/best_practices.html>), от которых проект отходит
 сознательно; причина — в решении по ссылке.
 
 | Рекомендация Symfony | Что в проекте | Почему |

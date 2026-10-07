@@ -3,6 +3,7 @@
 Rules under test: decision records 09 (Refs), 10 (TODO with a register ID, no DEBUG:), 18 (soft diff
 limit), 20 (skill frontmatter), 21 (instructions in a separate commit).
 """
+import os
 import subprocess
 import sys
 import tempfile
@@ -41,9 +42,13 @@ class Repo:
         self.write(rel, content)
         self.git("add", rel)
 
-    def run(self, *args: str) -> subprocess.CompletedProcess:
+    def run(self, *args: str, agent: bool = False) -> subprocess.CompletedProcess:
+        # The tests themselves run inside Claude Code; control the agent marker explicitly.
+        env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
+        if agent:
+            env["CLAUDECODE"] = "1"
         return subprocess.run([sys.executable, str(SCRIPT), *args], cwd=self.root,
-                              capture_output=True, text=True)
+                              capture_output=True, text=True, env=env)
 
 
 class PreCommitTest(unittest.TestCase):
@@ -144,6 +149,20 @@ class CommitMsgTest(unittest.TestCase):
         path = self.repo.root / "MSG"
         path.write_text(textwrap.dedent(text))
         return path
+
+    def test_agent_commit_requires_assisted_by(self):
+        # Decision record 21 §3: the trailer marks agent commits; agent commands run with CLAUDECODE=1.
+        r = self.repo.run("commit-msg", str(self.msg("docs: текст\n")), agent=True)
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("Assisted-by", r.stderr)
+
+    def test_agent_commit_with_assisted_by_passes(self):
+        r = self.repo.run("commit-msg", str(self.msg("docs: текст\n\nAssisted-by: Claude Code\n")), agent=True)
+        self.assertEqual(r.returncode, 0, r.stderr)
+
+    def test_human_commit_needs_no_assisted_by(self):
+        r = self.repo.run("commit-msg", str(self.msg("docs: текст\n")))
+        self.assertEqual(r.returncode, 0, r.stderr)
 
     def test_change_branch_code_commit_requires_refs(self):
         self.repo.git("switch", "-q", "-c", "change/demo")
