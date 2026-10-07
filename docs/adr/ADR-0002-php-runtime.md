@@ -6,8 +6,7 @@
 - **Drafted by:** agent
 
 > Reading notes: "decision record NN" is `docs/pre-init/NN-*.md`. `CON-…` IDs are defined in
-> `docs/constraints.md`, `QAS-…` in the `quality` spec (`openspec/changes/architecture-kickoff/specs/quality/spec.md`,
-> `openspec/specs/quality/spec.md` after archive), `RUL-…` in `.claude/rules/code.md`. "The skeleton" is
+> `docs/constraints.md`, `QAS-…` in the `quality` spec (`openspec/specs/quality/spec.md`), `RUL-…` in `.claude/rules/code.md`. "The skeleton" is
 > step 8 of `docs/pre-init/35-init-checklist.md`: the empty Symfony application running in Docker.
 
 ## Context and drivers

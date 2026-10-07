@@ -68,4 +68,4 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
   paths are read from the `Edit(./…)` entries of `permissions.ask`, so the two lists cannot drift apart.
   Unit tests: class `ProtectAskPaths` in `.claude/hooks/tests/test_hooks.py`; uncovered forms are listed in
   `.claude/hooks/BYPASSES.md`.
-- **Commit:** (filled in when the remedy is committed).
+- **Commit:** ce4b12f.
