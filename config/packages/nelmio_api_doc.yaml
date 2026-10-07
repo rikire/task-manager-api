@@ -24,6 +24,20 @@ nelmio_api_doc:
                                 properties:
                                     propertyPath: { type: string }
                                     title: { type: string }
+                # A task as the API returns it (ADR-0007 D4). Described here, not from TaskView's PHP
+                # properties: the JSON keys are snake_case (created_at), and the core stays free of
+                # serializer attributes (ADR-0006).
+                Task:
+                    type: object
+                    required: [id, title, description, status, created_at, updated_at]
+                    additionalProperties: false
+                    properties:
+                        id: { type: string, format: uuid }
+                        title: { type: string }
+                        description: { type: string, nullable: true }
+                        status: { type: string, description: 'Status name, for example "new"' }
+                        created_at: { type: string, format: date-time }
+                        updated_at: { type: string, format: date-time }
     areas:
         path_patterns:
             - ^/api(?!/doc)

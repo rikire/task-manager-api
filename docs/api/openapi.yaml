@@ -86,6 +86,68 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Problem'
+  /api/tasks:
+    post:
+      tags:
+        - Tasks
+      operationId: post_task_create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+      responses:
+        '201':
+          description: 'The created task'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: 'Malformed JSON'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '415':
+          description: 'The body is not JSON'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '422':
+          description: 'The body breaks a rule; violations per field'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  '/api/tasks/{id}':
+    get:
+      tags:
+        - Tasks
+      operationId: get_task_get
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[13-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      responses:
+        '200':
+          description: 'The task'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: 'No task has this id'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
 components:
   schemas:
     Problem:
@@ -116,6 +178,34 @@ components:
                 type: string
             type: object
       type: object
+    Task:
+      required:
+        - id
+        - title
+        - description
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          description: 'Status name, for example "new"'
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      type: object
+      additionalProperties: false
     CreateStatusRequest:
       required:
         - name
@@ -128,6 +218,19 @@ components:
         title:
           type: string
           maxLength: 255
+      type: object
+    CreateTaskRequest:
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+          default: null
+          maxLength: 5000
       type: object
     StatusView:
       required:
@@ -145,4 +248,6 @@ components:
 tags:
   -
     name: Statuses
+  -
+    name: Tasks
 

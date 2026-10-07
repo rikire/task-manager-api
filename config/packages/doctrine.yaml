@@ -20,6 +20,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Status/Infrastructure/Persistence/Mapping'
                 prefix: 'App\Status\Domain'
                 alias: Status
+            Task:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Task/Infrastructure/Persistence/Mapping'
+                prefix: 'App\Task\Domain'
+                alias: Task
 
 when@test:
     doctrine:
