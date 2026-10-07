@@ -10,7 +10,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-TEST_DIRS = ("tests/",)
+# Python tests of scripts and hooks follow the same TDD phases (change finish-init, task 2.3).
+TEST_DIRS = ("tests/", "scripts/tests/", ".claude/hooks/tests/")
 LOCKED_PHASES = ("impl", "refactor")
 
 

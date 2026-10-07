@@ -19,7 +19,8 @@ WRITE_FORMS = re.compile(
     r"\bpython3?\s+-c|\bphp\s+-r|\bnode\s+-e|\bgit\s+(checkout|restore)\b)"
 )
 TEST_REF = re.compile(r"(^|[\s'\"=/])(\./)?tests/")
-REDIRECT_TO_TESTS = re.compile(r">>?\s*['\"]?(\./)?tests/")
+# Any redirect into a `tests/` directory, nested ones included (scripts/tests/, .claude/hooks/tests/).
+REDIRECT_TO_TESTS = re.compile(r">>?\s*['\"]?(\S*/)?tests/")
 PHASE_FILE = ".agent-state/phase"
 PHASE_SCRIPT_ONLY = re.compile(r"^\s*(\./)?scripts/phase(\s+\w+)?\s*$")
 
