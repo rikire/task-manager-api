@@ -30,8 +30,8 @@ internals, owner 2026-10-07) — a broken data invariant, not a client error.
 
 ### D3. Dates
 
-Scope: local. Driver: owner (seconds, UTC). The handler takes the time from `new \DateTimeImmutable('now',
-UTC)` truncated to the second; columns store UTC wall-clock time and the read model formats without
+Scope: local. Driver: owner (seconds, UTC). The handler takes the time from `new \DateTimeImmutable('@'.time())` —
+UTC, whole seconds; columns store UTC wall-clock time and the read model formats without
 timezone conversion (PHP's default timezone is UTC in the images; not set elsewhere). `Task` keeps
 `createdAt` and `updatedAt`; columns `timestamp(0)` (Doctrine `datetime_immutable`). The read model formats
 `Y-m-d\TH:i:s\Z`. No clock port: no test freezes time (they assert the format and `created_at` =

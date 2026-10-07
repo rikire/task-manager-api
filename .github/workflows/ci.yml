@@ -68,6 +68,12 @@ jobs:
           code=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:8080/api/statuses \
             -H 'Content-Type: application/json' -d '{"name": "ci_check", "title": "CI"}')
           test "$code" = 201 || { echo "got: $code"; docker compose logs app; exit 1; }
+      - name: Create a task on the prod image (REQ-TASK-create.created)
+        run: |
+          code=$(curl -s -o task.json -w '%{http_code}' -X POST http://localhost:8080/api/tasks \
+            -H 'Content-Type: application/json' -d '{"title": "CI"}')
+          test "$code" = 201 && test "$(jq -r .status task.json)" = new \
+            || { echo "got: $code $(cat task.json)"; docker compose logs app; exit 1; }
       - name: Second start on the same volume (REQ-STATUS-initial.restart)
         run: |
           docker compose down
