@@ -211,7 +211,8 @@ Format and rules: `docs/pre-init/10-debt-polish-headroom.md` §2.
 - **Why not now:** not part of any task of change `status-catalog`; found while checking the prod image
   (2026-10-07, group 2). Out-of-scope ideas go to this register (AGENTS.md "Planning").
 - **Trigger:** the README "Как запустить" examples are written, or a reviewer-facing check of the API by
-  hand is prepared (submission checklist in `docs/roadmap.md`).
+  hand is prepared (submission checklist in `docs/roadmap.md`). Fired 2026-10-07 (README examples, PR #27);
+  the owner scheduled it as a separate OpenSpec change after `status-delete` is archived (2026-10-07).
 - **Size:** one setting — `JSON_UNESCAPED_UNICODE` in the JSON encoder context
   (`framework.serializer.default_context`) or in `AbstractController::json()` calls; one test asserting
   a literal Cyrillic `title` in the response body; the curl-examples note removed.
