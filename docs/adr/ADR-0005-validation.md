@@ -98,8 +98,8 @@ the domain exceptions mapped in `framework.exceptions`. Everything else keeps th
 JSON for unmatched requests (amended 2026-10-07): the `_format: json` route default applies only once a
 route matches, so an unknown `/api/…` path (404) or a wrong method (405) rendered an HTML page for a client
 without an `Accept` header (shown by a test). A request listener in `src/Shared/Infrastructure/Http/` sets
-the request format to JSON for every `/api/…` path except the Swagger UI (`/api/doc`, ADR-0003) before
-routing.
+the request format to JSON for every `/api/…` path before routing; the Swagger UI (`/api/doc`, ADR-0003)
+renders HTML whatever the request format, which a test checks.
 
 Status codes (decided by the owner, 2026-10-06):
 

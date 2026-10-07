@@ -29,8 +29,8 @@ final readonly class StatusTitle
         $this->value = $trimmed;
     }
 
-    /** Removes whitespace and Unicode spaces (NBSP included) at both ends. */
-    private static function trim(string $title): string
+    /** Removes whitespace and Unicode spaces (NBSP included) at both ends; the request DTO trims with it too. */
+    public static function trim(string $title): string
     {
         return (string) preg_replace(self::EDGE_SPACES, '', $title);
     }

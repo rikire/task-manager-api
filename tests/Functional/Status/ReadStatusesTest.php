@@ -47,6 +47,20 @@ final class ReadStatusesTest extends ApiTestCase
         self::assertSame(['new', 'in_progress', 'done', 'code_review'], self::names($response));
     }
 
+    /**
+     * The order is the id order (ADR-0007 D4), not the order rows happen to come back in: a status inserted
+     * last with the smallest id is listed first.
+     */
+    #[Group('REQ-STATUS-read.list')]
+    public function testOrdersByIdNotByInsertion(): void
+    {
+        $this->insertStatus('backlog', 'Бэклог', '00000000-0000-7000-8000-000000000001');
+
+        $response = $this->sendValid('GET', '/api/statuses', '/api/statuses');
+
+        self::assertSame(['backlog', 'new', 'in_progress', 'done'], self::names($response));
+    }
+
     #[Group('REQ-STATUS-read.list')]
     public function testListQueryCountDoesNotGrowWithStatuses(): void
     {
@@ -139,10 +153,10 @@ final class ReadStatusesTest extends ApiTestCase
         );
     }
 
-    private function insertStatus(string $name, string $title): void
+    private function insertStatus(string $name, string $title, ?string $id = null): void
     {
         self::assertContains('status', $this->connection()->createSchemaManager()->listTableNames(), 'No table "status": the migration is missing');
-        $this->connection()->insert('status', ['id' => Uuid::v7()->toRfc4122(), 'name' => $name, 'title' => $title]);
+        $this->connection()->insert('status', ['id' => $id ?? Uuid::v7()->toRfc4122(), 'name' => $name, 'title' => $title]);
     }
 
     private function idOf(string $name): string

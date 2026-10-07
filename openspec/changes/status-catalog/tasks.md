@@ -32,22 +32,23 @@
 
 ## 3. Create a status (REQ-STATUS-create, ADR-0005 codes with a body)
 
-- [ ] 3.1 Phase `tests`: functional tests for `REQ-STATUS-create.*` and the proposal's corner-case rows for the body,
+- [x] 3.1 Phase `tests`: functional tests for `REQ-STATUS-create.*` and the proposal's corner-case rows for the body,
   `name` and `title`; ADR-0005 tests for 400, 415, 422 (empty body, wrong type) and 405 (no `Accept` header, JSON
   asserted) on `/api/statuses`; ADR-0007 tests for 201 + `Location`; the 409 `detail` with debug off; unit test of the
   adapter turning a unique violation into `StatusNameTaken`; verify they fail for the right reason
-- [ ] 3.2 Phase `impl`: slice `CreateStatus` (DTO with the attribute options and constraints of design D3, handler,
+- [x] 3.2 Phase `impl`: slice `CreateStatus` (DTO with the attribute options and constraints of design D3, handler,
   `StatusNameTaken` → 409), adapter catch of the unique violation, error responses annotated (design D3, D4); verify
   the 3.1 tests pass; a non-object body may give 400 or 422 (owner), a 500 is a defect
-- [ ] 3.3 Phase `refactor`; regenerate `docs/api/openapi.yaml`; curl examples for `POST /api/statuses` (created,
+- [x] 3.3 Phase `refactor`; regenerate `docs/api/openapi.yaml`; curl examples for `POST /api/statuses` (created,
   invalid values, unknown field, duplicate); review brief; verify `make check` is green and the examples work against
   `make up`
 
 ## 4. Polish
 
 - [ ] 4.1 CI `clean-clone` (`QAS-DEPLOY-clean-clone-start`, `REQ-STATUS-initial.restart`): after the first and the
-  second `up`, `GET /api/statuses` → 200 listing `new`, `in_progress`, `done` once each, in that order; verify the job
-  is green
+  second `up`, `GET /api/statuses` → 200 listing `new`, `in_progress`, `done` once each, in that order; and
+  `POST /api/statuses` → 201 on the prod image (tests run with dev dependencies and missed a 500 there, group 3);
+  verify the job is green
 - [ ] 4.2 ADR-0002 check: with the database stopped, `GET /api/statuses` on the `prod` image answers 500 without a
   stack trace; verify by hand, output in the review brief
 - [ ] 4.3 Names; error message wording (`RUL-CODE-exception-messages`); boundary input; `docs/architecture/asvs-l1.md`

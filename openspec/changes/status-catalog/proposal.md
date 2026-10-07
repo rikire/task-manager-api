@@ -34,10 +34,10 @@ the status `new` (ADR-0007, D1).
 ## Out of scope
 
 - Deleting a status: change `status-delete` (roadmap row 7).
-- The `task` table and the foreign key to `status` (change `task-create-and-read`).
+- The `task` table and the foreign key to `status` (change `task-crud`).
 - Editing a status: no endpoint in the assignment (ADR-0007, D3).
-- Invalid query string → 422 (ADR-0005): no endpoint here validates a query; change
-  `task-filter-by-status`.
+- Invalid query string → 422 (ADR-0005): no endpoint here validates a query; change `task-crud`
+  (filter group).
 - Pagination (assignment line 141).
 
 ## Capabilities
@@ -105,8 +105,8 @@ only when the shape is right.
 | Input | Dimension | Expected behaviour |
 |---|---|---|
 | body | emptiness: no body with `Content-Type: application/json`, or `{}` | violations on `name` and `title` |
-| body | emptiness: no body and no `Content-Type` | 415 |
-| body | type: valid JSON that is not an object (`[]`, `"x"`, `42`, `null`) | 400 or 422, whichever the framework gives; a test fixes it (owner); never 500 |
+| body | emptiness: no body and no `Content-Type` | 422, violations on `name` and `title`: the framework checks emptiness before the content type (owner, 2026-10-07, group 3) |
+| body | type: valid JSON that is not an object (`[]`, `"x"`, `42`, `null`) | 400 or 422 accepted (owner); the framework gives 422 with type violations on `name` and `title` (observed in group 3); never 500 |
 | body | format: malformed JSON (`{"name":`), invalid UTF-8, lone `\ud800` escape | 400 |
 | body | format: `Content-Type` not `application/json` | 415 |
 | body | structure: unknown field (`"color"`) | violation on `color` only |

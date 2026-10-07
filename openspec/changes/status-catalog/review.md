@@ -118,3 +118,65 @@ JSON, but `JSON_UNESCAPED_UNICODE` would make curl output readable — registry:
 (first offered as "now", `FAIL-008`); README badges — roadmap row 9.
 
 **Extra checks:** `verifier` planned for the change (task 4.3).
+
+## Group 3 — create a status (tasks 3.1–3.3), 2026-10-07
+
+**Ready to commit:** yes, after `make check` (output in the chat brief). PHPUnit `OK (117 tests)`; the
+prod image (`make up`) answered the four curl examples of "Создать статус" as documented.
+
+**Data flow:** `POST /api/statuses` → `ApiRequestFormatListener` (JSON) → `#[MapRequestPayload]` builds
+`CreateStatusRequest` (`mapWhenEmpty`, extra fields and type errors → 422) and validates it →
+`CreateStatusController` → `CreateStatusHandler(CreateStatus)` → `Status` with `StatusName`, `StatusTitle`
+→ `DoctrineStatusRepository::save()` (unique index → `StatusNameTaken` → 409) → 201, `StatusView`,
+`Location` from the router.
+
+**Must read:**
+
+- `src/Status/Infrastructure/Http/CreateStatus/CreateStatusRequest.php` — every input rule in one place.
+- `src/Status/Infrastructure/Persistence/DoctrineStatusRepository.php` — `save()`: the unique index is the
+  only duplicate check.
+- `src/Shared/Infrastructure/Http/DomainProblemNormalizer.php` — `setSerializer()` (the group-1 defect below).
+
+**Check by hand:** the curl examples "Создать статус", "Неверные значения", "Лишнее поле", "Имя занято"
+against `make up`.
+
+**Key decisions:** design D3 (DTO, `ObjectNormalizer` with `symfony/property-access`), D4 (index only);
+ADR-0005 (amended), ADR-0007 D3.
+
+**Corner-case matrix and red output:** accepted by the owner (chat): 36 red on assertions (405 without
+the route; adapter skeleton).
+
+**Deviations and findings, each agreed in chat or stated here:**
+
+- Group-1 defect: `DomainProblemNormalizer` did not implement `SerializerAwareInterface`, so the framework
+  normalizer never got the serializer and every 422 lost its `violations`. Group 1 had no 422 test; the
+  group-3 tests caught it. Fixed by forwarding `setSerializer()`.
+- `symfony/property-access` added to production dependencies (owner, candidate card in chat): every
+  object denormalizer uses it; the prod image answered 500 to `POST /api/statuses`. My group-2 note that
+  `PropertyNormalizer` would avoid it was not verified on the prod image and was wrong; the workaround
+  is removed. Task 4.1 now also checks `POST` on the prod image.
+- No body and no `Content-Type` → 422, not 415 (owner): the framework checks emptiness first; the test
+  and the matrix row changed in a second phase `tests`.
+- A JSON body that is not an object → 422 (observed; the owner accepted 400 or 422).
+- `existsByName()` not written: no test needs it (design D4, `FAIL-009`).
+- The invalid-UTF-8 case moved out of a data provider: PHPUnit printed raw bytes and crashed the Stop hook
+  (`IMP-010-stop-hook-non-utf8-output`).
+- Infection on `src/Status` and `src/Shared`: 73 mutants, 67 killed. Of the 6 escaped: 2 code
+  simplifications (the `/api/doc` exception in the listener was dead — removed; the exception code literal
+  — removed), 2 test gaps closed with the owner's approval (`testOrdersByIdNotByInsertion`,
+  `testLeavesPathsOutsideApiToTheDefaultFormat`, both shown to fail on the hand-applied mutant), 1 false
+  positive from cached validator metadata (`IMP-011-infection-stale-validator-cache`, checked by hand).
+
+**Simplifications:** none beyond design D4.
+
+**Debt:** none; improvements `IMP-010`, `IMP-011`.
+
+**Not done:** none in this group.
+
+**Maturity:** functionality — working minimum (create, list, read); reliability — production-ready for
+this scope (database constraints decide duplicates, concurrent case tested on the adapter); security —
+production-ready (strict input, control characters refused, no internals in errors); maintainability —
+production-ready; observability — prototype; consumer experience — working minimum (`IMP-009`).
+
+**Extra checks:** `/security-review` recommended for the change before archiving (input parsing added);
+`verifier` in task 4.3.
