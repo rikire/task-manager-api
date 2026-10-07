@@ -11,5 +11,9 @@ framework:
 when@test:
     framework:
         test: true
+        # Stands for a mapped domain exception, to test the error `detail` (ADR-0005).
+        exceptions:
+            App\Tests\Fixtures\DomainRuleBroken:
+                status_code: 409
         session:
             storage_factory_id: session.storage.factory.mock_file

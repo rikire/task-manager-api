@@ -9,3 +9,12 @@
 
 controllers:
     resource: routing.controllers
+    # Every application route is part of the JSON API: errors render as JSON (ADR-0005).
+    defaults: { _format: json }
+
+# Routes that exist only for tests (ADR-0005 Confirmation: no test code in production routes).
+when@test:
+    test_only:
+        resource: ../tests/Fixtures/TestOnlyController.php
+        type: attribute
+        defaults: { _format: json }

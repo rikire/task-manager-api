@@ -1,6 +1,10 @@
 # ADR-0007: Task–status link, status deletion and API conventions
 
 - **Status:** active, 2026-10-07
+- **Errata:** 2026-10-07 — the Facts row on extra fields missed `collect_extra_attributes_errors: true`,
+  without which an unknown field ends in 500; `detail` texts now follow `RUL-CODE-exception-messages` and
+  reach the client through the normalizer of ADR-0005 (amended the same day). Found by the `spec-auditor`
+  subagent (change `status-catalog`).
 - **Kind:** architecture
 - **Decided by:** project owner (data schema, API contract and error codes; interview before the change
   `status-catalog`, 2026-10-07)
@@ -44,7 +48,7 @@ Facts (checked 2026-10-07 in `vendor/`, Symfony 8.1.8):
 | Fact | Source |
 |---|---|
 | `Requirement::UUID` is the regex `[0-9a-f]{8}-[0-9a-f]{4}-[13-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}`: lowercase only, versions 1 and 3–8; a path that does not match it matches no route | `symfony/routing` `Requirement/Requirement.php` |
-| With the serializer option `allow_extra_attributes: false` in a `#[MapRequestPayload]` serialization context, each unexpected field becomes a violation ("This attribute was not expected.", `propertyPath` = the field) answered with the validation code (422) | `symfony/http-kernel` `RequestPayloadValueResolver` (source read; not yet confirmed by a test) |
+| With the serializer options `allow_extra_attributes: false` and `collect_extra_attributes_errors: true` in a `#[MapRequestPayload]` serialization context, each unexpected field becomes a violation; with the first option alone the serializer throws and the request ends in 500. Shape violations are reported without the validator's: it runs only when the body could be mapped ("This attribute was not expected.", `propertyPath` = the field) answered with the validation code (422) | `symfony/http-kernel` `RequestPayloadValueResolver` (source read; not yet confirmed by a test) |
 | `symfony/uid` UUID v7 carries a microsecond timestamp and is monotonic within one PHP process; ids made in the same microsecond by different processes are ordered by their random bits | `symfony/uid` `UuidV7.php` |
 
 ## Considered options
@@ -120,8 +124,8 @@ the contract.
 - Deleting a status that any task uses → **409**, nothing deleted. The Status module asks the port
   `StatusUsage` ("is this status used by any task?", implemented by the Task module's `Persistence`)
   before deleting. Deleting `new` → **409** always, because every created task needs it; this check comes
-  first, so its `detail` wins even when tasks use `new`. The two 409s differ in `detail`: "status is used
-  by tasks" / "status `new` cannot be deleted". Deleting an unknown id → 404.
+  first, so its `detail` wins even when tasks use `new`. The two 409s differ in `detail`: `Status "x" is
+  used by tasks.` / `Status "new" cannot be deleted.` Deleting an unknown id → 404.
 - Concurrent requests (the foreign key decides; each loser gets the same code as without the race):
   - a `PATCH` moves a task to status X while X is being deleted, and the delete commits first → the
     Task module's `Persistence` turns the foreign key violation into the "unknown status" exception → 422;
@@ -130,8 +134,8 @@ the contract.
 
 **Status fields (D3).**
 
-- `name`: `^[a-z][a-z0-9_]*$`, 1–50 characters; otherwise 422 on `name`. Duplicate → **409**, `detail` "status `<name>`
-  already exists": a domain exception mapped with `framework.exceptions` (ADR-0005); a concurrent duplicate caught by
+- `name`: `^[a-z][a-z0-9_]*$`, 1–50 characters; otherwise 422 on `name`. Duplicate → **409**, `detail` `Status "<name>"
+  already exists.`: a domain exception mapped with `framework.exceptions` (ADR-0005); a concurrent duplicate caught by
   the unique index is turned into the same exception in the Status module's `Persistence`.
 - `title`: non-empty after trimming, at most 255 characters, not unique; otherwise 422 on `title`.
   `"Code Review"` is a valid `title` and an invalid `name`.
@@ -152,7 +156,7 @@ the contract.
 
 | Request | Code and body |
 |---|---|
-| `PATCH /api/tasks/{id}/status` with a status `name` that does not exist | 422, `detail` names the status; no `violations` |
+| `PATCH /api/tasks/{id}/status` with a status `name` that does not exist | 422, `detail` `Unknown status "<name>".`; no `violations` |
 | `GET /api/tasks?status=<name>` with a `name` that does not exist | 422, the same body |
 | `?status=` or a `PATCH` body `status` that fails the `name` pattern (`Done`) or is empty | 422, violation on `status` (request DTO constraint) |
 | A body field the endpoint does not define (`{"title": "x", "foo": 1}`) | 422, violation on `foo` |
@@ -160,14 +164,17 @@ the contract.
 | A path id that does not match `Requirement::UUID` (`/api/tasks/abc`, an uppercase UUID) | 404 |
 | A well-formed id that does not exist | 404 (ADR-0005) |
 
+- Every `detail` text above is the domain exception's message, put into the body by the normalizer of
+  ADR-0005 (with debug off the framework alone would show only `"Conflict"`).
 - "Unknown status by `name`" is its own domain exception class, mapped to 422 with
   `framework.exceptions`. It is not the "status not found by id" exception of `GET /api/statuses/{id}`
   (404): `framework.exceptions` maps a class to one code for the whole application.
-- Extra body fields are rejected per endpoint: `allow_extra_attributes: false` in each `#[MapRequestPayload]`
-  serialization context, not in the global serializer configuration, which would also reach `#[MapQueryString]`. Unknown
-  query parameters are ignored because proxies and browsers add their own (`utm_*`, cache-busting `_=<timestamp>`), and
-  a misspelt query parameter loses no data. Trade-off: a misspelt parameter name (`?stauts=done`) returns an unfiltered
-  list; accepted because the parameters others add cannot be listed.
+- Extra body fields are rejected per endpoint: `allow_extra_attributes: false` and `collect_extra_attributes_errors:
+  true` in each `#[MapRequestPayload]` serialization context, not in the global serializer configuration, which would
+  also reach `#[MapQueryString]`. Unknown query parameters are ignored because proxies and browsers add their own
+  (`utm_*`, cache-busting `_=<timestamp>`), and a misspelt query parameter loses no data. Trade-off: a misspelt
+  parameter name (`?stauts=done`) returns an unfiltered list; accepted because the parameters others add cannot be
+  listed.
 - A path that is not a UUID names no resource, so 404 is accurate, and the route requirement gives it
   without own code.
 

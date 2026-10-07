@@ -9,6 +9,9 @@
   left classes outside the modules unchecked, while `QAS-MAINT-layering` forbids HTTP entry points any
   database access; added the `Database` and `Unassigned` layers (owner's decision; found by the `verifier`
   subagent).
+- **Amended:** 2026-10-07 — layer `Shared` (`src/Shared/Infrastructure/`) for infrastructure that serves
+  both modules and is wired only by configuration; first class: the error `detail` normalizer of ADR-0005
+  (owner's decision, change `status-catalog`).
 - **Kind:** architecture
 - **Decided by:** project owner (proposed the style; chose full hexagonal and two modules over the agent's
   lighter recommendation)
@@ -104,7 +107,7 @@ the check does not report dependencies on classes outside every layer by default
 |---|---|
 | `Database` | `Doctrine\` (ORM, DBAL, Persistence), `Symfony\Bridge\Doctrine\` (for example `#[MapEntity]`, which loads an entity from the database), `PDO` |
 | `Vendor` | any other class outside `App\` that is not a PHP built-in (a `bool` collector) |
-| `Unassigned` | any class in `src/` outside the modules, except `src/Kernel.php` — so that, for example, a controller in `src/Controller/` is still checked |
+| `Unassigned` | any class in `src/` outside the modules and `src/Shared/Infrastructure/`, except `src/Kernel.php` — so that, for example, a controller in `src/Controller/` is still checked |
 
 | App layer (in each module) | May depend on |
 |---|---|
@@ -113,6 +116,7 @@ the check does not report dependencies on classes outside every layer by default
 | `Http` | its module's `Application` and `Domain` (exceptions and values); `Vendor` — never `Database` or `Persistence` |
 | `Persistence` | its module's `Domain`, `Database`, `Vendor`; Task's may use Status's `Domain` (to implement `StatusUsage`) |
 | `Unassigned` | nothing: code belongs in a module |
+| `Shared` (`src/Shared/Infrastructure/`, outside the modules) | `Vendor` only — never a module, never `Database`; no module depends on `Shared`: it is wired by configuration (amended 2026-10-07) |
 
 The core (`Domain`, `Application`) depends on nothing outside PHP; the adapters (`Http`, `Persistence`) may
 use any third-party library — that is where infrastructure belongs in ports and adapters — with the one
@@ -168,6 +172,8 @@ inversion.
 - Fixture tests in group `ADR-0006-module-structure`, written first (change `architecture-kickoff`
   group 2): a class in an `Http` layer that uses Doctrine, and a class in `Status` that uses `Task`, each
   make the check report a violation.
+- Amended 2026-10-07: fixture tests where a `Shared` class uses a module class, and a module class uses a
+  `Shared` class, each make the check report a violation (change `status-catalog`).
 
 ## Retires
 

@@ -41,6 +41,10 @@ deptrac:
             - { type: classNameRegex, value: '#^Symfony\\Bridge\\Doctrine\\#' }
             - { type: php_internal, value: '.*' }
 
+    # Infrastructure shared by both modules and wired only by configuration (ADR-0006, amended 2026-10-07).
+    - name: Shared
+      collectors: [{ type: directory, value: src/Shared/Infrastructure/.* }]
+
     # Code outside the modules (e.g. Symfony's default src/Controller/) may depend on nothing: it belongs in a
     # module. Kernel.php is the framework's entry point and stays outside the rules.
     - name: Unassigned
@@ -50,6 +54,7 @@ deptrac:
             - { type: directory, value: src/.* }
           must_not:
             - { type: directory, value: src/(Task|Status)/.* }
+            - { type: directory, value: src/Shared/Infrastructure/.* }
             - { type: directory, value: src/Kernel\.php }
 
   ruleset:
@@ -62,5 +67,7 @@ deptrac:
     StatusApplication: [StatusDomain]
     StatusHttp: [StatusApplication, StatusDomain, Vendor]
     StatusPersistence: [StatusDomain, Database, Vendor]
+
+    Shared: [Vendor]
 
     Unassigned: ~
