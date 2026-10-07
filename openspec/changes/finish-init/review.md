@@ -65,3 +65,49 @@ The `verifier` subagent could not refute "done" but found two major gaps; the ow
 4. Split `main` of `scripts/roadmap.py` into parsing and checking — proposed: Polish, if the
    cognitive-complexity report (task 6.2) flags it.
 5. Stop hook repeating identical red runs while waiting — `IMP-006`; proposed: register with trigger.
+
+## Group 2 — checks at setup (tasks 2.1–2.4), 2026-10-07
+
+**Ready to commit:** yes. `make check` green (hooks 31 tests, scripts 52 tests, Deptrac 0 violations,
+`openspec validate` 2/2, `roadmap-check`); a plain Bash command runs without a sandbox override.
+
+**What changed:** 14 of 16 checks at setup in `docs/pre-init/35-init-checklist.md` are marked with
+evidence or pointers; the remaining OpenSpec `verify` item waits for task 7.3 (owner). Found and fixed:
+the TDD hook did not lock `scripts/tests/` and `.claude/hooks/tests/` for Edit/Write, nor Bash redirects
+into nested `tests/` directories (task 2.3; tests first, accepted by the owner). The Bash sandbox is
+turned off (task 2.4).
+
+**Key decisions (owner, 2026-10-07):** sandbox off instead of an AppArmor fix; Composer release delay
+and the sandbox fix are roadmap candidates; thresholds are mapped to `IMP-001`, task 6.3 and decision
+record 34 §4.
+
+**Simplifications:** none in code. The sandbox decision is recorded as debt, not as a simplification,
+because it is below the norm of decision record 15.
+
+**Debt / improvements:** `DEBT-001-sandbox-disabled`, `IMP-007-protect-ask-paths-false-positives`.
+
+**Not done:** OpenSpec `verify` check (task 7.3). `.claude/hooks/BYPASSES.md` rows that relied on the
+sandbox are rewritten; decision record 15 itself is amended with the other decision records in task 7.2.
+
+**Agent error in this group:** before the owner accepted the task 2.3 test, the agent claimed Bash
+writes into `scripts/tests/` were already blocked; the test showed redirects were not. Corrected in the
+same task.
+
+**Maturity:**
+
+| Axis | Level | Why |
+|---|---|---|
+| Functionality | working minimum | every check has evidence or an owner-confirmed pointer |
+| Reliability | prototype | without the sandbox, guards are permission rules and pattern-matching hooks with known bypasses (`BYPASSES.md`) |
+| Performance | production-ready | Stop hook 12 s, per-edit format and lint under 3 s |
+| Security | prototype | no command isolation, no network allowlist (`DEBT-001`) |
+| Maintainability | working minimum | results live next to each checklist item; bypasses listed in one file |
+| Observability | working minimum | Stop-hook output shows each failing check |
+| Consumer experience | working minimum | false positives of the shell-write guard cost a retry (`IMP-007`) |
+
+**Top improvements** (the owner chooses now or register):
+
+1. Restore the sandbox with a narrow AppArmor profile — `DEBT-001`; proposed: roadmap candidate
+   (owner's decision).
+2. Fewer false positives of the shell-write guard — `IMP-007`; proposed: register with trigger.
+3. Repeated identical Stop-hook blocks — `IMP-006`; proposed: register with trigger.
