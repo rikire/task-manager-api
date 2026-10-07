@@ -111,6 +111,10 @@ Format and rules: `docs/pre-init/10-debt-polish-headroom.md` §2.
 - **Trigger:** the owner finds the repeated blocks costly, or a session hits the three-block limit while
   waiting.
 - **Size:** the Stop-hook script (reuse its state directory), 2 hook tests.
+- **Trigger fired:** 2026-10-07 — a cloud session (branch `claude/readme-repo-polish-jpxbbm`, PR #27) hit the
+  three-block limit in more than twenty blocks with identical output while the agent waited for the owner's
+  answers; the tree was committed and pushed, CI green (see `IMP-013`, `FAIL-010`). Not fixed yet: the
+  owner put harness changes after submission (2026-10-07).
 
 ## IMP-008-mutation-score-threshold
 
@@ -211,3 +215,18 @@ Format and rules: `docs/pre-init/10-debt-polish-headroom.md` §2.
 - **Size:** one setting — `JSON_UNESCAPED_UNICODE` in the JSON encoder context
   (`framework.serializer.default_context`) or in `AbstractController::json()` calls; one test asserting
   a literal Cyrillic `title` in the response body; the curl-examples note removed.
+
+## IMP-013-stop-hook-without-docker
+
+- **What could be better:** the Stop hook runs `make check`, which needs the development container. Where
+  the checks cannot run at all — a cloud container with no Docker daemon, or one whose network policy blocks
+  the image build (`deb.debian.org`, `pecl.php.net`, Docker Hub) — the hook reports "Checks are red" and
+  blocks every reply, the same as a real failure. The agent cannot fix the cause from the repository.
+- **Why not now:** the noise hides nothing: CI runs the same `make check` on every pull request and the agent
+  cannot switch it off (decision record 28 §4). Harness changes wait until after submission, the mandatory
+  change `status-delete` comes first (owner, 2026-10-07).
+- **Trigger:** after submission, or the next cloud session that needs more than a few turns.
+- **Size:** in the Stop-hook script, when the Docker daemon does not answer: print once "checks not run
+  here: no Docker; the gate is CI" and do not block; a red run with Docker keeps blocking as now. 2 hook
+  tests. Alternative rejected for now: opening the cloud network to the package hosts and Docker Hub
+  (wider access, Docker Hub rate limits seen as 429 on 2026-10-07).

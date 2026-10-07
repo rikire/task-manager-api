@@ -175,3 +175,19 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
   "Open questions" until the owner answers; only the answer moves them to "Confirmed". The `forms.py` check
   cannot tell who said what, so the level is instruction (skill `interview`, step 5).
 - **Commit:** —
+
+## FAIL-010-started-docker-without-checking-the-build
+
+- **What happened:** in a cloud session (2026-10-07, README and badges, PR #27) the agent started a Docker
+  daemon in the container to run the checks locally, without first checking that the image could be built
+  there. The build failed (the network policy blocks `deb.debian.org` and `pecl.php.net`), and from then on
+  the Stop hook tried the build after every reply and blocked; the agent also promised that stopping the
+  daemon would end the blocks, which was wrong — without Docker the hook blocks too. Found by the agent.
+- **Known weakness:** acting on an unchecked assumption about the environment ("Docker runs, so the checks
+  will run"), and a claim stated as fact without verification.
+- **Probable cause:** the agent checked only the first step (the daemon starts) and treated the rest of the
+  path (image pulls, package downloads) as given; the Stop hook does not tell "cannot run here" from "red".
+- **Remedy (level: hook, proposed; awaits the owner's decision):** `IMP-013-stop-hook-without-docker` — the
+  hook reports "not run here" instead of red when Docker is absent; with it, starting or not starting a
+  daemon no longer changes what the hook says. No instruction is added: one observed case.
+- **Commit:** —
