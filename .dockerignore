@@ -1,0 +1,10 @@
+.git
+.agent-state
+.claude
+.env
+.env.*
+!.env.example
+vendor
+var
+docs
+openspec

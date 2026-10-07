@@ -52,4 +52,4 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
   in the diff or the accepted decisions, states the context in the question, explains every term, and for
   a decision-only diff asks "why X and not Y" rather than "what happens at run time". No lower ladder level
   fits: question quality is a judgement.
-- **Commit:** (filled in when the remedy is committed).
+- **Commit:** 2829124.

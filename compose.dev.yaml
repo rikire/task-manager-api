@@ -1,0 +1,26 @@
+# Development build: `docker compose -f compose.yaml -f compose.dev.yaml …` (ADR-0002).
+# Not named compose.override.yaml on purpose: Compose loads that file automatically, which would give the
+# reviewer the development build.
+# The source is mounted; vendor/ and var/ stay in anonymous volumes, so the image's dependencies are used
+# and generated files are not written into the working tree (rebuild after changing dependencies).
+
+services:
+  migrate:
+    build:
+      context: .
+      target: dev
+    image: task-manager-app:dev
+    volumes:
+      - .:/app
+      - /app/vendor
+      - /app/var
+
+  app:
+    build:
+      context: .
+      target: dev
+    image: task-manager-app:dev
+    volumes:
+      - .:/app
+      - /app/vendor
+      - /app/var

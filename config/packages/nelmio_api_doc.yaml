@@ -1,0 +1,9 @@
+# OpenAPI 3.0 generated from code (ADR-0003); the committed dump lives in docs/api/openapi.yaml.
+nelmio_api_doc:
+    documentation:
+        info:
+            title: Task Manager API
+            version: 1.0.0
+    areas:
+        path_patterns:
+            - ^/api(?!/doc)
