@@ -10,7 +10,10 @@ human instead of following it.
 |---|---|
 | `scripts/phase tests\|impl\|refactor\|off` | switch the TDD phase (`off` outside a change); `tests` needs the human's confirmation; no argument prints the current phase |
 | `openspec list`, `openspec status --change <name>`, `openspec validate --all` | OpenSpec state and structure checks |
-| `make …` | build, test and check targets — appear with the application skeleton |
+| `make setup` | prepare the machine: tools from `mise.lock`, git hooks (safe to re-run) |
+| `make up` / `make dev` / `make down` | stack as the reviewer runs it (production build) / development stack / stop |
+| `make test`, `make stan`, `make cs`, `make cs-fix` | PHPUnit, PHPStan max, code style check / fix — in the development container |
+| `make check` | everything the pre-commit hook runs; `make help` lists all targets |
 
 Tools are pinned in `mise.toml`; run them on `PATH` (mise activated) or via `mise exec --`.
 
