@@ -1,18 +1,27 @@
 # Task Manager API — REST API для задач и их статусов
 
 [![CI](https://github.com/rikire/task-manager-api/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/rikire/task-manager-api/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Frikire%2Ftask-manager-api%2Fbadges%2Fcoverage.json)](https://github.com/rikire/task-manager-api/actions/workflows/ci.yml?query=branch%3Amain)
+[![Mutation score](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Frikire%2Ftask-manager-api%2Fbadges%2Fmsi.json)](https://github.com/rikire/task-manager-api/actions/workflows/ci.yml?query=branch%3Amain)
 [![PHP 8.4](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php&logoColor=white)](docs/adr/ADR-0001-platform-versions.md)
 [![Symfony 8.1](https://img.shields.io/badge/Symfony-8.1-000000?logo=symfony&logoColor=white)](docs/adr/ADR-0001-platform-versions.md)
 [![PostgreSQL 18](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](docs/adr/ADR-0001-platform-versions.md)
 [![PHPStan level max](https://img.shields.io/badge/PHPStan-level%20max-2A5EA7)](phpstan.neon)
 [![OpenAPI 3.0](https://img.shields.io/badge/OpenAPI-3.0-6BA539?logo=openapiinitiative&logoColor=white)](docs/api/openapi.yaml)
+[![Cognitive complexity](https://img.shields.io/badge/cognitive%20complexity-method%20%E2%89%A45%2C%20class%20%E2%89%A420-brightgreen)](phpstan-complexity.neon)
+[![Deptrac](https://img.shields.io/badge/Deptrac-layers%20enforced-brightgreen)](deptrac.yaml)
+[![Psalm taint](https://img.shields.io/badge/Psalm-taint%20analysis-brightgreen)](psalm.xml)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-FE5196?logo=conventionalcommits&logoColor=white)](commitlint.config.mjs)
 
 Тестовое задание Skyeng (Backend): REST API для управления задачами и их статусами на Symfony 8.1,
 PHP 8.4, PostgreSQL 18 и Docker Compose. Готово: каталог статусов (список, чтение, создание), задачи
 (создание, чтение, список с фильтром по статусу, удаление, смена статуса). В работе: удаление статуса.
 
-Плашка CI показывает результат последнего прогона на `main`; остальные — статические и ведут на файл,
-где закреплено значение (уровень PHPStan max проверяется в CI через `make check`).
+Живые плашки: CI — результат последнего прогона на `main`; покрытие тестами и оценка мутационного
+тестирования (MSI — доля намеренно внесённых в код ошибок, которые поймали тесты) — всего кода, их считает
+CI после каждого слияния в `main` (`make badges`). Остальные — статические и ведут на файл, где закреплено
+значение; правила с плашек (PHPStan, сложность, Deptrac, Psalm, формат коммитов) проверяет CI, нарушение
+валит сборку.
 
 ## Эндпоинты
 
@@ -148,8 +157,6 @@ curl -s -i 'http://localhost:8080/api/tasks?status=done'
 - Порог мутационного тестирования: Infection (мутационное тестирование — проверяет, замечают ли тесты
   намеренно испорченный код) в CI пока только показывает пропущенные мутации и не валит
   сборку (`IMP-008` в [реестре улучшений](docs/registers/debt.md)).
-- Плашки покрытия тестами и оценки мутационного тестирования (MSI) — нужен внешний сервис или своя
-  генерация в CI (пункт 9 «плашки в README» в [роадмапе](docs/roadmap.md#изменения)).
 - Перед реальным деплоем — контейнеры не от `root` (`IMP-002`); кириллица в JSON без экранирования
   `\u…` (`IMP-009`).
 
@@ -214,6 +221,7 @@ Claude Code не применяет настройки и хуки проект�
 | Когнитивная сложность методов и классов | `make check` | метод сложнее 5 или класс сложнее 20 валит сборку: длинный запутанный код не проходит (`QAS-MAINT-readability`) |
 | Psalm, taint-анализ | CI, блокирует | ввод из запроса не должен доходить до SQL, HTML или shell |
 | Infection по изменённым строкам PR | CI, только отчёт | показывает, какие изменения кода тесты не замечают (`IMP-008`) |
+| Покрытие и MSI всего кода (`make badges`) | CI, только отчёт; с `main` публикуется в ветку `badges` | живые цифры на плашках README: видно, насколько тесты покрывают код и ловят ошибки, без внешних сервисов |
 | Аудит зависимостей (`composer audit`) | `make check` | известные уязвимости в пакетах |
 | Роадмап и порядок изменений | `make check` | статусы в [роадмапе](docs/roadmap.md) совпадают с изменениями OpenSpec; нельзя начать изменение, пока выше в роадмапе не завершено изменение с приоритетом «обязательно» |
 | Форма изменений, сводок ревью и ADR | `make check` | у изменения — таблица покрытия и списки «подтверждено / допущения / открытые вопросы» (задачу нельзя отметить выполненной, пока они не закрыты); у сводки ревью (`review.md` изменения) — упрощения, долг, зрелость; у ADR — варианты и драйверы |
