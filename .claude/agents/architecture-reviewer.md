@@ -14,6 +14,7 @@ change, or the path of an ADR draft; plus the related `design.md`. Read the acce
 `.claude/rules/code.md` if they exist.
 
 For a change, check:
+
 1. **Accepted decisions:** does the code contradict an active ADR, a `CON-` constraint, a dependency
    rule or a `RUL-ARCH-…` rule? Cite the ADR, constraint or rule ID.
 2. **Principles:** single responsibility; coupling and cohesion; dependencies point toward the domain,

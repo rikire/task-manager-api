@@ -30,8 +30,8 @@ Name the problem. Check, in order: the framework and its conventions; tactics by
 modifiability: encapsulation, dependency inversion, ports and adapters; security: input validation,
 authorization at the boundary, least privilege); styles (layered, hexagonal / ports and adapters,
 clean architecture); patterns (PoEAA: repository, service layer, data mapper, DTO; DDD: aggregate,
-value object, bounded context; EIP for messaging). Record what fits and what was rejected and why. For a non-trivial problem or a library choice, hand the
-named problem to the `researcher` subagent and cite its sources.
+value object, bounded context; EIP for messaging). Record what fits and what was rejected and why.
+For a non-trivial problem or a library choice, hand the named problem to the `researcher` subagent and cite its sources.
 
 ## 4. Options and trade-offs
 
@@ -40,6 +40,7 @@ points (a decision strongly affects one attribute) and trade-off points (improve
 expense of another). Recommend one, citing the principle, tactic or pattern applied.
 
 Principle checks for each option:
+
 - Single responsibility: does each unit have one reason to change?
 - Coupling: how many modules change when this changes? Cohesion: do the unit's parts change together?
 - Dependency rule: do dependencies point toward the domain? Any cycles?
@@ -61,7 +62,7 @@ Draft `docs/adr/ADR-NNNN-<slug>.md` (English) with: Status `active`; Kind `archi
 Decided by: project owner; Drafted by: agent; Context and drivers; Considered options (≥2); Trade-offs
 table; Decision and rationale (the only normative section); Consequences; Confirmation (test or
 dependency rule that enforces it, or "review"); Retires (rules or wording it cancels); Revisit-when.
-When asking to commit, say "this commit accepts ADR-NNNN-<slug>".
+When asking to commit, say "this commit accepts `ADR-NNNN-<slug>`".
 
 Update in the same change: `docs/architecture/README.md` (strategy, building blocks, diagrams in
 Mermaid with a caption saying why the diagram exists), dependency rules, `RUL-ARCH-…` rules if any.

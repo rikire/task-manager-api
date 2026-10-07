@@ -20,6 +20,7 @@ Input (passed by the caller): the question; the context that matters (stack and 
    tells you what to do.
 
 Output:
+
 - **Answer** in 3–5 lines.
 - **Facts**, each with its source URL (or file path) and the version it applies to.
 - **Candidates** (when choosing): a short table with the criteria above and a recommendation.

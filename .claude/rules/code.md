@@ -38,7 +38,7 @@ Rules for application code. Each rule: why, scope, source.
 - **RUL-CODE-style.** Formatting is PHP-CS-Fixer's job (`@Symfony`, `@Symfony:risky`, `@PHP8x4Migration`,
   `ordered_class_elements`, `declare(strict_types=1)` in every file; `.php-cs-fixer.dist.php`); the rules
   below cover what the config cannot express. Source: Symfony Coding Standards
-  (https://symfony.com/doc/current/contributing/code/standards.html); owner, 2026-10-07 (change
+  (<https://symfony.com/doc/current/contributing/code/standards.html>); owner, 2026-10-07 (change
   `finish-init`, step 13).
 - **RUL-CODE-exception-messages.** Build messages with `sprintf()`; start with a capital letter, end with
   a period; quote values with double quotes, never backticks; use `get_debug_type()` for types. Why:
@@ -52,7 +52,7 @@ Rules for application code. Each rule: why, scope, source.
   Standards.
 - **RUL-CODE-di.** Autowiring and autoconfiguration; services private; no `$container->get()`;
   `#[Autowire]` only where a value cannot be inferred. Source: Symfony Best Practices
-  (https://symfony.com/doc/current/best_practices.html).
+  (<https://symfony.com/doc/current/best_practices.html>).
 - **RUL-CODE-config.** Infrastructure settings come from environment variables, secrets from Symfony
   secrets or the environment (never committed), application options as `app.`-prefixed parameters,
   options that never change per environment as class constants. Source: Symfony Best Practices;

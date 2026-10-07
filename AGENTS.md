@@ -56,8 +56,8 @@ Source: `docs/pre-init/13-authority.md`.
 
 Stop the dependent work when: a check refuted a hypothesis you acted on; you are about to repeat an
 attempt with no new information; the work goes beyond the active change and its `tasks.md`; a result
-contradicts the spec, an ADR, a `CON-` constraint or a `RUL-` rule; required behaviour is unknown and cannot be looked up; a
-change cannot be linked to a requirement or task; a test looks wrong; you can no longer tell agreed
+contradicts the spec, an ADR, a `CON-` constraint or a `RUL-` rule; required behaviour is unknown and
+cannot be looked up; a change cannot be linked to a requirement or task; a test looks wrong; you can no longer tell agreed
 from proposed. Then separate confirmed / refuted / unknown and ask **one** question with options and a
 recommendation.
 
