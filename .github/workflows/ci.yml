@@ -110,3 +110,47 @@ jobs:
           mise exec -- lychee --no-progress --max-retries 2
           --exclude-path vendor --exclude-path node_modules --exclude-path var --exclude-path docs/pre-init
           --exclude localhost --accept '200..=299,403,429' './**/*.md'
+
+  # README badges (roadmap row 9): coverage and MSI of all code. A pull request only shows the numbers; main also
+  # publishes them as shields.io endpoint JSON to the branch `badges`, one commit, force-pushed (owner, 2026-10-07).
+  badges:
+    name: badges
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write # only the publish step uses the token, and only on main
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false # the code under test never sees the write token
+      - name: Coverage and mutation score (make badges)
+        run: make badges
+      - name: Badge JSON
+        run: |
+          python3 - <<'EOF'
+          import json, os, xml.etree.ElementTree as ET
+
+          metrics = ET.parse("build/badges/clover.xml").getroot().find("project/metrics")
+          coverage = 100 * int(metrics.get("coveredstatements")) / int(metrics.get("statements"))
+          msi = float(json.load(open("build/badges/infection.json"))["stats"]["msi"])
+
+          def badge(label, value):
+              color = "brightgreen" if value >= 90 else "green" if value >= 80 else "yellow" if value >= 70 else "orange"
+              return {"schemaVersion": 1, "label": label, "message": f"{value:.0f}%", "color": color}
+
+          os.makedirs("badges", exist_ok=True)
+          for name, label, value in (("coverage", "coverage", coverage), ("msi", "mutation score (MSI)", msi)):
+              json.dump(badge(label, value), open(f"badges/{name}.json", "w"))
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as summary:
+              summary.write(f"Coverage: {coverage:.1f}%, MSI: {msi:.1f}%\n")
+          EOF
+      - name: Publish to the branch badges
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: badges
+        run: |
+          git init -q -b badges
+          git add coverage.json msi.json
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+            commit -q -m "chore: badges for ${GITHUB_SHA}"
+          git push -q -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" badges

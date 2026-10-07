@@ -32,3 +32,6 @@ __pycache__/
 
 # Deptrac analysis cache
 /.deptrac.cache
+
+# Coverage and mutation reports for the README badges (make badges)
+/build/
