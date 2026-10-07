@@ -86,6 +86,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Problem'
+  '/api/tasks/{id}/status':
+    patch:
+      tags:
+        - Tasks
+      operationId: patch_task_change_status
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[13-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeTaskStatusRequest'
+      responses:
+        '200':
+          description: 'The task with its status'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: 'Malformed JSON'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: 'No task has this id'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '415':
+          description: 'The body is not JSON'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '422':
+          description: 'The body breaks a rule, or names no status'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
   /api/tasks:
     get:
       tags:
@@ -271,6 +321,15 @@ components:
         title:
           type: string
           maxLength: 255
+      type: object
+    ChangeTaskStatusRequest:
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          pattern: '^[a-z][a-z0-9_]*$'
+          maxLength: 50
       type: object
     CreateTaskRequest:
       required:
