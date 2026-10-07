@@ -17,6 +17,9 @@ interface StatusRepository
     /** @throws StatusNotFound */
     public function get(StatusId $id): Status;
 
+    /** The status with this name, or null; the Task module turns null into its own errors (ADR-0007 D5). */
+    public function findByName(StatusName $name): ?Status;
+
     /** A new UUID v7 identifier: known before the status is saved (ADR-0006). */
     public function nextId(): StatusId;
 

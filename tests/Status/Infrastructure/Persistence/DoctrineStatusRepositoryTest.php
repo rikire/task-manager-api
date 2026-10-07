@@ -54,6 +54,16 @@ final class DoctrineStatusRepositoryTest extends KernelTestCase
         $this->repository()->save($status);
     }
 
+    #[Group('REQ-TASK-create.created')]
+    public function testFindsStatusByName(): void
+    {
+        $status = $this->repository()->findByName(new StatusName('in_progress'));
+
+        self::assertNotNull($status);
+        self::assertSame('019b76da-a800-7000-8000-000000000002', $status->id()->value);
+        self::assertNull($this->repository()->findByName(new StatusName('archived')));
+    }
+
     private function repository(): StatusRepository
     {
         $repository = self::getContainer()->get(StatusRepository::class);

@@ -6,6 +6,7 @@ namespace App\Status\Infrastructure\Persistence;
 
 use App\Status\Domain\Status;
 use App\Status\Domain\StatusId;
+use App\Status\Domain\StatusName;
 use App\Status\Domain\StatusNameTaken;
 use App\Status\Domain\StatusNotFound;
 use App\Status\Domain\StatusRepository;
@@ -31,6 +32,11 @@ final readonly class DoctrineStatusRepository implements StatusRepository
     public function get(StatusId $id): Status
     {
         return $this->entityManager->find(Status::class, $id->value) ?? throw StatusNotFound::withId($id);
+    }
+
+    public function findByName(StatusName $name): ?Status
+    {
+        return $this->entityManager->getRepository(Status::class)->findOneBy(['name' => $name->value]);
     }
 
     public function nextId(): StatusId
