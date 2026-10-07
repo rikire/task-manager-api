@@ -23,6 +23,21 @@ Format and rules: `docs/pre-init/10-debt-polish-headroom.md` §2.
   next project on this machine — first a narrow AppArmor profile, then `sandbox.enabled: true` and the
   checklist item re-run.
 
+## DEBT-002-hook-tests-on-handmade-events
+
+- **What is wrong:** the unit tests of the Claude Code hooks (`.claude/hooks/tests/test_hooks.py`) feed
+  events written by hand after the documented hook input format, not events recorded from a real
+  session, as decision record 34 §2 and checklist 35 step 7 require.
+- **Why it was done:** the hooks were built before a session could be recorded; on 2026-10-07 the owner
+  chose to keep the tests as they are (change `finish-init`, final check of the initialization) because
+  the hooks were exercised live many times in that session (blocks by `protect_tests.py`,
+  `protect_ask_paths.py`, the Stop hook and `post_edit.py`).
+- **Risk:** if Claude Code changes the event format, a hook may stop matching and let actions through
+  while its tests stay green.
+- **Marker:** `.claude/hooks/tests/test_hooks.py`, module docstring.
+- **When to fix:** a hook fails to fire when it should, or a Claude Code release notes a change of the
+  hook input format.
+
 ## IMP-001-readability-threshold
 
 - **What could be better:** `QAS-MAINT-readability` has no cognitive complexity threshold yet, so the
