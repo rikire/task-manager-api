@@ -14,6 +14,8 @@ interface TaskRepository
 
     public function save(Task $task): void;
 
+    public function remove(Task $task): void;
+
     /** @throws TaskNotFound */
     public function get(TaskId $id): Task;
 

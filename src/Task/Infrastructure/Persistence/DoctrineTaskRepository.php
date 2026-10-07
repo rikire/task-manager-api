@@ -30,6 +30,12 @@ final readonly class DoctrineTaskRepository implements TaskRepository
         $this->entityManager->flush();
     }
 
+    public function remove(Task $task): void
+    {
+        $this->entityManager->remove($task);
+        $this->entityManager->flush();
+    }
+
     public function get(TaskId $id): Task
     {
         return $this->entityManager->find(Task::class, $id->value) ?? throw TaskNotFound::withId($id);
