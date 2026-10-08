@@ -86,6 +86,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Problem'
+    delete:
+      tags:
+        - Statuses
+      operationId: delete_status_delete
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[13-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      responses:
+        '204':
+          description: 'The status is deleted'
+        '404':
+          description: 'No status has this id'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: 'The status is `new` or used by tasks'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
   '/api/tasks/{id}/status':
     patch:
       tags:

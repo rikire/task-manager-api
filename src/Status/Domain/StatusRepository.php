@@ -25,4 +25,7 @@ interface StatusRepository
 
     /** @throws StatusNameTaken when another status has the same name, also under concurrent requests */
     public function save(Status $status): void;
+
+    /** @throws StatusNotDeletable when a task uses the status (the foreign key refuses, ADR-0007 D2) */
+    public function remove(Status $status): void;
 }
