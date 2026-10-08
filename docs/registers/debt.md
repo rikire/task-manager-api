@@ -113,7 +113,7 @@ Format and rules: `docs/pre-init/10-debt-polish-headroom.md` §2.
 - **Size:** the Stop-hook script (reuse its state directory), 2 hook tests.
 - **Trigger fired:** 2026-10-07 — a cloud session (branch `claude/readme-repo-polish-jpxbbm`, PR #27) hit the
   three-block limit in more than twenty blocks with identical output while the agent waited for the owner's
-  answers; the tree was committed and pushed, CI green (see `IMP-013`, `FAIL-010`). Not fixed yet: the
+  answers; the tree was committed and pushed, CI green (see `IMP-015`, `FAIL-011`). Not fixed yet: the
   owner put harness changes after submission (2026-10-07).
 
 ## IMP-008-mutation-score-threshold
@@ -217,7 +217,7 @@ Format and rules: `docs/pre-init/10-debt-polish-headroom.md` §2.
   (`framework.serializer.default_context`) or in `AbstractController::json()` calls; one test asserting
   a literal Cyrillic `title` in the response body; the curl-examples note removed.
 
-## IMP-013-stop-hook-without-docker
+## IMP-015-stop-hook-without-docker
 
 - **What could be better:** the Stop hook runs `make check`, which needs the development container. Where
   the checks cannot run at all — a cloud container with no Docker daemon, or one whose network policy blocks

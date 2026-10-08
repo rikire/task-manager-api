@@ -176,7 +176,7 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
   cannot tell who said what, so the level is instruction (skill `interview`, step 5).
 - **Commit:** —
 
-## FAIL-010-started-docker-without-checking-the-build
+## FAIL-011-started-docker-without-checking-the-build
 
 - **What happened:** in a cloud session (2026-10-07, README and badges, PR #27) the agent started a Docker
   daemon in the container to run the checks locally, without first checking that the image could be built
@@ -188,7 +188,7 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
 - **Probable cause:** the agent checked only the first step (the daemon starts) and treated the rest of the
   path (image pulls, package downloads) as given; the Stop hook does not tell "cannot run here" from "red".
 - **Remedy (level: hook; accepted by the owner 2026-10-07, done after submission):**
-  `IMP-013-stop-hook-without-docker` — the hook reports "not run here" instead of red when Docker is
+  `IMP-015-stop-hook-without-docker` — the hook reports "not run here" instead of red when Docker is
   absent; with it, starting or not starting a daemon no longer changes what the hook says. No instruction
   is added: one observed case.
 - **Commit:** —
