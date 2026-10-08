@@ -216,6 +216,8 @@ Format and rules: `docs/pre-init/10-debt-polish-headroom.md` §2.
 - **Size:** one setting — `JSON_UNESCAPED_UNICODE` in the JSON encoder context
   (`framework.serializer.default_context`) or in `AbstractController::json()` calls; one test asserting
   a literal Cyrillic `title` in the response body; the curl-examples note removed.
+- **Closed:** 2026-10-08 — change `json-unicode` (`REQ-API-json-utf8`). A setting alone was not enough:
+  `AbstractController::json()` passes its own options, so a decorator of the JSON encoder adds the flag.
 
 ## IMP-015-stop-hook-without-docker
 

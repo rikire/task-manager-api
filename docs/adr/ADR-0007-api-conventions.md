@@ -149,6 +149,12 @@ the contract.
   all tasks. UUID v7 grows with time, so this is creation order to the microsecond; ids made in the same microsecond by
   different requests keep a stable but arbitrary order (Facts).
 - Dates: ISO 8601 in UTC with the `Z` suffix, for example `2026-10-07T12:00:00Z` (not `+00:00`).
+- Text (amended 2026-10-08, change `json-unicode`, owner): every JSON response, success and error, writes
+  non-ASCII characters as UTF-8 (`"В работе"`, not `"\u0412 …"`), except U+2028 and U+2029, which stay
+  escaped; success responses keep Symfony's escaping of `<`, `>`, `&`, `'`, `"` (`\u003C` and similar) and
+  every body keeps `\/`. A decorator of the Serializer's JSON encoder in `Shared` adds the flag
+  (`REQ-API-json-utf8`). The rule covers the API endpoints; the contract document `/api/doc.json` is rendered
+  by NelmioApiDocBundle with its own flags (`/` and non-ASCII unescaped).
 - `POST` → 201 with the created resource and a `Location` header holding the resource path
   (`/api/statuses/{id}`); `DELETE` → 204, no body.
 
