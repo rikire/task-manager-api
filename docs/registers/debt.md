@@ -233,3 +233,18 @@ Format and rules: `docs/pre-init/10-debt-polish-headroom.md` §2.
   here: no Docker; the gate is CI" and do not block; a red run with Docker keeps blocking as now. 2 hook
   tests. Alternative rejected for now: opening the cloud network to the package hosts and Docker Hub
   (wider access, Docker Hub rate limits seen as 429 on 2026-10-07).
+
+## IMP-016-default-problem-type-title
+
+- **What could be better:** error bodies other than validation keep Symfony's defaults:
+  `"type": "https://tools.ietf.org/html/rfc2616#section-10"` and `"title": "An error occurred"` for 404, 409
+  and the 422 "unknown status". RFC 9457 expects `type` to identify the problem kind and `title` to summarise
+  it; clients and reviewers see a generic placeholder in the first `curl` with an error. Found on the
+  clean-clone check, 2026-10-08.
+- **Why not now:** the error format is part of the API contract (owner decides, ADR-0005); a change needs an
+  OpenSpec change with tests, and submission is due 2026-10-09 (`CON-PLAN-deadline`). README states the
+  defaults honestly.
+- **Trigger:** after submission, or a client that branches on `type`.
+- **Size:** one change: in `DomainProblemNormalizer` set `title` from the HTTP status text ("Not Found",
+  "Conflict") and `type` to `about:blank` or a project URI per problem kind; update `docs/api/openapi.yaml`,
+  curl examples and the functional error tests.
