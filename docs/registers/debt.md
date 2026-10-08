@@ -165,6 +165,27 @@ Format and rules: `docs/pre-init/10-debt-polish-headroom.md` §2.
   `TEST_TOKEN`, if the kernel supports it — not verified) or disable the validator metadata cache in the
   test environment; one check that the hand-applied mutant above is reported as killed.
 
+## IMP-013-initial-status-name-twice
+
+- **What could be better:** the name of the initial status `new` is written twice:
+  `StatusNotDeletable::INITIAL` (Status module) and `CreateTaskHandler::INITIAL_STATUS` (Task module). Renaming
+  it in one place would let a new task get a status that can be deleted. Found by the `verifier` subagent
+  (change `status-delete`, 2026-10-08).
+- **Why not now:** the name is fixed by the seed migration and ADR-0007; Task may depend on Status `Domain`
+  (ADR-0006), so the fix is small, but it touches the Task slice outside this change.
+- **Trigger:** the initial status becomes configurable, or a third place needs the name.
+- **Size:** one constant in Status `Domain` (for example on `StatusName`), used by both; no test changes.
+
+## IMP-014-no-log-on-restrict-backstop
+
+- **What could be better:** when the foreign key rejects a status delete (SQLSTATE 23001, the race the
+  `StatusUsage` check missed), the API answers 409 and nothing is logged, so how often the race happens is
+  unknown. Found by the `verifier` subagent (change `status-delete`, 2026-10-08).
+- **Why not now:** observability is at the prototype level for the assignment (review maturity); the answer to
+  the client is already correct.
+- **Trigger:** logging or metrics are added to the application.
+- **Size:** one log line at `info` in `DoctrineStatusRepository::remove()`.
+
 ## IMP-012-status-name-rule-in-three-dtos
 
 - **What could be better:** the status name rule (`NotBlank`, `Length(max: 50)`, the pattern, its message and
