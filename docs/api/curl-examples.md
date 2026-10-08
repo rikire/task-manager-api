@@ -118,6 +118,25 @@ curl -s -i -X POST "$API/api/statuses" -H 'Content-Type: application/json' \
 
 Ожидаемо: `409`, `detail` — `Status "done" already exists.`
 
+### Удалить статус — `DELETE /api/statuses/{id}`
+
+Сценарии: `REQ-STATUS-delete.deleted`, `.in-use`, `.initial`, `.not-found`.
+
+```bash
+ID=$(curl -s -X POST "$API/api/statuses" -H 'Content-Type: application/json' -d '{"name": "qa", "title": "QA"}' \
+  | sed 's/.*"id":"\([^"]*\)".*/\1/')
+curl -s -i -X DELETE "$API/api/statuses/$ID"
+curl -s -i -X DELETE "$API/api/statuses/$ID"
+curl -s -i -X DELETE "$API/api/statuses/019b76da-a800-7000-8000-000000000001"
+DONE_TASK=$(curl -s -X POST "$API/api/tasks" -H 'Content-Type: application/json' -d '{"title": "Готовая"}' \
+  | sed 's/.*"id":"\([^"]*\)".*/\1/')
+curl -s -X PATCH "$API/api/tasks/$DONE_TASK/status" -H 'Content-Type: application/json' -d '{"status": "done"}' > /dev/null
+curl -s -i -X DELETE "$API/api/statuses/019b76da-a800-7000-8000-000000000003"
+```
+
+Ожидаемо: `204`; повторно — `404`; `new` — `409`, `detail` — `Status "new" cannot be deleted.`; статус `done`, к
+которому привязана задача `$DONE_TASK`, — `409`, `detail` — `Status "done" is used by tasks.`
+
 ## Задачи
 
 ### Создать задачу — `POST /api/tasks`

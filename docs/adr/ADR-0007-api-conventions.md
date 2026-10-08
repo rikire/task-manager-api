@@ -198,7 +198,9 @@ the wrapper lets `total` or a cursor be added later without a breaking change.
 - Minus: one extra query per filtered list (does the status exist?).
 - Minus: each `Persistence` adapter translates two Doctrine exceptions (foreign key, unique) into domain
   exceptions; mapping a Doctrine exception class in `framework.exceptions` directly would apply to every
-  foreign key violation in the application and is not done.
+  foreign key violation in the application and is not done. Amended 2026-10-08 (change `status-delete`): a
+  delete blocked by `ON DELETE RESTRICT` comes from PostgreSQL as SQLSTATE 23001, which Doctrine does not map
+  to `ForeignKeyConstraintViolationException`; that adapter catches `DriverException` filtered on 23001.
 - Risk: the 404 for a non-UUID path matches no route, so the `_format: json` default that ADR-0005 sets on
   all `/api` routes (it makes errors render as JSON) does not apply, and a client that does not ask for
   JSON may get an HTML error page. ADR-0005 already marks unmatched-route rendering as not verified; the D5

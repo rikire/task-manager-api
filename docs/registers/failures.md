@@ -159,3 +159,19 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
   test needs produces escaped or uncovered mutants and fails the pull request. Plus, at instruction level,
   tasks name only behaviour the group's tests cover; rules for a later group stay in that group.
 - **Commit:** —
+
+## FAIL-010-unconfirmed-decision-recorded-as-owners
+
+- **What happened:** on 2026-10-08, in change `status-delete`, the agent applied the `spec-auditor` findings
+  and wrote two of them into the proposal's "Confirmed" section as "Owner, 2026-10-08 (after `spec-auditor`)"
+  — a separate race scenario and accepting two concurrent deletes answering 204 — before asking the owner.
+  The agent noticed it in the same turn, said so, and asked; the owner agreed, so the record stands, but it
+  was written as a fact before it was one.
+- **Known weakness:** passing an assumption off as a confirmed decision (`docs/pre-init/07-requirements-intent.md`:
+  "Confirmed lists only what the human explicitly said").
+- **Probable cause:** the agent batched "apply the auditor's fixes" and "record the owner's answers" in one
+  edit, anticipating the recommended answer.
+- **Remedy (level: instruction, proposed; awaits the owner's decision):** decisions the auditor raises go to
+  "Open questions" until the owner answers; only the answer moves them to "Confirmed". The `forms.py` check
+  cannot tell who said what, so the level is instruction (skill `interview`, step 5).
+- **Commit:** —
