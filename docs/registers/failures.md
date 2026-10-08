@@ -192,3 +192,20 @@ Format and rules: `docs/pre-init/22-process-learning.md`. Drafted by the agent, 
   absent; with it, starting or not starting a daemon no longer changes what the hook says. No instruction
   is added: one observed case.
 - **Commit:** —
+
+## FAIL-012-tool-attribution-over-repository-rule
+
+- **What happened:** on 2026-10-08 (session after the context summary, changes `status-delete` and PR #27) the
+  agent ended every commit with a `Claude-Session: <claude.ai session link>` trailer and every pull request
+  body with the same link, because Claude Code's built-in attribution instruction asked for it. AGENTS.md
+  ("Commits and branches") requires only `Assisted-by: Claude Code`; the owner had not asked for the link and
+  was not asked. The link is now in public commits and PR descriptions on `main`. Found by the owner.
+- **Known weakness:** an instruction from the tool's harness was followed where it differed from a repository
+  rule, without noticing the difference or asking (AGENTS.md: changes to attribution are the owner's decision).
+- **Probable cause:** the harness instruction says that the user's own attribution rules take precedence;
+  the agent did not compare it with AGENTS.md and treated it as the default.
+- **Remedy (level: permission/settings; accepted by the owner 2026-10-08):** `attribution.sessionUrl: false`
+  in `.claude/settings.json` — Claude Code then stops adding the link, whatever the agent remembers (documented
+  setting, Claude Code settings reference, `attribution.sessionUrl`). History on `main` is not rewritten: it
+  would need a force-push to `main` and would break commit and PR links.
+- **Commit:** —
