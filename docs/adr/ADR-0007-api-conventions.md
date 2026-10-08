@@ -204,9 +204,11 @@ the wrapper lets `total` or a cursor be added later without a breaking change.
 - Risk: the 404 for a non-UUID path matches no route, so the `_format: json` default that ADR-0005 sets on
   all `/api` routes (it makes errors render as JSON) does not apply, and a client that does not ask for
   JSON may get an HTML error page. ADR-0005 already marks unmatched-route rendering as not verified; the D5
-  test sends no `Accept` header to show the real behaviour.
+  test sends no `Accept` header to show the real behaviour. Closed 2026-10-08: the 404 answers JSON
+  (`ErrorResponsesTest`, D5 tests).
 - Risk: the 422 for extra body fields relies on framework behaviour read in the source but not yet tested
-  (Facts); the first endpoint with a body confirms it.
+  (Facts); the first endpoint with a body confirms it. Closed 2026-10-08: confirmed by the extra-field
+  scenarios (`CreateStatusTest`, `CreateTaskTest`, `ChangeTaskStatusTest`).
 - Status `name` and `title` cannot be corrected after creation: delete and recreate, possible only while
   no task uses the status, never for `new`.
 
