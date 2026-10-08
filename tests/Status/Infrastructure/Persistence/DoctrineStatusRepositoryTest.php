@@ -7,6 +7,7 @@ namespace App\Tests\Status\Infrastructure\Persistence;
 use App\Status\Domain\Status;
 use App\Status\Domain\StatusName;
 use App\Status\Domain\StatusNameTaken;
+use App\Status\Domain\StatusNotDeletable;
 use App\Status\Domain\StatusRepository;
 use App\Status\Domain\StatusTitle;
 use Doctrine\DBAL\Connection;
@@ -62,6 +63,32 @@ final class DoctrineStatusRepositoryTest extends KernelTestCase
         self::assertNotNull($status);
         self::assertSame('019b76da-a800-7000-8000-000000000002', $status->id()->value);
         self::assertNull($this->repository()->findByName(new StatusName('archived')));
+    }
+
+    /**
+     * A task moved to the status after the usage check: the foreign key refuses the delete and the client gets
+     * the "used" 409 (ADR-0007 D2). remove() is called directly, standing in for a check that has passed.
+     */
+    #[Group('REQ-STATUS-delete.moved-in-meanwhile')]
+    public function testDeleteRefusedByForeignKeyIsStatusInUse(): void
+    {
+        $this->connection()->insert('status', ['id' => '01a00000-0000-7000-8000-0000000000aa', 'name' => 'temporary', 'title' => 'Временный']);
+        $this->connection()->insert('task', [
+            'id' => '01a00000-0000-7000-8000-000000000001', 'title' => 'Отчет', 'description' => null,
+            'status_id' => '01a00000-0000-7000-8000-0000000000aa',
+            'created_at' => '2026-01-01 10:00:00', 'updated_at' => '2026-01-01 10:00:00',
+        ]);
+        $temporary = $this->repository()->findByName(new StatusName('temporary'));
+        self::assertNotNull($temporary);
+
+        try {
+            $this->repository()->remove($temporary);
+            self::fail('The delete of a status in use went through');
+        } catch (StatusNotDeletable $exception) {
+            self::assertSame('Status "temporary" is used by tasks.', $exception->getMessage());
+        }
+        self::assertSame(1, $this->connection()->fetchOne("SELECT COUNT(*) FROM status WHERE name = 'temporary'"));
+        self::assertSame('01a00000-0000-7000-8000-0000000000aa', $this->connection()->fetchOne('SELECT status_id FROM task'));
     }
 
     private function repository(): StatusRepository
