@@ -37,7 +37,7 @@
 
 | Префикс | Что | Допустимые значения | Где определяется |
 |---|---|---|---|
-| `REQ-<CAP>-<slug>` | требование; `.<slug>` — его сценарий | `<CAP>`: `TASK`, `STATUS` | спеки OpenSpec |
+| `REQ-<CAP>-<slug>` | требование; `.<slug>` — его сценарий | `<CAP>`: `TASK`, `STATUS`, `API` | спеки OpenSpec |
 | `QAS-<ATTR>-<slug>` | сценарий качества | `<ATTR>`: `DEPLOY`, `MAINT` | капабилити `quality` |
 | `CON-<AREA>-<slug>` | внешнее ограничение — предел, заданный извне (заданием, рекрутером, окружением), например `CON-PLAN-deadline` — сдача до 2026-10-09 | `<AREA>`: `STACK`, `PLAN`, `DELIV` | [docs/constraints.md](constraints.md) |
 | `RUL-<AREA>-<slug>` | правило для агента | `<AREA>`: `ARCH`, `CODE`, `SEC`, `TEST` | [.claude/rules/](../.claude/rules/) |
