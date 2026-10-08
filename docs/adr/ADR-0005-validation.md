@@ -75,7 +75,9 @@ Use **Symfony Validator on request DTOs** mapped with `#[MapRequestPayload]` and
 errors are rendered by the framework as RFC 9457-shaped problem details with `application/json`; API
 routes default to the JSON format (`_format: json` in the defaults of the `/api` route prefix); every
 `#[MapQueryString]` sets `validationFailedStatusCode: 422`. No custom listener. Whether 404 and 405 for
-unmatched routes also render JSON is not verified; the tests below check it.
+unmatched routes also render JSON is not verified; the tests below check it. Verified 2026-10-08: 404 for an
+unknown `/api` path (`tests/Functional/ErrorResponsesTest.php`) and 405 (`DeleteStatusTest`,
+`testAnswersMethodNotAllowed`) answer JSON problem details without an `Accept` header.
 
 Request bodies (amended 2026-10-07):
 
