@@ -1,5 +1,6 @@
 """Tests for scripts/stop_check.py: in TDD phase `tests` only new or changed test files may fail
 (decision record 04, Stop hook)."""
+import os
 import subprocess
 import sys
 import tempfile
@@ -7,6 +8,11 @@ import unittest
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[1] / "stop_check.py"
+
+# Under a git hook (pre-commit runs these tests) git exports GIT_INDEX_FILE and friends; inherited by `git -C
+# <tmp>`, they make the temporary repository write into the index of the commit being made.
+for _name in [n for n in os.environ if n.startswith("GIT_")]:
+    del os.environ[_name]
 
 
 def junit(*cases: tuple[str, str]) -> str:
